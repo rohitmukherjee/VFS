@@ -3,8 +3,8 @@ package virtualDisk;
 import java.io.File;
 import java.io.RandomAccessFile;
 
-import org.apache.log4j.BasicConfigurator;
 // logging imports
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import exceptions.IncorrectPathException;
@@ -26,6 +26,11 @@ public class VirtualDisk implements VirtualDiskInterface {
 		}
 		disk = new RandomAccessFile(new File(path), "rw");
 		logger.info("Successfully created disk");
+	}
+
+	@Override
+	public long getDiskSize() {
+		return 0;
 	}
 
 	private void setupLogging() {

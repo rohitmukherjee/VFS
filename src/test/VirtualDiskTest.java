@@ -1,6 +1,5 @@
 package test;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import virtualDisk.VirtualDisk;
@@ -8,9 +7,10 @@ import exceptions.IncorrectPathException;
 
 public class VirtualDiskTest {
 
-	@Ignore
+	@Test
 	public void settingUpDiskWithValidPathShouldWork() throws Exception {
-		// TODO: RM
+		VirtualDisk virtualDisk = new VirtualDisk("D:/hello.vdisk");
+		virtualDisk.setupDisk();
 	}
 
 	@Test(expected = IncorrectPathException.class)
