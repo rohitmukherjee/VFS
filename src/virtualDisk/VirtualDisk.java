@@ -26,6 +26,12 @@ public class VirtualDisk implements VirtualDiskInterface {
 		}
 		disk = new RandomAccessFile(new File(path), "rw");
 		logger.info("Successfully created disk");
+		setupRootDirectory();
+	}
+
+	private void setupRootDirectory() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -43,5 +49,65 @@ public class VirtualDisk implements VirtualDiskInterface {
 		if (file.exists())
 			return true;
 		return false;
+	}
+
+	@Override
+	public void loadDisk() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteDisk() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteData(long position, long size) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public byte[] getDiskInformation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long getFreeSpace() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long getAllocatedSpace() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long getNextFreeBlock() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long write(long position, byte[] data) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long write(byte[] data) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public byte[] read(long position, long size) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
