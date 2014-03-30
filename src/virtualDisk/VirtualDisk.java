@@ -1,6 +1,7 @@
 package virtualDisk;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 
 // logging imports
@@ -31,36 +32,18 @@ public class VirtualDisk implements VirtualDiskInterface {
 
 	private void setupRootDirectory() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public long getDiskSize() {
-		return 0;
-	}
-
-	private void setupLogging() {
-		logger = Logger.getLogger(VirtualDisk.class);
-		BasicConfigurator.configure();
-	}
-
-	private boolean fileExists(String path) {
-		File file = new File(path);
-		if (file.exists())
-			return true;
-		return false;
+	public long getDiskSize() throws IOException {
+		return disk.length();
 	}
 
 	@Override
-	public void loadDisk() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteDisk() {
-		// TODO Auto-generated method stub
-
+	public void deleteDisk() throws IOException {
+		closeDisk();
+		File diskToDelete = new File(this.path);
+		diskToDelete.delete();
 	}
 
 	@Override
@@ -94,9 +77,9 @@ public class VirtualDisk implements VirtualDiskInterface {
 	}
 
 	@Override
-	public long write(long position, byte[] data) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void write(long position, byte[] data) throws IOException {
+		disk.seek(position);
+		disk.write(data);
 	}
 
 	@Override
@@ -106,8 +89,27 @@ public class VirtualDisk implements VirtualDiskInterface {
 	}
 
 	@Override
-	public byte[] read(long position, long size) {
-		// TODO Auto-generated method stub
-		return null;
+	public byte[] read(long position, int size) throws IOException {
+		byte[] bytesRead = new byte[size];
+		disk.seek(position);
+		disk.read(bytesRead);
+		return bytesRead;
 	}
+
+	private void setupLogging() {
+		logger = Logger.getLogger(VirtualDisk.class);
+		BasicConfigurator.configure();
+	}
+
+	private boolean fileExists(String path) {
+		File file = new File(path);
+		if (file.exists())
+			return true;
+		return false;
+	}
+
+	private void closeDisk() throws IOException {
+		disk.close();
+	}
+
 }
