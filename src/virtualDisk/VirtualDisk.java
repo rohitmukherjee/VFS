@@ -47,8 +47,10 @@ public class VirtualDisk implements VirtualDiskInterface {
 	}
 
 	@Override
-	public void deleteData(long position, long size) {
-		// TODO Auto-generated method stub
+	public void deleteData(long position, long size) throws IOException {
+		//THIS IS BAD-- the cast can cause problems
+		byte[] emptyBuf = new byte[(int) size]; 
+		write(position,emptyBuf);
 
 	}
 
@@ -78,13 +80,14 @@ public class VirtualDisk implements VirtualDiskInterface {
 
 	@Override
 	public void write(long position, byte[] data) throws IOException {
+		//@TODO ensure that were aren't writing over used data
 		disk.seek(position);
 		disk.write(data);
 	}
 
 	@Override
-	public long write(byte[] data) {
-		// TODO Auto-generated method stub
+	public long write(byte[] data) throws IOException {
+		this.write(getNextFreeBlock(), data);
 		return 0;
 	}
 

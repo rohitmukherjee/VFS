@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public interface VirtualDiskInterface {
 
-	// TODO: Adding JavaDoc to all methods with parameters, returns etc.
+	// TODO: checking JavaDoc of all methods with parameters, returns etc.
 
 	/*
 	 * Deletes the disk.  After this action is complete the file will cease to exist
@@ -21,7 +21,7 @@ public interface VirtualDiskInterface {
 	 * @param position location of the starting byte of the chunk of memory to be deleted
 	 * @param size the size of the chunk of memory that will be removed
 	 */
-	void deleteData(long position, long size);
+	void deleteData(long position, long size) throws IOException;
 
 	byte[] getDiskInformation();
 
