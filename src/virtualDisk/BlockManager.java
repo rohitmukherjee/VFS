@@ -27,11 +27,11 @@ public class BlockManager {
 		logger.debug("Finished writing first bitmap block");
 	}
 
-	private long getVirtualDiskOffset(long offset) {
+	public long getVirtualDiskOffset(long offset) {
 		return blockSize + offset;
 	}
 
-	private long getCurrentBlockNumber() {
+	public long getCurrentBlockNumber() {
 		try {
 			long currentPosition = virtualDisk.getFilePosition();
 			currentPosition -= blockSize;
