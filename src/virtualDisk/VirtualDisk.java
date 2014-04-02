@@ -112,4 +112,20 @@ public class VirtualDisk implements VirtualDiskInterface {
 	public long getFilePosition() throws IOException {
 		return disk.getFilePointer();
 	}
+
+	public void seek(long filePointer) throws IOException {
+		disk.seek(filePointer);
+	}
+
+	public void write(byte[] data) throws IOException {
+		disk.write(data);
+	}
+
+	public long readLong() throws IOException {
+		return disk.readLong();
+	}
+
+	public void writeLong(long offset) throws IOException {
+		disk.writeLong(offset);
+	}
 }

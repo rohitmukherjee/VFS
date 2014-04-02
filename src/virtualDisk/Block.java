@@ -1,10 +1,14 @@
 package virtualDisk;
 
 public class Block {
-	protected long offset;
-	protected static final int MAXIMUM_BLOCK_SIZE = 16;
+	private long blockNumber;
+	protected static final long MAXIMUM_BLOCK_SIZE = BlockSettings.MAXIMUM_BLOCK_SIZE;
 
-	public Block(long offset) {
-		this.offset = offset;
+	public Block(long blockNumber) {
+		this.blockNumber = blockNumber;
+	}
+
+	public long getBlockNumber() {
+		return blockNumber;
 	}
 }
