@@ -64,7 +64,7 @@ public class BlockManager {
 			// write magic number to beginning of block only after filling block
 			virtualDisk.seek(currentWritePosition
 					- BlockSettings.MAGIC_NUMBER_LENGTH);
-			virtualDisk.write(BlockSettings.MAGIC_NUMBER);
+			virtualDisk.writeLong(data.length);
 			// write the next address as NULL_NEXT_ADDRESS
 			virtualDisk.seek(virtualDisk.getFilePosition()
 					+ BlockSettings.MAXIMUM_BLOCK_SIZE

@@ -1,6 +1,5 @@
 package test;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.RandomAccessFile;
@@ -28,8 +27,7 @@ public class BlockManagerTest {
 		assertEquals(0, blockManager.OffsetInsideCurrentBlock());
 		blockManager.write(BlockSettings.MAGIC_NUMBER);
 		file.seek(0);
-		file.read(result);
-		assertArrayEquals(result, BlockSettings.MAGIC_NUMBER);
+		assertEquals(file.readLong(), BlockSettings.MAGIC_NUMBER.length);
 		assertEquals(1, blockManager.getNextFreeBlock());
 		assertEquals(1, blockManager.getNextFreeBlock());
 		assertEquals(1, blockManager.getNextFreeBlock());
