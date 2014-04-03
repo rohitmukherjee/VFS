@@ -41,7 +41,7 @@ public class BlockManager {
 		virtualDisk.seek(getOffset(blockNumber));
 		long lengthOfDataToRead = virtualDisk.readLong();
 		results.write(virtualDisk.read(getOffset(blockNumber)
-				+ BlockSettings.MAGIC_NUMBER_LENGTH, lengthOfDataToRead));
+				+ BlockSettings.HEADER_LENGTH, lengthOfDataToRead));
 		// Read the next address
 		virtualDisk.seek(getOffset(blockNumber)
 				+ BlockSettings.NEXT_ADDRESS_START);
@@ -63,21 +63,21 @@ public class BlockManager {
 	public void write(byte[] data) throws IOException {
 		long currentWritePosition = getCurrentBlockNumber()
 				* BlockSettings.MAXIMUM_BLOCK_SIZE
-				+ BlockSettings.MAGIC_NUMBER_LENGTH;
+				+ BlockSettings.HEADER_LENGTH;
 		logger.debug("Value of currentWritePosition:" + currentWritePosition);
 		if (data.length <= BlockSettings.MAXIMUM_BLOCK_SIZE
 				- BlockSettings.NEXT_ADDRESS_LENGTH
-				- BlockSettings.MAGIC_NUMBER_LENGTH) {
+				- BlockSettings.HEADER_LENGTH) {
 			logger.debug("Data fits into current block, writing data");
 			virtualDisk.write(currentWritePosition, data);
 			// write magic number to beginning of block only after filling block
 			virtualDisk.seek(currentWritePosition
-					- BlockSettings.MAGIC_NUMBER_LENGTH);
+					- BlockSettings.HEADER_LENGTH);
 			virtualDisk.writeLong(data.length);
 			// write the next address as NULL_NEXT_ADDRESS
 			virtualDisk.seek(virtualDisk.getFilePosition()
 					+ BlockSettings.MAXIMUM_BLOCK_SIZE
-					- BlockSettings.MAGIC_NUMBER_LENGTH
+					- BlockSettings.HEADER_LENGTH
 					- BlockSettings.NEXT_ADDRESS_LENGTH);
 			virtualDisk.write(BlockSettings.UNUSED);
 		}
@@ -97,7 +97,7 @@ public class BlockManager {
 
 	public long getNextFreeBlock(long blockNumber) throws IOException {
 		virtualDisk.seek(blockNumber * BlockSettings.MAXIMUM_BLOCK_SIZE);
-		byte[] result = new byte[(int) BlockSettings.MAGIC_NUMBER_LENGTH];
+		byte[] result = new byte[(int) BlockSettings.HEADER_LENGTH];
 		virtualDisk.read(result);
 		if (isUnused(result)) {
 			return blockNumber;
