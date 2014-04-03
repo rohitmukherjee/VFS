@@ -24,6 +24,7 @@ public class BlockManager {
 	}
 
 	public byte[] read(long blockNumber) throws IOException {
+		logger.debug("Starting to read the blockNumber: " + blockNumber);
 		ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
 		long positionBeforeReading = virtualDisk.getFilePosition();
 		byte[] results = read(resultStream, blockNumber);
@@ -157,21 +158,22 @@ public class BlockManager {
 	 * returns the next block for computation
 	 * 
 	 * @return
+	 * @throws IOException
 	 */
-	public Block getNextBlock() {
-		RestoreBlock restoreBlock = new RestoreBlock(this);
+	public long getNextBlock() throws IOException {
+		long currentPosition = virtualDisk.getFilePosition();
 		long nextStartingAddress = -1;
-		virtualDisk = getVirtualDisk();
 		try {
-			virtualDisk.seek(getCurrentBlockStartingAddress() + blockSize - 8);
+			virtualDisk.seek(getCurrentBlockNumber() * BlockSettings.BLOCK_SIZE
+					+ BlockSettings.NEXT_ADDRESS_START);
 			nextStartingAddress = virtualDisk.readLong();
 		} catch (Exception ex) {
 			// TODO: some meaningful logging
 			ex.printStackTrace();
 		} finally {
-			restoreBlock.restore(this);
+			virtualDisk.seek(currentPosition);
 		}
-		return new Block(nextStartingAddress);
+		return nextStartingAddress;
 	}
 
 	public void combineBlocks(long firstOffset, long secondOffset)
@@ -187,7 +189,7 @@ public class BlockManager {
 		}
 	}
 
-	public boolean hasNextBlock() {
-		return getNextBlock().getBlockNumber() != -1;
+	public boolean hasNextBlock() throws IOException {
+		return getNextBlock() != -1;
 	}
 }
