@@ -27,15 +27,15 @@ public class CommandMap {
 	private void addCommands(Console console) {
 		// can change the keywords here or add more
 		myMap.put("cd", new ChangeDirectory(console));
-		myMap.put("copy", new CopyFile(console));
+		myMap.put("cp", new CopyFile(console));
 		myMap.put("create", new CreateDirectory(console));
-		myMap.put("delete", new DeleteDirectory(console));
+		myMap.put("rm", new DeleteDirectory(console));
 		myMap.put("export", new ExportFile(console));
 		myMap.put("getfree", new GetFreeSpace(console));
 		myMap.put("getocc", new GetOccupiedSpace(console));
 		myMap.put("import", new ImportFile(console));
-		myMap.put("list", new List(console));
-		myMap.put("move", new MoveFile(console));
+		myMap.put("ls", new List(console));
+		myMap.put("mv", new MoveFile(console));
 		myMap.put("pwd", new PWD(console));
 		myMap.put("rename", new RenameDirectory(console));
 	}
