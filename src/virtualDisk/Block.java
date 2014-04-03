@@ -2,7 +2,7 @@ package virtualDisk;
 
 public class Block {
 	private long blockNumber;
-	protected static final long MAXIMUM_BLOCK_SIZE = BlockSettings.MAXIMUM_BLOCK_SIZE;
+	protected static final long MAXIMUM_BLOCK_SIZE = BlockSettings.BLOCK_SIZE;
 
 	public Block(long blockNumber) {
 		this.blockNumber = blockNumber;
