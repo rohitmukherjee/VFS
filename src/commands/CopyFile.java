@@ -1,6 +1,6 @@
 package commands;
 
-public class DeleteDirectory implements Command{
+public class CopyFile implements Command{
 
 	@Override
 	public void execute() {
