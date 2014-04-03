@@ -1,8 +1,8 @@
 package virtualDisk;
 
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -21,10 +21,6 @@ public class BlockManager {
 
 	public void setupBlocks() throws Exception {
 		virtualDisk.setupDisk();
-		// Setup first block here
-		logger.debug("Wrote magic number to first block, block now ready for writing");
-		// virtualDisk.write(0, BlockSettings.MAGIC_NUMBER);
-		logger.debug("Finished writing first bitmap block");
 	}
 
 	public byte[] read(long blockNumber) throws IOException {
@@ -53,33 +49,29 @@ public class BlockManager {
 	}
 
 	private long getBlockNumber(long offset) {
-		return offset / BlockSettings.MAXIMUM_BLOCK_SIZE;
+		return offset / BlockSettings.BLOCK_SIZE;
 	}
 
 	private long getOffset(long blockNumber) {
-		return blockNumber * BlockSettings.MAXIMUM_BLOCK_SIZE;
+		return blockNumber * BlockSettings.BLOCK_SIZE;
 	}
 
 	public void write(byte[] data) throws IOException {
 		long currentWritePosition = getCurrentBlockNumber()
-				* BlockSettings.MAXIMUM_BLOCK_SIZE
-				+ BlockSettings.HEADER_LENGTH;
+				* BlockSettings.BLOCK_SIZE + BlockSettings.HEADER_LENGTH;
 		logger.debug("Value of currentWritePosition:" + currentWritePosition);
-		if (data.length <= BlockSettings.MAXIMUM_BLOCK_SIZE
+		if (data.length <= BlockSettings.BLOCK_SIZE
 				- BlockSettings.NEXT_ADDRESS_LENGTH
 				- BlockSettings.HEADER_LENGTH) {
 			logger.debug("Data fits into current block, writing data");
 			virtualDisk.write(currentWritePosition, data);
 			// write magic number to beginning of block only after filling block
-			virtualDisk.seek(currentWritePosition
-					- BlockSettings.HEADER_LENGTH);
+			virtualDisk
+					.seek(currentWritePosition - BlockSettings.HEADER_LENGTH);
 			virtualDisk.writeLong(data.length);
 			// write the next address as NULL_NEXT_ADDRESS
-			virtualDisk.seek(virtualDisk.getFilePosition()
-					+ BlockSettings.MAXIMUM_BLOCK_SIZE
-					- BlockSettings.HEADER_LENGTH
-					- BlockSettings.NEXT_ADDRESS_LENGTH);
-			virtualDisk.write(BlockSettings.UNUSED);
+			virtualDisk.seek(currentWritePosition + BlockSettings.DATA_LENGTH);
+			virtualDisk.writeLong(BlockSettings.UNUSED);
 		}
 		// we don't write a next block address because data has bit into this
 		// block
@@ -90,29 +82,43 @@ public class BlockManager {
 	public long getNextFreeBlock() throws Exception {
 		logger.debug("getNextFreeBlock was called");
 		long currentPosition = virtualDisk.getFilePosition();
+		logger.debug("Stored current position: " + currentPosition);
 		long result = getNextFreeBlock(0);
 		virtualDisk.seek(currentPosition);
 		return result;
 	}
 
-	public long getNextFreeBlock(long blockNumber) throws IOException {
-		virtualDisk.seek(blockNumber * BlockSettings.MAXIMUM_BLOCK_SIZE);
-		byte[] result = new byte[(int) BlockSettings.HEADER_LENGTH];
-		virtualDisk.read(result);
-		if (isUnused(result)) {
+	private long getNextFreeBlock(long blockNumber) throws IOException {
+		virtualDisk.seek(blockNumber * BlockSettings.BLOCK_SIZE);
+		logger.debug("virtualDisk file pointer is now at position: "
+				+ virtualDisk.getFilePosition());
+		try {
+			long result = virtualDisk.readLong();
+			if (isUnused(result))
+				return blockNumber;
+			else
+				return getNextFreeBlock(blockNumber + 1);
+		} catch (EOFException ex) {
+			logger.debug("Creating free space");
+			setupEmptyBlock(blockNumber);
 			return blockNumber;
-		} else
-			return getNextFreeBlock(blockNumber + 1);
+		}
 	}
 
-	private boolean isUnused(byte[] result) {
-		return Arrays.equals(result, BlockSettings.UNUSED);
+	private void setupEmptyBlock(long blockNumber) throws IOException {
+		long currentPosition = blockNumber * BlockSettings.BLOCK_SIZE;
+		virtualDisk.write(new byte[(int) BlockSettings.BYTES_TO_GROW]);
+		virtualDisk.seek(currentPosition);
+	}
+
+	private boolean isUnused(long result) {
+		return (result == BlockSettings.UNUSED);
 	}
 
 	public long getCurrentBlockNumber() {
 		try {
 			long currentPosition = virtualDisk.getFilePosition();
-			return (currentPosition + 1) / BlockSettings.MAXIMUM_BLOCK_SIZE;
+			return (currentPosition + 1) / BlockSettings.BLOCK_SIZE;
 		} catch (Exception ex) {
 			return -1;
 		}
@@ -130,12 +136,12 @@ public class BlockManager {
 	 */
 	public Block getCurrentBlock() {
 		Block block = new Block(getCurrentBlockNumber()
-				* BlockSettings.MAXIMUM_BLOCK_SIZE);
+				* BlockSettings.BLOCK_SIZE);
 		return block;
 	}
 
 	public long getCurrentBlockStartingAddress() {
-		return getCurrentBlockNumber() * BlockSettings.MAXIMUM_BLOCK_SIZE;
+		return getCurrentBlockNumber() * BlockSettings.BLOCK_SIZE;
 	}
 
 	public long OffsetInsideCurrentBlock() {
