@@ -1,11 +1,18 @@
 package commands;
 
-public class GetOccupiedSpace implements Command{
+import cli.Console;
 
+public class GetOccupiedSpace implements Command{
+	private Console console;
+	
+	public GetOccupiedSpace(Console aConsole) {
+		console = aConsole;
+	}
+	
 	@Override
 	public void execute(String[] params) {
-		// TODO Auto-generated method stub
-		
+		console.printMessage(
+				String.valueOf(console.fs.getOccupiedMem()));
 	}
 
 }

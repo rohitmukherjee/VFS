@@ -1,11 +1,21 @@
 package commands;
 
-public class CopyFile implements Command{
+import cli.Console;
 
+public class CopyFile implements Command{
+	private Console console;
+	
+	public CopyFile(Console aConsole) {
+		console = aConsole;
+	}
+	
+	
 	@Override
 	public void execute(String[] params) {
-		// TODO Auto-generated method stub
-		
+		if(console.fs.isValidFile(params[0])) {
+			console.fs.writeFile(params[1],
+				console.fs.readFile(params[0]));
+		}
 	}
 
 }

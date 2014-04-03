@@ -1,11 +1,17 @@
 package commands;
 
-public class CreateDirectory implements Command{
+import cli.Console;
 
+public class CreateDirectory implements Command{
+	private Console console;
+	
+	public CreateDirectory(Console aConsole) {
+		console = aConsole;
+	}
 	@Override
 	public void execute(String[] params) {
-		// TODO Auto-generated method stub
-		
+		console.fs.addNewDirectory(params[0]);
+		console.printMessage(params[0]);
 	}
 
 }

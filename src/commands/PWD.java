@@ -1,10 +1,16 @@
 package commands;
 
-public class PWD implements Command{
+import cli.Console;
 
+public class PWD implements Command{
+	private Console console;
+	
+	public PWD(Console aConsole) {
+		console = aConsole;
+	}
 	@Override
 	public void execute(String[] params) {
-		// TODO Auto-generated method stub
+		console.printMessage(console.path);
 		
 	}
 

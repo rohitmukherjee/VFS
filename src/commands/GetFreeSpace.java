@@ -1,11 +1,18 @@
 package commands;
 
-public class GetFreeSpace implements Command{
+import cli.Console;
 
+public class GetFreeSpace implements Command{
+	private Console console;
+	
+	public GetFreeSpace(Console aConsole) {
+		console = aConsole;
+	}
+	
 	@Override
 	public void execute(String[] params) {
-		// TODO Auto-generated method stub
-		
+		console.printMessage(
+				String.valueOf(console.fs.getFreeMem()));
 	}
 
 }

@@ -6,12 +6,10 @@ import java.io.PrintWriter;
 import FileSystem.FileSystemImpl;
 
 public class Console {
-
-	
 		private BufferedReader reader;
 		private PrintWriter writer;
-		private FileSystemImpl fs;
-		private String path;
+		public FileSystemImpl fs;
+		public String path;
 		private boolean shouldQuit;
 		
 		/**

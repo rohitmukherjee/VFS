@@ -1,11 +1,21 @@
 package commands;
 
-public class RenameDirectory implements Command{
+import cli.Console;
 
+public class RenameDirectory implements Command{
+	private Console console;
+	
+	public RenameDirectory(Console aConsole) {
+		console = aConsole;
+	}
+	
 	@Override
 	public void execute(String[] params) {
-		// TODO Auto-generated method stub
-		
+		if(console.fs.isValidPath(params[0])) {
+			console.fs.renameDirectory(params[0], params[1]);
+			console.printMessage("New title is:" + params[1]);
+		}
+
 	}
 
 }
