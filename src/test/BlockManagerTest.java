@@ -32,7 +32,6 @@ public class BlockManagerTest {
 		assertEquals(1, blockManager.getNextFreeBlock());
 		// Checking reading capabilities
 		assertArrayEquals(BlockSettings.MAGIC_NUMBER, blockManager.read(0));
-		assertArrayEquals(BlockSettings.UNUSED, blockManager.read(1));
 		assertEquals(32, blockManager.getVirtualDisk().getFilePosition());
 		assertEquals(0, blockManager.OffsetInsideCurrentBlock());
 		blockManager.getVirtualDisk().deleteDisk();
