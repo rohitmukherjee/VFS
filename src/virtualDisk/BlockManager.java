@@ -49,45 +49,52 @@ public class BlockManager {
 		else
 			return read(results, getBlockNumber(nextAddress));
 	}
-	
+
 	public void write(byte[] data) throws Exception {
-		long startPos =  getNextFreeBlock()*BlockSettings.BLOCK_SIZE;
-		rwrite(data, 0, startPos);
+		long startPosition = getOffset(getNextFreeBlock());
+		rwrite(data, 0, startPosition);
 	}
-	
-	private void rwrite(byte[] data, int startPosInArray, long startPosInFile) throws Exception {
-		if(data.length-startPosInArray >= BlockSettings.DATA_LENGTH) {
-			byte[] toWrite = subArray(data, startPosInArray, (int) BlockSettings.DATA_LENGTH);
-			virtualDisk.write(startPosInFile, longToBytes(BlockSettings.HEADER_LENGTH));
-			virtualDisk.write(startPosInFile + BlockSettings.HEADER_LENGTH, toWrite);
-			long startPos =  getNextFreeBlock()*BlockSettings.BLOCK_SIZE;
-			virtualDisk.write(startPosInFile + 
-					BlockSettings.HEADER_LENGTH + BlockSettings.DATA_LENGTH, longToBytes(startPos));
-			rwrite(data, startPosInArray + (int) BlockSettings.DATA_LENGTH, startPos);
-		}	
-		else {
-			int numWrite = data.length-startPosInArray ;
+
+	private void rwrite(byte[] data, int startPosInArray, long startPosInFile)
+			throws Exception {
+		if (data.length - startPosInArray > BlockSettings.DATA_LENGTH) {
+			byte[] toWrite = subArray(data, startPosInArray,
+					(int) BlockSettings.DATA_LENGTH);
+			// Writing the header
+			virtualDisk.write(startPosInFile, BlockSettings.DATA_LENGTH);
+			// Writing the data
+			virtualDisk.write(startPosInFile + BlockSettings.HEADER_LENGTH,
+					toWrite);
+			// Writing the next address
+			long startPos = getOffset(getNextFreeBlock());
+			virtualDisk
+					.write(startPosInFile + BlockSettings.NEXT_ADDRESS_START,
+							startPos);
+			rwrite(data, startPosInArray + (int) BlockSettings.DATA_LENGTH,
+					startPos);
+		} else {
+			logger.debug("Suup Dawg?!");
+			int numWrite = data.length - startPosInArray;
 			byte[] toWrite = subArray(data, startPosInArray, numWrite);
-			virtualDisk.write(startPosInFile, longToBytes((long)numWrite));
-			virtualDisk.write(startPosInFile + BlockSettings.HEADER_LENGTH, toWrite);
+			virtualDisk.write(startPosInFile, numWrite);
+			virtualDisk.write(startPosInFile + BlockSettings.HEADER_LENGTH,
+					toWrite);
 			byte[] empty = new byte[(int) BlockSettings.HEADER_LENGTH];
-			virtualDisk.write(startPosInFile + 
-					BlockSettings.HEADER_LENGTH + BlockSettings.DATA_LENGTH, empty);
+			virtualDisk.write(startPosInFile + BlockSettings.HEADER_LENGTH
+					+ BlockSettings.DATA_LENGTH, empty);
 		}
-		logger.debug("This should never be written, ever");
-			
 	}
 
 	public byte[] longToBytes(long x) {
-	    ByteBuffer buffer = ByteBuffer.allocate(8);
-	    buffer.putLong(x);
-	    return buffer.array();
+		ByteBuffer buffer = ByteBuffer.allocate(8);
+		buffer.putLong(x);
+		return buffer.array();
 	}
 
 	private byte[] subArray(byte[] data, int start, int length) {
 		byte[] tempArr = new byte[length];
-		for(int i = 0; i < length; ++i) {
-			tempArr[i] = data[start+i];
+		for (int i = 0; i < length; ++i) {
+			tempArr[i] = data[start + i];
 		}
 		return tempArr;
 	}
@@ -100,30 +107,25 @@ public class BlockManager {
 		return blockNumber * BlockSettings.BLOCK_SIZE;
 	}
 
-
-/*
-	public void write(byte[] data) throws IOException {
-		long currentWritePosition = getCurrentBlockNumber()
-				* BlockSettings.BLOCK_SIZE + BlockSettings.HEADER_LENGTH;
-		logger.debug("Value of currentWritePosition:" + currentWritePosition);
-		if (data.length <= BlockSettings.BLOCK_SIZE
-				- BlockSettings.NEXT_ADDRESS_LENGTH
-				- BlockSettings.HEADER_LENGTH) {
-			logger.debug("Data fits into current block, writing data");
-			virtualDisk.write(currentWritePosition, data);
-			// write magic number to beginning of block only after filling block
-			virtualDisk
-					.seek(currentWritePosition - BlockSettings.HEADER_LENGTH);
-			virtualDisk.writeLong(data.length);
-			// write the next address as NULL_NEXT_ADDRESS
-			virtualDisk.seek(currentWritePosition + BlockSettings.DATA_LENGTH);
-			virtualDisk.writeLong(BlockSettings.UNUSED);
-		}
-		// we don't write a next block address because data has bit into this
-		// block
-		else
-			logger.debug("Byte array too big for current block, partitioning data");
-	}*/
+	/*
+	 * public void write(byte[] data) throws IOException { long
+	 * currentWritePosition = getCurrentBlockNumber() BlockSettings.BLOCK_SIZE +
+	 * BlockSettings.HEADER_LENGTH;
+	 * logger.debug("Value of currentWritePosition:" + currentWritePosition); if
+	 * (data.length <= BlockSettings.BLOCK_SIZE -
+	 * BlockSettings.NEXT_ADDRESS_LENGTH - BlockSettings.HEADER_LENGTH) {
+	 * logger.debug("Data fits into current block, writing data");
+	 * virtualDisk.write(currentWritePosition, data); // write magic number to
+	 * beginning of block only after filling block virtualDisk
+	 * .seek(currentWritePosition - BlockSettings.HEADER_LENGTH);
+	 * virtualDisk.writeLong(data.length); // write the next address as
+	 * NULL_NEXT_ADDRESS virtualDisk.seek(currentWritePosition +
+	 * BlockSettings.DATA_LENGTH); virtualDisk.writeLong(BlockSettings.UNUSED);
+	 * } // we don't write a next block address because data has bit into this
+	 * // block else
+	 * logger.debug("Byte array too big for current block, partitioning data");
+	 * }
+	 */
 
 	public long getNextFreeBlock() throws Exception {
 		logger.debug("getNextFreeBlock was called");
@@ -140,6 +142,8 @@ public class BlockManager {
 				+ virtualDisk.getFilePosition());
 		try {
 			long result = virtualDisk.readLong();
+			logger.debug("BlockNumber: " + blockNumber + " header length: "
+					+ result);
 			if (isUnused(result))
 				return blockNumber;
 			else
@@ -219,7 +223,7 @@ public class BlockManager {
 		} finally {
 			virtualDisk.seek(currentPosition);
 		}
-		return nextStartingAddress;
+		return getBlockNumber(nextStartingAddress);
 	}
 
 	public void combineBlocks(long firstOffset, long secondOffset)

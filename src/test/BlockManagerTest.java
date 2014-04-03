@@ -42,17 +42,30 @@ public class BlockManagerTest {
 	public void diskReadTestsForBlockData() throws Exception {
 		BlockManager blockManager = new BlockManager(WINDOWS_PATH);
 		blockManager.setupBlocks();
-		RandomAccessFile file = new RandomAccessFile(WINDOWS_PATH, "r");
 		assertEquals(0, blockManager.getCurrentBlockNumber());
 		assertEquals(0, blockManager.getNextFreeBlock());
 		blockManager.write(TestUtilities.testBlockDataLessThan);
-		System.out.println(blockManager.getNextBlock());
 		assertEquals(0, blockManager.getNextBlock());
 		// Writes to block 0, so file pointer should be at position
+		assertArrayEquals(TestUtilities.testBlockDataLessThan,
+				blockManager.read(0));
 		blockManager.write(TestUtilities.testBlockDataLessThan);
-		System.out.println(blockManager.read(0));
-		assertArrayEquals(blockManager.read(0),
-				TestUtilities.testBlockDataLessThan);
-
+		assertArrayEquals(TestUtilities.testBlockDataLessThan,
+				blockManager.read(1));
+		assertEquals(2, blockManager.getNextFreeBlock());
+		blockManager.write(TestUtilities.testBlockDataFullBlock);
+		assertArrayEquals(TestUtilities.testBlockDataFullBlock,
+				blockManager.read(2));
+		assertEquals(3, blockManager.getNextFreeBlock());
+		// writing big data
+		TestUtilities.bigDataSetup();
+		blockManager.write(TestUtilities.bigData);
+		assertEquals(66, blockManager.getNextFreeBlock());
+		blockManager.getVirtualDisk().seek(3 * BlockSettings.BLOCK_SIZE);
+		assertEquals(4, blockManager.getNextBlock());
+		blockManager.getVirtualDisk().seek(56 * BlockSettings.BLOCK_SIZE);
+		assertEquals(57, blockManager.getNextBlock());
+		byte[] result = blockManager.read(3);
+		assertArrayEquals(TestUtilities.bigData, result);
 	}
 }

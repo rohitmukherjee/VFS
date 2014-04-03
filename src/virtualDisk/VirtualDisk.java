@@ -85,6 +85,11 @@ public class VirtualDisk implements VirtualDiskInterface {
 		disk.write(data);
 	}
 
+	public void write(long position, long data) throws IOException {
+		disk.seek(position);
+		disk.writeLong(data);
+	}
+
 	public void read(byte[] data) throws IOException {
 		disk.read(data);
 	}
