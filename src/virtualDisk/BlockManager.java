@@ -39,7 +39,7 @@ public class BlockManager {
 		return results;
 	}
 
-	public byte[] read(ByteArrayOutputStream results, long blockNumber)
+	private byte[] read(ByteArrayOutputStream results, long blockNumber)
 			throws IOException {
 		virtualDisk.seek(getOffset(blockNumber));
 		long lengthOfDataToRead = virtualDisk.readLong();
@@ -111,10 +111,6 @@ public class BlockManager {
 		return Arrays.equals(result, BlockSettings.UNUSED);
 	}
 
-	private boolean isMagicNumber(byte[] result) {
-		return Arrays.equals(result, BlockSettings.MAGIC_NUMBER);
-	}
-
 	public long getCurrentBlockNumber() {
 		try {
 			long currentPosition = virtualDisk.getFilePosition();
@@ -130,12 +126,12 @@ public class BlockManager {
 	}
 
 	/**
-	 * Function returns the current Block (both Data and Bitmap)
+	 * Function returns the current Block
 	 * 
 	 * @return
 	 */
 	public Block getCurrentBlock() {
-		Block block = new Block(getCurrentBlockNumber() * blockSize + blockSize);
+		Block block = new Block(getCurrentBlockNumber() * blockSize);
 		return block;
 	}
 
