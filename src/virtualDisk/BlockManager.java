@@ -127,6 +127,22 @@ public class BlockManager {
 	 * }
 	 */
 
+	public void delete(long blockNumber) throws Exception {
+		virtualDisk.seek(getOffset(blockNumber));
+		virtualDisk.writeLong(BlockSettings.UNUSED);
+		virtualDisk.seek(getOffset(blockNumber)
+				+ BlockSettings.NEXT_ADDRESS_START);
+		long nextAddress = virtualDisk.readLong();
+		while (nextAddress != 0) {
+			virtualDisk.seek(nextAddress);
+			virtualDisk.writeLong(BlockSettings.UNUSED);
+			virtualDisk.seek(getOffset(blockNumber)
+					+ BlockSettings.NEXT_ADDRESS_START);
+			nextAddress = virtualDisk.readLong();
+		}
+		virtualDisk.seek(getNextFreeBlock());
+	}
+	
 	public long getNextFreeBlock() throws Exception {
 		logger.debug("getNextFreeBlock was called");
 		long currentPosition = virtualDisk.getFilePosition();

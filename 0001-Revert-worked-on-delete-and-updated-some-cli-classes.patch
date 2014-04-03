@@ -1,0 +1,53 @@
+From 49e0f0fd7c7574fbce731c10ca80744dace00d6e Mon Sep 17 00:00:00 2001
+From: Jeremy Bradford <jerbrad6@gmail.com>
+Date: Thu, 3 Apr 2014 22:21:27 +0200
+Subject: [PATCH 1/1] Revert "worked on delete and updated some cli classes"
+
+This reverts commit e9765dc267351f06f8f008a3a77568264dd13545.
+
+adding a commit message because i have to
+---
+ src/cli/CommandMap.java |    8 ++++----
+ src/cli/Console.java    |    2 --
+ 2 files changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/src/cli/CommandMap.java b/src/cli/CommandMap.java
+index 20e502f..e0568c6 100644
+--- a/src/cli/CommandMap.java
++++ b/src/cli/CommandMap.java
+@@ -27,15 +27,15 @@ public class CommandMap {
+ 	private void addCommands(Console console) {
+ 		// can change the keywords here or add more
+ 		myMap.put("cd", new ChangeDirectory(console));
+-		myMap.put("cp", new CopyFile(console));
++		myMap.put("copy", new CopyFile(console));
+ 		myMap.put("create", new CreateDirectory(console));
+-		myMap.put("rm", new DeleteDirectory(console));
++		myMap.put("delete", new DeleteDirectory(console));
+ 		myMap.put("export", new ExportFile(console));
+ 		myMap.put("getfree", new GetFreeSpace(console));
+ 		myMap.put("getocc", new GetOccupiedSpace(console));
+ 		myMap.put("import", new ImportFile(console));
+-		myMap.put("ls", new List(console));
+-		myMap.put("mv", new MoveFile(console));
++		myMap.put("list", new List(console));
++		myMap.put("move", new MoveFile(console));
+ 		myMap.put("pwd", new PWD(console));
+ 		myMap.put("rename", new RenameDirectory(console));
+ 	}
+diff --git a/src/cli/Console.java b/src/cli/Console.java
+index cd93223..74a5613 100644
+--- a/src/cli/Console.java
++++ b/src/cli/Console.java
+@@ -8,8 +8,6 @@ import commands.Command;
+ import FileSystem.FileSystemImpl;
+ 
+ public class Console {
+-
+-	
+ 		private BufferedReader reader;
+ 		private PrintWriter writer;
+ 		public FileSystemImpl fs;
+-- 
+1.7.4.4
+
