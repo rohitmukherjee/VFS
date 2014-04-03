@@ -3,6 +3,7 @@ package virtualDisk;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -33,7 +34,7 @@ public class BlockManager {
 		return results;
 	}
 
-	public byte[] read(ByteArrayOutputStream results, long blockNumber)
+	private byte[] read(ByteArrayOutputStream results, long blockNumber)
 			throws IOException {
 		virtualDisk.seek(getOffset(blockNumber));
 		long lengthOfDataToRead = virtualDisk.readLong();
@@ -48,6 +49,48 @@ public class BlockManager {
 		else
 			return read(results, getBlockNumber(nextAddress));
 	}
+	
+	public void write(byte[] data) throws Exception {
+		long startPos =  getNextFreeBlock()*BlockSettings.BLOCK_SIZE;
+		rwrite(data, 0, startPos);
+	}
+	
+	private void rwrite(byte[] data, int startPosInArray, long startPosInFile) throws Exception {
+		if(data.length-startPosInArray >= BlockSettings.DATA_LENGTH) {
+			byte[] toWrite = subArray(data, startPosInArray, (int) BlockSettings.DATA_LENGTH);
+			virtualDisk.write(startPosInFile, longToBytes(BlockSettings.HEADER_LENGTH));
+			virtualDisk.write(startPosInFile + BlockSettings.HEADER_LENGTH, toWrite);
+			long startPos =  getNextFreeBlock()*BlockSettings.BLOCK_SIZE;
+			virtualDisk.write(startPosInFile + 
+					BlockSettings.HEADER_LENGTH + BlockSettings.DATA_LENGTH, longToBytes(startPos));
+			rwrite(data, startPosInArray + (int) BlockSettings.DATA_LENGTH, startPos);
+		}	
+		else {
+			int numWrite = data.length-startPosInArray ;
+			byte[] toWrite = subArray(data, startPosInArray, numWrite);
+			virtualDisk.write(startPosInFile, longToBytes((long)numWrite));
+			virtualDisk.write(startPosInFile + BlockSettings.HEADER_LENGTH, toWrite);
+			byte[] empty = new byte[(int) BlockSettings.HEADER_LENGTH];
+			virtualDisk.write(startPosInFile + 
+					BlockSettings.HEADER_LENGTH + BlockSettings.DATA_LENGTH, empty);
+		}
+		logger.debug("This should never be written, ever");
+			
+	}
+
+	public byte[] longToBytes(long x) {
+	    ByteBuffer buffer = ByteBuffer.allocate(8);
+	    buffer.putLong(x);
+	    return buffer.array();
+	}
+
+	private byte[] subArray(byte[] data, int start, int length) {
+		byte[] tempArr = new byte[length];
+		for(int i = 0; i < length; ++i) {
+			tempArr[i] = data[start+i];
+		}
+		return tempArr;
+	}
 
 	private long getBlockNumber(long offset) {
 		return offset / BlockSettings.BLOCK_SIZE;
@@ -57,6 +100,8 @@ public class BlockManager {
 		return blockNumber * BlockSettings.BLOCK_SIZE;
 	}
 
+
+/*
 	public void write(byte[] data) throws IOException {
 		long currentWritePosition = getCurrentBlockNumber()
 				* BlockSettings.BLOCK_SIZE + BlockSettings.HEADER_LENGTH;
@@ -78,7 +123,7 @@ public class BlockManager {
 		// block
 		else
 			logger.debug("Byte array too big for current block, partitioning data");
-	}
+	}*/
 
 	public long getNextFreeBlock() throws Exception {
 		logger.debug("getNextFreeBlock was called");
@@ -131,11 +176,12 @@ public class BlockManager {
 	}
 
 	/**
-	 * Function returns the current Block (both Data and Bitmap)
+	 * Function returns the current Block
 	 * 
 	 * @return
 	 */
 	public Block getCurrentBlock() {
+
 		Block block = new Block(getCurrentBlockNumber()
 				* BlockSettings.BLOCK_SIZE);
 		return block;
