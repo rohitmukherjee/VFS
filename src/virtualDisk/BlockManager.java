@@ -1,8 +1,8 @@
 package virtualDisk;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
@@ -31,21 +31,33 @@ public class BlockManager {
 	}
 
 	public byte[] read(long blockNumber) throws IOException {
-		ArrayList<Byte> result = new ArrayList<Byte>();
+		ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
 		long positionBeforeReading = virtualDisk.getFilePosition();
-		// reading logic goes here
-		// MAIN PROBLEM: Knowing how many bytes you have to read ie. length of
-		// actual data in the block
+		byte[] results = read(resultStream, blockNumber);
 		logger.debug("Resetting file Pointer to previous position");
-		return null;
+		virtualDisk.seek(positionBeforeReading);
+		return results;
 	}
 
-	// public byte[] read(ArrayList<Byte> result, long blockNumber)
-	// throws IOException {
-	// virtualDisk.seek(getOffset(blockNumber) +
-	// BlockSettings.MAGIC_NUMBER_LENGTH);
-	//
-	// }
+	public byte[] read(ByteArrayOutputStream results, long blockNumber)
+			throws IOException {
+		virtualDisk.seek(getOffset(blockNumber));
+		long lengthOfDataToRead = virtualDisk.readLong();
+		results.write(virtualDisk.read(getOffset(blockNumber)
+				+ BlockSettings.MAGIC_NUMBER_LENGTH, lengthOfDataToRead));
+		// Read the next address
+		virtualDisk.seek(getOffset(blockNumber)
+				+ BlockSettings.NEXT_ADDRESS_START);
+		long nextAddress = virtualDisk.readLong();
+		if (nextAddress == 0)
+			return results.toByteArray();
+		else
+			return read(results, getBlockNumber(nextAddress));
+	}
+
+	private long getBlockNumber(long offset) {
+		return offset / BlockSettings.MAXIMUM_BLOCK_SIZE;
+	}
 
 	private long getOffset(long blockNumber) {
 		return blockNumber * BlockSettings.MAXIMUM_BLOCK_SIZE;

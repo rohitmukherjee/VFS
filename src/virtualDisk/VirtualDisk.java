@@ -86,8 +86,8 @@ public class VirtualDisk implements VirtualDiskInterface {
 	}
 
 	@Override
-	public byte[] read(long position, int size) throws IOException {
-		byte[] bytesRead = new byte[size];
+	public byte[] read(long position, long size) throws IOException {
+		byte[] bytesRead = new byte[(int) size];
 		disk.seek(position);
 		disk.read(bytesRead);
 		return bytesRead;
@@ -127,5 +127,11 @@ public class VirtualDisk implements VirtualDiskInterface {
 
 	public void writeLong(long offset) throws IOException {
 		disk.writeLong(offset);
+	}
+
+	@Override
+	public byte[] read(long position, int size) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

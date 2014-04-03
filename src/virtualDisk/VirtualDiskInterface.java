@@ -82,4 +82,6 @@ public interface VirtualDiskInterface {
 	 */
 	byte[] read(long position, int size) throws IOException;
 
+	byte[] read(long position, long size) throws IOException;
+
 }
