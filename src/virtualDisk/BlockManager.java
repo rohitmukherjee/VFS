@@ -2,7 +2,6 @@ package virtualDisk;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
@@ -23,8 +22,6 @@ public class BlockManager {
 	public void setupBlocks() throws Exception {
 		virtualDisk.setupDisk();
 		// Setup first block here
-		// Write a magic number into the first 8 bytes to show that it's
-		// allocated 11111111
 		logger.debug("Wrote magic number to first block, block now ready for writing");
 		// virtualDisk.write(0, BlockSettings.MAGIC_NUMBER);
 		logger.debug("Finished writing first bitmap block");
@@ -92,19 +89,20 @@ public class BlockManager {
 
 	public long getNextFreeBlock() throws Exception {
 		logger.debug("getNextFreeBlock was called");
-		RandomAccessFile file = new RandomAccessFile("D:/test.vdisk", "r");
-		return getNextFreeBlock(0, file);
+		long currentPosition = virtualDisk.getFilePosition();
+		long result = getNextFreeBlock(0);
+		virtualDisk.seek(currentPosition);
+		return result;
 	}
 
-	public long getNextFreeBlock(long blockNumber, RandomAccessFile filePointer)
-			throws IOException {
-		filePointer.seek(blockNumber * BlockSettings.MAXIMUM_BLOCK_SIZE);
-		byte[] result = new byte[8];
-		filePointer.read(result);
+	public long getNextFreeBlock(long blockNumber) throws IOException {
+		virtualDisk.seek(blockNumber * BlockSettings.MAXIMUM_BLOCK_SIZE);
+		byte[] result = new byte[(int) BlockSettings.MAGIC_NUMBER_LENGTH];
+		virtualDisk.read(result);
 		if (isUnused(result)) {
 			return blockNumber;
 		} else
-			return getNextFreeBlock(blockNumber + 1, filePointer);
+			return getNextFreeBlock(blockNumber + 1);
 	}
 
 	private boolean isUnused(byte[] result) {
@@ -131,7 +129,10 @@ public class BlockManager {
 	 * @return
 	 */
 	public Block getCurrentBlock() {
-		Block block = new Block(getCurrentBlockNumber() * blockSize);
+
+		Block block = new Block(getCurrentBlockNumber()
+				* BlockSettings.MAXIMUM_BLOCK_SIZE);
+
 		return block;
 	}
 
@@ -169,21 +170,20 @@ public class BlockManager {
 		return new Block(nextStartingAddress);
 	}
 
-	public void combineBlocks(long firstOffset, long secondOffset) {
-		RestoreBlock restoreBlock = new RestoreBlock(this);
+	public void combineBlocks(long firstOffset, long secondOffset)
+			throws IOException {
 		try {
-			long offset = firstOffset + blockSize - 8;
+			long offset = firstOffset + BlockSettings.NEXT_ADDRESS_START;
 			virtualDisk.seek(offset);
-			virtualDisk.writeLong(offset);
+			virtualDisk.writeLong(secondOffset);
 		} catch (Exception ex) {
 			// TODO: Some meaningful logging
 		} finally {
-			restoreBlock.restore(this);
+			virtualDisk.seek(secondOffset);
 		}
 	}
 
 	public boolean hasNextBlock() {
 		return getNextBlock().getBlockNumber() != -1;
 	}
-
 }

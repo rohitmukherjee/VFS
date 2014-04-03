@@ -85,6 +85,10 @@ public class VirtualDisk implements VirtualDiskInterface {
 		disk.write(data);
 	}
 
+	public void read(byte[] data) throws IOException {
+		disk.read(data);
+	}
+
 	@Override
 	public byte[] read(long position, long size) throws IOException {
 		byte[] bytesRead = new byte[(int) size];
