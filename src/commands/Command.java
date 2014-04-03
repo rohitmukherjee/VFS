@@ -1,5 +1,5 @@
 package commands;
 
 public interface Command {
-	abstract void execute();
+	abstract void execute(String[] params);
 }
