@@ -13,7 +13,7 @@ public class DeleteDirectory implements Command{
 	public void execute(String[] params) {
 		if(console.fs.isValidPath(params[0])) {
 			console.fs.deleteDirectory(params[0]);
-			console.printMessage("successfully deleted");
+			console.print("successfully deleted");
 		}
 	}
 

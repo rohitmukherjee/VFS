@@ -11,7 +11,7 @@ public class CreateDirectory implements Command{
 	@Override
 	public void execute(String[] params) {
 		console.fs.addNewDirectory(params[0]);
-		console.printMessage(params[0]);
+		console.print(params[0]);
 	}
 
 }

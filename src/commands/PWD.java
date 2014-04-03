@@ -10,7 +10,7 @@ public class PWD implements Command{
 	}
 	@Override
 	public void execute(String[] params) {
-		console.printMessage(console.path);
+		console.print(console.path);
 		
 	}
 

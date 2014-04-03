@@ -14,7 +14,7 @@ public class ChangeDirectory implements Command{
 		if(console.fs.isValidPath(params[0])) {
 			console.path = params[0];
 		} else {
-		console.printMessage(params[0] + "is not a directory");
+			console.print(params[0] + "is not a directory");
 		}
 	}
 

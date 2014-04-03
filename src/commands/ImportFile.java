@@ -23,9 +23,9 @@ public class ImportFile implements Command{
 				tempFile = java.nio.file.Files.readAllBytes(
 						Paths.get(params[0]));
 				console.fs.writeFile(params[1], tempFile);
-				console.printMessage("Successfully copied");
+				console.print("Successfully copied");
 			} catch (IOException e) {
-				console.printMessage("File could not be copied");
+				console.print("File could not be copied");
 			}
 		}
 	}

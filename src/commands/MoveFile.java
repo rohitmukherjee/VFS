@@ -15,9 +15,9 @@ public class MoveFile implements Command{
 				byte[] tempFile = console.fs.readFile(params[0]);
 				console.fs.writeFile(params[1], tempFile);
 				console.fs.deleteFile(params[0]);
-				console.printMessage(params[1] + "has been moved");
+				console.print(params[1] + "has been moved");
 			} catch (Exception e) {
-				console.printMessage("An Error has occured");
+				console.print("An Error has occured");
 			}
 		}
 		

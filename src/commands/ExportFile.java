@@ -23,9 +23,9 @@ public class ExportFile implements Command{
 			Path filePath = Paths.get(params[1]);
 			try {
 				java.nio.file.Files.write(filePath, tempFile);
-				console.printMessage("Successfully copied");
+				console.print("Successfully copied");
 			} catch (IOException e) {
-				console.printMessage("File could not be copied");
+				console.print("File could not be copied");
 			}
 		}
 	}

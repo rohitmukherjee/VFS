@@ -38,7 +38,7 @@ public class Console {
 		/**
 		 * Print message.
 		 */
-		public void printMessage(String str) {
+		public void print(String str) {
 			writer.println(str);
 			writer.flush();
 		}
@@ -65,7 +65,7 @@ public class Console {
 				try {
 					inputCmd = reader.readLine().trim();
 				} catch (Exception e) {
-					printMessage(e.getMessage());
+					print(e.getMessage());
 					quit();
 				}
 				//first token is command name
@@ -96,7 +96,7 @@ public class Console {
 			if (command != null) {
 				command.execute(args);
 			} else {
-				printMessage("Command not found.");
+				print("Command not found.");
 			}
 		}
 

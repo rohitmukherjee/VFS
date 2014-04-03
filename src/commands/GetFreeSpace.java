@@ -11,7 +11,7 @@ public class GetFreeSpace implements Command{
 	
 	@Override
 	public void execute(String[] params) {
-		console.printMessage(
+		console.print(
 				String.valueOf(console.fs.getFreeMem()));
 	}
 
