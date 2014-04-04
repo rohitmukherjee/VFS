@@ -3,8 +3,10 @@ package test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.RandomAccessFile;
 
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -13,14 +15,20 @@ import virtualDisk.BlockSettings;
 
 public class BlockManagerTest {
 
+	@After
+	public void method() {
+		File f = new File(TestUtilities.WINDOWS_PATH);
+		f.deleteOnExit();
+	}
+
 	@Ignore
 	public void settingUpDiskUsingBlockManagerShouldWriteFirstBlock()
 			throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.POSIX_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
 		blockManager.setupBlocks();
 		byte[] result = new byte[8];
 		RandomAccessFile file = new RandomAccessFile(
-				TestUtilities.POSIX_PATH, "r");
+				TestUtilities.WINDOWS_PATH, "r");
 		file.read(result);
 		assertEquals(0, blockManager.getCurrentBlockNumber());
 		assertEquals(0, blockManager.getCurrentBlockStartingAddress());
@@ -39,7 +47,7 @@ public class BlockManagerTest {
 
 	@Test
 	public void diskReadTestsForBlockData() throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.POSIX_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
 		blockManager.setupBlocks();
 		assertEquals(0, blockManager.getCurrentBlockNumber());
 		assertEquals(0, blockManager.getNextFreeBlock());

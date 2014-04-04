@@ -14,4 +14,5 @@ public class BlockSettings {
 			- HEADER_LENGTH;
 	public static final long BLOCKS_TO_INITIALIZE = 8;
 	public static final long BYTES_TO_GROW = BLOCKS_TO_INITIALIZE * BLOCK_SIZE;
+	public static final byte[] EMPTY_BUFFER = new byte[(int) DATA_LENGTH];
 }

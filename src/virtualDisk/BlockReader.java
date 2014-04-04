@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import exceptions.NotImplementedException;
 
@@ -34,13 +35,6 @@ public class BlockReader extends InputStream implements DataInput {
 		this.positionMark = offset;
 		this.blockMark = blockNumber;
 		this.blockNumber = blockNumber;
-		try {
-			byteBuffer = blockManager.readBlock(blockNumber);
-		} catch (IOException e) {
-			// TODO : Add some meaning logging
-			e.printStackTrace();
-		}
-
 	}
 
 	@Override
@@ -80,7 +74,7 @@ public class BlockReader extends InputStream implements DataInput {
 		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
 			moveToNextBlock();
 		positionInBlock++;
-		
+
 		return byteBuffer[(int) positionInBlock];
 	}
 
@@ -97,7 +91,7 @@ public class BlockReader extends InputStream implements DataInput {
 		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
 			moveToNextBlock();
 		positionInBlock++;
-	
+
 		return getByteBuffer(8).getDouble();
 	}
 
@@ -106,14 +100,19 @@ public class BlockReader extends InputStream implements DataInput {
 		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
 			moveToNextBlock();
 		positionInBlock++;
-	
+
 		return getByteBuffer(4).getFloat();
 	}
 
+	// Assumption is that a read won't be attempted before a write
 	@Override
 	public void readFully(byte[] arg0) throws IOException {
-		arg0 = blockManager.read(0);
-		// This leaves vDisk file pointer at 0
+		if (bufferIsEmpty())
+			byteBuffer = blockManager.readBlock(blockNumber);
+		byte[] temp = blockManager.read(blockNumber);
+		for (int i = 0; i < arg0.length; i++)
+			arg0[i] = temp[i];
+		// This leaves vDisk file pointer at getOffset(blockNumber)
 	}
 
 	@Override
@@ -127,7 +126,7 @@ public class BlockReader extends InputStream implements DataInput {
 		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
 			moveToNextBlock();
 		positionInBlock++;
-	
+
 		return getByteBuffer(4).getInt();
 	}
 
@@ -141,7 +140,7 @@ public class BlockReader extends InputStream implements DataInput {
 		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
 			moveToNextBlock();
 		positionInBlock++;
-	
+
 		return getByteBuffer(8).getLong();
 	}
 
@@ -150,7 +149,7 @@ public class BlockReader extends InputStream implements DataInput {
 		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
 			moveToNextBlock();
 		positionInBlock++;
-	
+
 		return getByteBuffer(2).getShort();
 	}
 
@@ -178,10 +177,10 @@ public class BlockReader extends InputStream implements DataInput {
 	public int read() throws IOException {
 		return readByte() & 0xFF;
 	}
-	
+
 	private ByteBuffer getByteBuffer(int size) throws IOException {
 		byte[] data = new byte[size];
-		for(int i = 0; i < size; ++i) {
+		for (int i = 0; i < size; ++i) {
 			if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
 				moveToNextBlock();
 			positionInBlock++;
@@ -189,6 +188,8 @@ public class BlockReader extends InputStream implements DataInput {
 		}
 		return ByteBuffer.wrap(data);
 	}
-	
-	
+
+	private boolean bufferIsEmpty() {
+		return Arrays.equals(byteBuffer, BlockSettings.EMPTY_BUFFER);
+	}
 }
