@@ -145,18 +145,31 @@ public class BlockManager {
 	}
 
 	public void delete(long blockNumber) throws Exception {
+		if (blockNumber == 0) {
+			logger.warn("Nice try, can't delete the root");
+			return;
+		}
+		
 		virtualDisk.seek(getOffset(blockNumber));
 		virtualDisk.writeLong(BlockSettings.UNUSED);
+		//get the address of next block
+		logger.debug("deleting data in block "+blockNumber);
 		virtualDisk.seek(getOffset(blockNumber)
 				+ BlockSettings.NEXT_ADDRESS_START);
+		long fileAddress = virtualDisk.getFilePosition();
 		long nextAddress = virtualDisk.readLong();
+		
 		while (nextAddress != 0) {
+			virtualDisk.seek(fileAddress);
+			virtualDisk.writeLong(0);
 			virtualDisk.seek(nextAddress);
 			virtualDisk.writeLong(BlockSettings.UNUSED);
 			virtualDisk.seek(getOffset(blockNumber)
 					+ BlockSettings.NEXT_ADDRESS_START);
+			fileAddress = virtualDisk.getFilePosition();
 			nextAddress = virtualDisk.readLong();
 		}
+		//reset pointer to current first free block
 		virtualDisk.seek(getNextFreeBlock());
 	}
 
@@ -171,7 +184,7 @@ public class BlockManager {
 		logger.debug("getNextFreeBlock was called");
 		long currentPosition = virtualDisk.getFilePosition();
 		logger.debug("Stored current position: " + currentPosition);
-		long result = getNextFreeBlock(0);
+		long result = getNextFreeBlock(1);
 		virtualDisk.seek(currentPosition);
 		return result;
 	}
