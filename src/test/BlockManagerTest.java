@@ -3,8 +3,10 @@ package test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.RandomAccessFile;
 
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -12,6 +14,12 @@ import virtualDisk.BlockManager;
 import virtualDisk.BlockSettings;
 
 public class BlockManagerTest {
+
+	@After
+	public void method() {
+		File f = new File(TestUtilities.WINDOWS_PATH);
+		f.deleteOnExit();
+	}
 
 	@Ignore
 	public void settingUpDiskUsingBlockManagerShouldWriteFirstBlock()

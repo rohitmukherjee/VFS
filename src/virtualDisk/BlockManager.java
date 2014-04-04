@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -20,10 +21,41 @@ public class BlockManager {
 		BasicConfigurator.configure();
 	}
 
+	/**
+	 * First method that should be called when the BlockManager is initialized
+	 * 
+	 * @throws Exception
+	 */
 	public void setupBlocks() throws Exception {
 		virtualDisk.setupDisk();
 	}
 
+	public byte[] readBlock(long blockNumber) throws IOException {
+		return this.read(blockNumber, (int) BlockSettings.HEADER_LENGTH,
+				(int) BlockSettings.DATA_LENGTH);
+	}
+
+	/**
+	 * reads data into byte array starting from a particular byte array
+	 * 
+	 * @param blockNumber
+	 * @return
+	 * @throws IOException
+	 */
+	public byte[] read(long blockNumber, int offset, int length)
+			throws IOException {
+		byte[] temp = read(blockNumber);
+		byte[] result = Arrays.copyOfRange(temp, offset, offset + length);
+		return result;
+	}
+
+	/**
+	 * reads data into byte array starting from a particular byte array
+	 * 
+	 * @param blockNumber
+	 * @return
+	 * @throws IOException
+	 */
 	public byte[] read(long blockNumber) throws IOException {
 		logger.debug("Starting to read the blockNumber: " + blockNumber);
 		ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
@@ -50,6 +82,12 @@ public class BlockManager {
 			return read(results, getBlockNumber(nextAddress));
 	}
 
+	/**
+	 * Start writing data into available positions
+	 * 
+	 * @param data
+	 * @throws Exception
+	 */
 	public void write(byte[] data) throws Exception {
 		long startPosition = getOffset(getNextFreeBlock());
 		rwrite(data, 0, startPosition);
@@ -73,7 +111,6 @@ public class BlockManager {
 			rwrite(data, startPosInArray + (int) BlockSettings.DATA_LENGTH,
 					startPos);
 		} else {
-			logger.debug("Suup Dawg?!");
 			int numWrite = data.length - startPosInArray;
 			byte[] toWrite = subArray(data, startPosInArray, numWrite);
 			virtualDisk.write(startPosInFile, numWrite);
@@ -107,26 +144,6 @@ public class BlockManager {
 		return blockNumber * BlockSettings.BLOCK_SIZE;
 	}
 
-	/*
-	 * public void write(byte[] data) throws IOException { long
-	 * currentWritePosition = getCurrentBlockNumber() BlockSettings.BLOCK_SIZE +
-	 * BlockSettings.HEADER_LENGTH;
-	 * logger.debug("Value of currentWritePosition:" + currentWritePosition); if
-	 * (data.length <= BlockSettings.BLOCK_SIZE -
-	 * BlockSettings.NEXT_ADDRESS_LENGTH - BlockSettings.HEADER_LENGTH) {
-	 * logger.debug("Data fits into current block, writing data");
-	 * virtualDisk.write(currentWritePosition, data); // write magic number to
-	 * beginning of block only after filling block virtualDisk
-	 * .seek(currentWritePosition - BlockSettings.HEADER_LENGTH);
-	 * virtualDisk.writeLong(data.length); // write the next address as
-	 * NULL_NEXT_ADDRESS virtualDisk.seek(currentWritePosition +
-	 * BlockSettings.DATA_LENGTH); virtualDisk.writeLong(BlockSettings.UNUSED);
-	 * } // we don't write a next block address because data has bit into this
-	 * // block else
-	 * logger.debug("Byte array too big for current block, partitioning data");
-	 * }
-	 */
-
 	public void delete(long blockNumber) throws Exception {
 		if (blockNumber == 0) {
 			logger.warn("Nice try, can't delete the root");
@@ -155,7 +172,14 @@ public class BlockManager {
 		//reset pointer to current first free block
 		virtualDisk.seek(getNextFreeBlock());
 	}
-	
+
+	/**
+	 * Function scans the disk for free memory and returns the absolute position
+	 * of the first free block
+	 * 
+	 * @return position of the first available/free block
+	 * @throws Exception
+	 */
 	public long getNextFreeBlock() throws Exception {
 		logger.debug("getNextFreeBlock was called");
 		long currentPosition = virtualDisk.getFilePosition();
@@ -194,6 +218,11 @@ public class BlockManager {
 		return (result == BlockSettings.UNUSED);
 	}
 
+	/**
+	 * returns the current block number
+	 * 
+	 * @return current block number
+	 */
 	public long getCurrentBlockNumber() {
 		try {
 			long currentPosition = virtualDisk.getFilePosition();
@@ -270,5 +299,13 @@ public class BlockManager {
 
 	public boolean hasNextBlock() throws IOException {
 		return getNextBlock() != -1;
+	}
+
+	public long getNextBlock(long blockNumber) throws IOException {
+		long currentPosition = virtualDisk.getFilePosition();
+		virtualDisk.seek(getOffset(blockNumber));
+		long nextBlockStart = this.getNextBlock();
+		virtualDisk.seek(currentPosition);
+		return nextBlockStart;
 	}
 }
