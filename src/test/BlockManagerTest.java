@@ -66,6 +66,8 @@ public class BlockManagerTest {
 		assertEquals(57, blockManager.getNextBlock());
 		byte[] result = blockManager.read(3);
 		assertArrayEquals(TestUtilities.bigData, result);
+		blockManager.getVirtualDisk().deleteDisk();
+
 	}
 	@Test 
 	public void diskDeleteFileGeneral() throws Exception { 
@@ -97,6 +99,8 @@ public class BlockManagerTest {
 		blockManager.write(TestUtilities.bigData);
 		assertEquals(initialNextFreeBlock, blockManager.getNextFreeBlock());
 
+		blockManager.getVirtualDisk().deleteDisk();
+
 	} 
 	
 	@Test 
@@ -121,6 +125,9 @@ public class BlockManagerTest {
 		blockManager.write(TestUtilities.testBlockDataFullBlock);
 		assertEquals(2, blockManager.getNextFreeBlock());
 		assertEquals(0, blockManager.getNextBlock());
+		
+		blockManager.getVirtualDisk().deleteDisk();
+
 	}
 	
 	@Test 
@@ -148,6 +155,9 @@ public class BlockManagerTest {
 		assertEquals(2, blockManager.getNextFreeBlock());
 		blockManager.write(TestUtilities.testBlockDataFullBlock);
 		assertEquals(4, blockManager.getNextFreeBlock());
+		
+		blockManager.getVirtualDisk().deleteDisk();
+
 	}
 	
 	/**
