@@ -132,8 +132,11 @@ public class BlockManager {
 			logger.warn("Nice try, can't delete the root");
 			return;
 		}
+		
 		virtualDisk.seek(getOffset(blockNumber));
 		virtualDisk.writeLong(BlockSettings.UNUSED);
+		//get the address of next block
+		logger.debug("deleting data in block "+blockNumber);
 		virtualDisk.seek(getOffset(blockNumber)
 				+ BlockSettings.NEXT_ADDRESS_START);
 		long fileAddress = virtualDisk.getFilePosition();
