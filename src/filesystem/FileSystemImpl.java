@@ -1,4 +1,4 @@
-package FileSystem;
+package filesystem;
 
 public class FileSystemImpl implements FileSystemInterface{
 

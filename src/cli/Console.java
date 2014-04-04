@@ -5,12 +5,12 @@ import java.io.PrintWriter;
 
 import commands.Command;
 
-import FileSystem.FileSystemImpl;
+import filesystem.FileSystemImpl;
 
 public class Console {
 		private BufferedReader reader;
 		private PrintWriter writer;
-		public FileSystemImpl fs;
+		public filesystem.FileSystemImpl fs;
 		public String path;
 		private boolean shouldQuit;
 		private CommandMap map;
