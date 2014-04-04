@@ -12,16 +12,15 @@ import virtualDisk.BlockManager;
 import virtualDisk.BlockSettings;
 
 public class BlockManagerTest {
-	private final String WINDOWS_PATH = "D:/test.vdisk";
-	private final String POSIX_PATH = "~/home";
 
 	@Ignore
 	public void settingUpDiskUsingBlockManagerShouldWriteFirstBlock()
 			throws Exception {
-		BlockManager blockManager = new BlockManager(WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
 		blockManager.setupBlocks();
 		byte[] result = new byte[8];
-		RandomAccessFile file = new RandomAccessFile(WINDOWS_PATH, "r");
+		RandomAccessFile file = new RandomAccessFile(
+				TestUtilities.WINDOWS_PATH, "r");
 		file.read(result);
 		assertEquals(0, blockManager.getCurrentBlockNumber());
 		assertEquals(0, blockManager.getCurrentBlockStartingAddress());
@@ -40,7 +39,7 @@ public class BlockManagerTest {
 
 	@Test
 	public void diskReadTestsForBlockData() throws Exception {
-		BlockManager blockManager = new BlockManager(WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
 		blockManager.setupBlocks();
 		assertEquals(0, blockManager.getCurrentBlockNumber());
 		assertEquals(0, blockManager.getNextFreeBlock());
