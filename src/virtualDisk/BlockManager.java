@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -27,6 +28,25 @@ public class BlockManager {
 	 */
 	public void setupBlocks() throws Exception {
 		virtualDisk.setupDisk();
+	}
+
+	public byte[] readBlock(long blockNumber) throws IOException {
+		return this.read(blockNumber, (int) BlockSettings.HEADER_LENGTH,
+				(int) BlockSettings.DATA_LENGTH);
+	}
+
+	/**
+	 * reads data into byte array starting from a particular byte array
+	 * 
+	 * @param blockNumber
+	 * @return
+	 * @throws IOException
+	 */
+	public byte[] read(long blockNumber, int offset, int length)
+			throws IOException {
+		byte[] temp = read(blockNumber);
+		byte[] result = Arrays.copyOfRange(temp, offset, offset + length);
+		return result;
 	}
 
 	/**
@@ -266,5 +286,13 @@ public class BlockManager {
 
 	public boolean hasNextBlock() throws IOException {
 		return getNextBlock() != -1;
+	}
+
+	public long getNextBlock(long blockNumber) throws IOException {
+		long currentPosition = virtualDisk.getFilePosition();
+		virtualDisk.seek(getOffset(blockNumber));
+		long nextBlockStart = this.getNextBlock();
+		virtualDisk.seek(currentPosition);
+		return nextBlockStart;
 	}
 }

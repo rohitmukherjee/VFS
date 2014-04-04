@@ -15,38 +15,84 @@ public class BlockReader extends InputStream implements DataInput {
 
 	private BlockManager blockManager;
 	private long blockNumber;
+	private long positionInBlock;
+	private byte[] byteBuffer = new byte[(int) BlockSettings.DATA_LENGTH];
+
+	private long blockMark;
+	private long positionMark;
 
 	public BlockReader(BlockManager blockManager, long blockNumber) {
-		this(blockManager, blockNumber, 0);
+		this(blockManager, blockNumber, BlockSettings.HEADER_LENGTH);
 	}
 
 	public BlockReader(BlockManager blockManager, long blockNumber, long offset) {
 		this.blockManager = blockManager;
+		this.positionInBlock = offset;
+		this.positionMark = offset;
+		this.blockMark = blockNumber;
 		this.blockNumber = blockNumber;
+		try {
+			byteBuffer = blockManager.readBlock(blockNumber);
+		} catch (IOException e) {
+			// TODO : Add some meaning logging
+			e.printStackTrace();
+		}
 
+	}
+
+	@Override
+	public void reset() {
+		blockNumber = blockMark;
+		positionInBlock = positionMark;
+	}
+
+	@Override
+	public void mark(int position) {
+		positionMark = positionInBlock;
+		blockMark = blockNumber;
 	}
 
 	@Override
 	public boolean readBoolean() throws IOException {
-		// TODO Auto-generated method stub
-		return false;
+		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
+			moveToNextBlock();
+		positionInBlock++;
+		return byteBuffer[(int) positionInBlock] != 0;
+	}
+
+	private void moveToNextBlock() throws IOException {
+		long nextBlockNumber = blockManager.getNextBlock(this.blockNumber);
+		if (nextBlockNumber != 0) {
+			byteBuffer = blockManager.readBlock(nextBlockNumber);
+			blockNumber = nextBlockNumber;
+			positionInBlock = BlockSettings.HEADER_LENGTH;
+		}
+		// TODO: Have to handle end of file more elegantly
+		else
+			throw new IOException("EOF Reached");
 	}
 
 	@Override
 	public byte readByte() throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
+			moveToNextBlock();
+		positionInBlock++;
+		return byteBuffer[(int) positionInBlock];
 	}
 
 	@Override
 	public char readChar() throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
+			moveToNextBlock();
+		positionInBlock++;
+		return (char) byteBuffer[(int) positionInBlock];
 	}
 
 	@Override
 	public double readDouble() throws IOException {
-		// TODO Auto-generated method stub
+		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
+			moveToNextBlock();
+		positionInBlock++;
 		return 0;
 	}
 
@@ -58,14 +104,14 @@ public class BlockReader extends InputStream implements DataInput {
 
 	@Override
 	public void readFully(byte[] arg0) throws IOException {
-		// TODO Auto-generated method stub
-
+		arg0 = blockManager.read(0);
+		// This leaves vDisk file pointer at 0
 	}
 
 	@Override
-	public void readFully(byte[] arg0, int arg1, int arg2) throws IOException {
-		// TODO Auto-generated method stub
-
+	public void readFully(byte[] arg0, int offset, int length)
+			throws IOException {
+		arg0 = blockManager.read(0, offset, length);
 	}
 
 	@Override
