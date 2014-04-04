@@ -3,7 +3,7 @@ package test;
 public class TestUtilities {
 
 	public final static String WINDOWS_PATH = "D:/test.vdisk";
-	public final static String POSIX_PATH = "~/home";
+	public final static String POSIX_PATH = "~\\Desktop\\test.vdisk";
 	public static final byte[] testBlockDataLessThan = { 1, 0, 1, 0, 1, 0, 1,
 			0, 1, 0 };
 	public static final byte[] testBlockDataFullBlock = { 0, 1, 0, 1, 0, 1, 0,

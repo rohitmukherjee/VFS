@@ -16,11 +16,11 @@ public class BlockManagerTest {
 	@Ignore
 	public void settingUpDiskUsingBlockManagerShouldWriteFirstBlock()
 			throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.POSIX_PATH);
 		blockManager.setupBlocks();
 		byte[] result = new byte[8];
 		RandomAccessFile file = new RandomAccessFile(
-				TestUtilities.WINDOWS_PATH, "r");
+				TestUtilities.POSIX_PATH, "r");
 		file.read(result);
 		assertEquals(0, blockManager.getCurrentBlockNumber());
 		assertEquals(0, blockManager.getCurrentBlockStartingAddress());
@@ -39,7 +39,7 @@ public class BlockManagerTest {
 
 	@Test
 	public void diskReadTestsForBlockData() throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.POSIX_PATH);
 		blockManager.setupBlocks();
 		assertEquals(0, blockManager.getCurrentBlockNumber());
 		assertEquals(0, blockManager.getNextFreeBlock());

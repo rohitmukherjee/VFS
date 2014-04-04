@@ -3,6 +3,9 @@ package virtualDisk;
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+
+import exceptions.NotImplementedException;
 
 /**
  * This class is a stream wrapper around the byte oriented io that happens with
@@ -77,6 +80,7 @@ public class BlockReader extends InputStream implements DataInput {
 		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
 			moveToNextBlock();
 		positionInBlock++;
+		
 		return byteBuffer[(int) positionInBlock];
 	}
 
@@ -93,13 +97,17 @@ public class BlockReader extends InputStream implements DataInput {
 		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
 			moveToNextBlock();
 		positionInBlock++;
-		return 0;
+	
+		return getByteBuffer(8).getDouble();
 	}
 
 	@Override
 	public float readFloat() throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
+			moveToNextBlock();
+		positionInBlock++;
+	
+		return getByteBuffer(4).getFloat();
 	}
 
 	@Override
@@ -116,56 +124,71 @@ public class BlockReader extends InputStream implements DataInput {
 
 	@Override
 	public int readInt() throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
+			moveToNextBlock();
+		positionInBlock++;
+	
+		return getByteBuffer(4).getInt();
 	}
 
 	@Override
 	public String readLine() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public long readLong() throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
+			moveToNextBlock();
+		positionInBlock++;
+	
+		return getByteBuffer(8).getLong();
 	}
 
 	@Override
 	public short readShort() throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
+			moveToNextBlock();
+		positionInBlock++;
+	
+		return getByteBuffer(2).getShort();
 	}
 
 	@Override
 	public String readUTF() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public int readUnsignedByte() throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public int readUnsignedShort() throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public int skipBytes(int arg0) throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public int read() throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+		return readByte() & 0xFF;
 	}
-
+	
+	private ByteBuffer getByteBuffer(int size) throws IOException {
+		byte[] data = new byte[size];
+		for(int i = 0; i < size; ++i) {
+			if (positionInBlock > BlockSettings.NEXT_ADDRESS_START)
+				moveToNextBlock();
+			positionInBlock++;
+			data[i] = byteBuffer[(int) positionInBlock];
+		}
+		return ByteBuffer.wrap(data);
+	}
+	
+	
 }
