@@ -1,5 +1,7 @@
 package fileManager;
 
+import java.io.IOException;
+
 import virtualDisk.BlockManager;
 
 public class FileManager implements FileManagerInterface {
@@ -32,7 +34,13 @@ public class FileManager implements FileManagerInterface {
 		// TODO Auto-generated method stub
 	}
 
-	private byte[] metaDataToByteArray(MetaData metaData) {
-		return null;
+	@Override
+	public void search(String path) {
+		byte[] toSearch = MetaDataUtilities.StringToBytes(path);
+
+	}
+
+	private void getMetaData(long blockNumber, byte[] data) throws IOException {
+		data = blockManager.readBlock(blockNumber);
 	}
 }

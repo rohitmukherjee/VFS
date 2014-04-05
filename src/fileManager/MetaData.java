@@ -9,37 +9,37 @@ import java.util.Arrays;
 
 public class MetaData {
 	
-	public long address;
-	public String name;
-	public long parent;
-	public DiskEntry type;
-	public long timestamp;
+	private long address;
+	private String name;
+	private long parent;
+	private Byte type;
+	private long timestamp;
 	
-	//maybe should make this a class?
-	public enum DiskEntry {
-		FILE(0), DIRECTORY(1);
-		
-		private final int index;
-	    private DiskEntry(int index) {
-	        this.index = index;
-	    }
-
-	    public int getIndex() {
-	        return index;
-	    }
-	    
-	    public static DiskEntry fromInteger(int x) throws Exception {
-	        switch(x) {
-	        case 0:
-	            return FILE;
-	        case 1:
-	            return DIRECTORY;
-	        default:
-	        	throw new Exception("cannot create enum from int greater than 1");
-	        }
-	    }
-		
-	}
+//	//maybe should make this a class?
+//	public enum DiskEntry {
+//		FILE(0), DIRECTORY(1);
+//		
+//		private final int index;
+//	    private DiskEntry(int index) {
+//	        this.index = index;
+//	    }
+//
+//	    public int getIndex() {
+//	        return index;
+//	    }
+//	    
+//	    public static DiskEntry fromInteger(int x) throws Exception {
+//	        switch(x) {
+//	        case 0:
+//	            return FILE;
+//	        case 1:
+//	            return DIRECTORY;
+//	        default:
+//	        	throw new Exception("cannot create enum from int greater than 1");
+//	        }
+//	    }
+//		
+//	}
 	
 	public MetaData(long address, byte[] data) throws Exception {
 		this.address = address;
@@ -59,7 +59,7 @@ public class MetaData {
 	 * @param type
 	 * @param timestamp
 	 */
-	public MetaData(String name, long parent, DiskEntry type, long timestamp) {
+	public MetaData(String name, long parent, byte type, long timestamp) {
 		this.name = name;
 		this.parent = parent;
 		this.type = type;
@@ -116,16 +116,14 @@ public class MetaData {
 	}
 	
 	private byte[] typeToBytes() {
-		ByteBuffer buffer = ByteBuffer.allocate(4);
-		buffer.putInt(type.getIndex());
-		byte[] temp = buffer.array();
-		return Arrays.copyOf(temp, utils.BlockSettings.META_TIMESTAMP_START 
-				- utils.BlockSettings.META_FILE_TYPE_START);
+		byte[] typeBytes = new byte[utils.BlockSettings.META_TIMESTAMP_START 
+				- utils.BlockSettings.META_FILE_TYPE_START];
+		typeBytes[0] = type;
+		return typeBytes;
 	}
 	
 	private void bytesToType(byte[] bytes) throws Exception {
-		ByteBuffer buffer = ByteBuffer.wrap(bytes);
-		type = DiskEntry.fromInteger(buffer.getInt());
+		type = bytes[0];
 	}
 	
 	private byte[] timeStampToBytes() {
@@ -139,7 +137,46 @@ public class MetaData {
 	private void bytesToTimeStamp(byte[] bytes) {
 		ByteBuffer buffer = ByteBuffer.wrap(bytes);
 		timestamp = buffer.getLong();
-	}
-	
+	}	
 
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public Byte getType() {
+		return type;
+	}
+
+	public void setType(Byte type) {
+		this.type = type;
+	}
+
+	public long getParent() {
+		return parent;
+	}
+
+	public void setParent(long parent) {
+		this.parent = parent;
+	}
+
+	public long getPosition() {
+		return address;
+	}
+
+	public void setPosition(long position) {
+		this.address = position;
+	}
 }

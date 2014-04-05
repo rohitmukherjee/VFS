@@ -1,5 +1,7 @@
 package fileSystem;
 
+import java.io.File;
+
 import virtualDisk.BlockSettings;
 import fileManager.FileManager;
 import fileManager.MetaData;
@@ -51,8 +53,8 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public void deleteFile(String path) {
-		// TODO Auto-generated method stub
-
+		File f = new File(path);
+		f.getAbsolutePath();
 	}
 
 	@Override
