@@ -2,6 +2,7 @@ package fileManager;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,7 +16,13 @@ public class MetaDataUtilities {
 	}
 
 	public static String bytesToString(byte[] data) {
-		return new String(data);
+		String string = "";
+		try {
+			string = new String(data, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			//return ""
+		}
+		return string;
 	}
 
 	public static byte[] longToBytes(long value) {
