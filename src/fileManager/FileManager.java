@@ -12,7 +12,7 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public void writeMetaData(long position, MetaData metaData) {
-		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -32,4 +32,7 @@ public class FileManager implements FileManagerInterface {
 		// TODO Auto-generated method stub
 	}
 
+	private byte[] metaDataToByteArray(MetaData metaData) {
+		return null;
+	}
 }
