@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import virtualDisk.BlockSettings;
+import utils.BlockSettings;
 
 public class MetaDataUtilities {
 
@@ -63,7 +63,7 @@ public class MetaDataUtilities {
 		return meta.array();
 	}
 
-	public MetaData bytesToMetaData(byte[] data) {
+	public MetaData bytesToMetaData(byte[] data) throws Exception {
 		ByteBuffer meta = ByteBuffer.allocate(BlockSettings.METADATA_LENGTH);
 		MetaData metaData = new MetaData(data);
 		meta.put(data);
