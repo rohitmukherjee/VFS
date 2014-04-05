@@ -6,14 +6,22 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 import utils.BlockSettings;
 
 public class MetaDataUtilities {
 
+	public static Key key = new SecretKeySpec("KEYVALUE".getBytes(), "AES");
+	
 	public static byte[] StringToBytes(String string) {
 		return string.getBytes();
 	}
@@ -124,5 +132,19 @@ public class MetaDataUtilities {
 		}
 		byte[] data = stream.toByteArray();
 		return Arrays.copyOf(data, uncompressedSize);
+	}
+	
+	public static byte[] getEncryptedBytes(byte[] data) throws Exception, NoSuchPaddingException, InvalidKeyException {	
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.ENCRYPT_MODE, key);
+		byte[] encryptedData = cipher.doFinal(data);
+		return encryptedData;
+	}
+	
+	public static byte[] getDecryptedBytes(byte[] data) throws Exception{
+		Cipher cipher = Cipher.getInstance("AES");
+	    cipher.init(Cipher.DECRYPT_MODE, key);
+	    byte[] decryptedData = cipher.doFinal(data);
+	    return decryptedData;
 	}
 }

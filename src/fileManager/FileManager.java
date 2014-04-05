@@ -43,9 +43,10 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void writeFile(MetaData meta, byte[] data) throws Exception {
 		meta.setPosition(blockManager.getNextFreeBlock());
-		byte[] toWrite = MetaDataUtilities.getCompressedBytes(data);
+		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
+		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
 		blockManager.write(MetaDataUtilities.concaByteArrays(
-				meta.getBytes(), data));
+				meta.getBytes(), toWrite));
 	}
 
 	@Override
@@ -88,7 +89,8 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public byte[] getData(MetaData metaData) throws Exception {
 		byte[] tempData = blockManager.read(blockManager.getNextBlock(metaData.getPosition()));
-		return MetaDataUtilities.getDecompressedBytes(tempData);
+		return MetaDataUtilities.getDecryptedBytes(
+				MetaDataUtilities.getDecompressedBytes(tempData));
 	}
 
 	@Override
