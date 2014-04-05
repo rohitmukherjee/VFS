@@ -2,6 +2,7 @@ package fileSystem;
 
 import java.io.File;
 
+import utils.BlockSettings;
 import fileManager.FileManager;
 import fileManager.MetaData;
 
@@ -92,16 +93,12 @@ public class FileSystem implements FileSystemInterface {
 
 	// Writes the root directory at position 0
 	private void writeRoot() throws Exception {
-		/*
-		 * TODO: Have to figure out who should convert real meta data in the
-		 * form of / String, long etc. to byte arrays. After writing root, we
-		 * should forcefully allocate it some data space because our current
-		 * design doesn't allow us to grow files/folders. If we allocated some
-		 * space to it to store longs of sub - directories/files, it is easy to
-		 * add entries to it later on.
-		 */
-		MetaData rootMetaData = new MetaData(null);
-		fileManager.writeFile(0, rootMetaData,
-				new byte[(int) (utils.BlockSettings.ROOT_SUPERBLOCK_SIZE)]);
+		MetaData rootMetaData = new MetaData(BlockSettings.ROOT_NAME,
+				BlockSettings.ROOT_PARENT, BlockSettings.ROOT_TYPE,
+				BlockSettings.ROOT_TIMESTAMP);
+		rootMetaData.setPosition(BlockSettings.ROOT_POSITION);
+		// Currently sends a block of zeroes
+		fileManager.writeFile(BlockSettings.ROOT_POSITION, rootMetaData,
+				new byte[BlockSettings.ROOT_SUPERBLOCK_SIZE]);
 	}
 }

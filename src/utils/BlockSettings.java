@@ -16,7 +16,7 @@ public class BlockSettings {
 	public static final long BYTES_TO_GROW = BLOCKS_TO_INITIALIZE * BLOCK_SIZE;
 
 	// Number of blocks to allocate to root directory
-	public static final long ROOT_SUPERBLOCK_SIZE = 10;
+	public static final int ROOT_SUPERBLOCK_SIZE = 10;
 	public static final byte[] EMPTY_BUFFER = new byte[(int) DATA_LENGTH];
 
 	// MetaData specific constants
@@ -30,4 +30,12 @@ public class BlockSettings {
 	public static final int FILENAME_LENGTH = METADATA_LENGTH
 			- TIMESTAMP_LENGTH - FILETYPE_LENGTH - PARENT_LENGTH
 			- POSITION_LENGTH;
+
+	// root specific constants
+
+	public static final String ROOT_NAME = "root";
+	public static final int ROOT_POSITION = 0;
+	public static final long ROOT_TIMESTAMP = 0;
+	public static final long ROOT_PARENT = 0;
+	public static final byte ROOT_TYPE = 0;
 }
