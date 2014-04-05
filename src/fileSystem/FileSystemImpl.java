@@ -1,10 +1,10 @@
-package filesystem;
+package fileSystem;
 
-public class FileSystemImpl implements FileSystemInterface{
+public class FileSystemImpl implements FileSystemInterface {
 
 	@Override
 	public boolean writeFile(String path, byte[] content) {
-		// TODO Auto-generated method stub
+		// Writes the data from the byte[] content to path
 		return false;
 	}
 
@@ -16,7 +16,7 @@ public class FileSystemImpl implements FileSystemInterface{
 
 	@Override
 	public String[] getChildren(String path) {
-		// TODO Auto-generated method stub
+		// get children bytes
 		return null;
 	}
 
@@ -35,19 +35,19 @@ public class FileSystemImpl implements FileSystemInterface{
 	@Override
 	public void addNewDirectory(String path) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteFile(String path) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteDirectory(String path) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -71,15 +71,10 @@ public class FileSystemImpl implements FileSystemInterface{
 	@Override
 	public void renameDirectory(String oldName, String newName) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void renameFile(String oldName, String newName) {
 		// TODO Auto-generated method stub
-		
 	}
-
-
-
 }
