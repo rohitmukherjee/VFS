@@ -9,6 +9,9 @@ import java.util.Arrays;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import utils.BlockSettings;
+
+
 public class BlockManager {
 
 	private VirtualDisk virtualDisk;

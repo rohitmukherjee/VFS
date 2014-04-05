@@ -4,6 +4,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import utils.BlockSettings;
+
+
 public class BlockWriter extends OutputStream implements DataOutput {
 
 	private BlockManager blockManager;
