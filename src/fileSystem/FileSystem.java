@@ -1,8 +1,9 @@
 package fileSystem;
 
-import java.io.File;
+import java.util.Date;
 
 import utils.BlockSettings;
+import exceptions.InvalidDirectoryException;
 import fileManager.FileManager;
 import fileManager.MetaData;
 
@@ -17,13 +18,12 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public boolean writeFile(String path, byte[] content) {
-		// Writes the data from the byte[] content to path
+
 		return false;
 	}
 
 	@Override
 	public byte[] readFile(String path) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -48,19 +48,25 @@ public class FileSystem implements FileSystemInterface {
 	@Override
 	public void addNewDirectory(String path) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void deleteFile(String path) {
-		File f = new File(path);
-		f.getAbsolutePath();
+		MetaData fileMetaData = fileManager.search(path);
+		if (fileMetaData != null)
+		// Some kind of delete method inside fileManager
+		{
+		}
 	}
 
 	@Override
 	public void deleteDirectory(String path) {
-		// TODO Auto-generated method stub
-
+		MetaData directoryMetaData = fileManager.search(path);
+		if (isValidDirectory(directoryMetaData.getName())
+				&& !(isRoot(directoryMetaData)))
+		// Some kind of recursive delete method inside fileManager
+		{
+		}
 	}
 
 	@Override
@@ -82,8 +88,26 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public void renameDirectory(String oldName, String newName) {
+	public void renameDirectory(String oldName, String newName)
+			throws InvalidDirectoryException {
+		MetaData originalMetaData = fileManager.search(oldName);
+		if (isValidDirectory(originalMetaData.getName())
+				&& !(isRoot(originalMetaData))) {
+			originalMetaData.setName(newName);
+			originalMetaData.setTimestamp(new Date().getTime());
+		} else
+			throw new InvalidDirectoryException(
+					"Rename directory failed because the directory wasn't valid");
+	}
+
+	private boolean isRoot(MetaData metaData) {
+		return metaData.getName().equals(BlockSettings.ROOT_NAME)
+				|| metaData.getPosition() == BlockSettings.ROOT_POSITION;
+	}
+
+	private boolean isValidDirectory(String name) {
 		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
