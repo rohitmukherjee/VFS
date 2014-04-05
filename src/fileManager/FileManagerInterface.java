@@ -1,5 +1,7 @@
 package fileManager;
 
+import java.io.IOException;
+
 public interface FileManagerInterface {
 
 	/**
@@ -8,8 +10,10 @@ public interface FileManagerInterface {
 	 * 
 	 * @param position
 	 * @param metaData
+	 * @throws Exception 
+	 * @throws IOException 
 	 */
-	void writeMetaData(long position, MetaData metaData);
+	void writeMetaData(long position, MetaData metaData) throws IOException, Exception;
 
 	/**
 	 * Get the data of a particular file/directory starting at the position
@@ -28,8 +32,10 @@ public interface FileManagerInterface {
 	 * 
 	 * @param position
 	 * @return
+	 * @throws Exception 
+	 * @throws IOException 
 	 */
-	MetaData getMetaData(long position);
+	MetaData getMetaData(long position) throws IOException, Exception;
 
 	/**
 	 * Write a file/Directory starting at the position passed in as a parameter.

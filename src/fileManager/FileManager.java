@@ -13,7 +13,7 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	@Override
-	public void writeMetaData(long position, MetaData metaData) {
+	public void writeMetaData(long position, MetaData metaData) throws IOException, Exception {
 		blockManager.write(metaData.getBytes(), metaData.getPosition());
 	}
 
@@ -24,7 +24,7 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	@Override
-	public MetaData getMetaData(long position) {
+	public MetaData getMetaData(long position) throws IOException, Exception {
 		//change to metaData.getPosition();
 		return new MetaData(position, blockManager.readBlock(position));
 	}

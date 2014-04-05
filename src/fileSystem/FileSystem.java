@@ -1,8 +1,8 @@
-package fileSystem;
+package filesystem;
 
 import java.io.File;
 
-import virtualDisk.BlockSettings;
+import utils.BlockSettings;
 import fileManager.FileManager;
 import fileManager.MetaData;
 
