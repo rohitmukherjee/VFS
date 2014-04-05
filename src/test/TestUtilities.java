@@ -1,6 +1,6 @@
 package test;
 
-import virtualDisk.BlockSettings;
+import utils.BlockSettings;
 
 public class TestUtilities {
 
