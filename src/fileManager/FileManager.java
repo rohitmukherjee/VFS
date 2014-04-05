@@ -1,6 +1,14 @@
 package fileManager;
 
-public class FileManagerImpl implements FileManagerInterface {
+import virtualDisk.BlockManager;
+
+public class FileManager implements FileManagerInterface {
+
+	private BlockManager blockManager;
+
+	public FileManager(String path) {
+		blockManager = new BlockManager(path);
+	}
 
 	@Override
 	public void writeMetaData(long position, MetaData metaData) {
