@@ -56,4 +56,5 @@ public interface FileManagerInterface {
 	
 	MetaData search(String path) throws IOException, Exception;
 
+	void deleteRecurisively(MetaData metaData) throws Exception;
 }

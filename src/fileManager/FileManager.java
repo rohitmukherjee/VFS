@@ -2,12 +2,12 @@ package fileManager;
 
 import java.io.IOException;
 
+import utils.BlockSettings;
 import virtualDisk.BlockManager;
 
 public class FileManager implements FileManagerInterface {
 
 	private BlockManager blockManager;
-	private boolean found;
 
 	public FileManager(String path) {
 		blockManager = new BlockManager(path);
@@ -43,6 +43,7 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void writeFile(MetaData meta, byte[] data) throws Exception {
 		meta.setPosition(blockManager.getNextFreeBlock());
+		//comp/enc data
 		blockManager.write(MetaDataUtilities.concaByteArrays(
 				meta.getBytes(), data));
 	}
@@ -51,12 +52,7 @@ public class FileManager implements FileManagerInterface {
 	public MetaData search(String path) throws IOException, Exception {
 		String[] pathComponents = path.split("/");
 		MetaData root = getMetaData(0);
-		// This may seem wierd, but this lets us stop all of the branches of 
-		// the recursive search if it is parallelized. (which it cant be...so)
-		found = false;
 		return rsearch(root, 1, pathComponents);
-		//byte[] toSearch = MetaDataUtilities.StringToBytes(path);
-
 	}
 
 	private MetaData rsearch(MetaData metaData,int location, String[] pathComponents) throws Exception {
@@ -64,13 +60,20 @@ public class FileManager implements FileManagerInterface {
 		for(int i = 0; i < contents.length; ++i) {
 			if(location == pathComponents.length-1){
 				//looking for a file now
-				
+				if(contents[i].getType() == BlockSettings.FILE_TYPE && 
+						contents[i].getName().equals(pathComponents[location])) {
+					return contents[i];
+				}
 			}
 			else {
 				//looking for a directory
+				if(contents[i].getType() == BlockSettings.DIRECTORY_TYPE && 
+						contents[i].getName().equals(pathComponents[location])) {
+					return rsearch(contents[i], location+1, pathComponents);
+				}
 			}
 		}
-		return metaData;
+		return null;
 	}
 
 	private MetaData[] getChildrenMeta(MetaData metaData) throws Exception {
@@ -84,6 +87,7 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public byte[] getData(MetaData metaData) throws IOException {
+		//decomp/decrypt
 		return blockManager.read(blockManager.getNextBlock(metaData.getPosition()));
 	}
 
@@ -91,5 +95,20 @@ public class FileManager implements FileManagerInterface {
 	public void deleteFile(MetaData metaData) throws Exception {
 		blockManager.delete(metaData.getPosition());
 		
+	}
+
+	@Override
+	public void deleteRecurisively(MetaData metaData) throws Exception {
+		if(metaData.getType() == utils.BlockSettings.DIRECTORY_TYPE){
+			//directory
+			MetaData[] childrenMetaData = getChildrenMeta(metaData);
+			for(int i = 0; i < childrenMetaData.length; ++i) {
+				deleteRecurisively(childrenMetaData[i]);
+			}
+		}
+		else {
+			//file
+			deleteFile(metaData);
+		}
 	}
 }
