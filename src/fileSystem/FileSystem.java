@@ -4,6 +4,7 @@ import java.util.Date;
 
 import utils.BlockSettings;
 import exceptions.InvalidDirectoryException;
+import exceptions.InvalidFileException;
 import fileManager.FileManager;
 import fileManager.MetaData;
 
@@ -47,7 +48,7 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public void addNewDirectory(String path) {
-		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -60,13 +61,15 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public void deleteDirectory(String path) {
+	public void deleteDirectory(String path) throws InvalidDirectoryException {
 		MetaData directoryMetaData = fileManager.search(path);
 		if (isValidDirectory(directoryMetaData.getName())
 				&& !(isRoot(directoryMetaData)))
 		// Some kind of recursive delete method inside fileManager
 		{
-		}
+		} else
+			throw new InvalidDirectoryException(
+					"The directory cannot be deleted");
 	}
 
 	@Override
@@ -97,7 +100,7 @@ public class FileSystem implements FileSystemInterface {
 			originalMetaData.setTimestamp(new Date().getTime());
 		} else
 			throw new InvalidDirectoryException(
-					"Rename directory failed because the directory wasn't valid");
+					"Rename directory failed because the directory is invalid");
 	}
 
 	private boolean isRoot(MetaData metaData) {
@@ -111,8 +114,15 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public void renameFile(String oldName, String newName) {
-		// TODO Auto-generated method stub
+	public void renameFile(String oldName, String newName)
+			throws InvalidFileException {
+		MetaData originalMetaData = fileManager.search(oldName);
+		if (isValidFile(originalMetaData.getName())) {
+			originalMetaData.setName(newName);
+			originalMetaData.setTimestamp(new Date().getTime());
+		} else
+			throw new InvalidFileException(
+					"Rename file failed because the file is invalid");
 	}
 
 	// Writes the root directory at position 0

@@ -17,7 +17,7 @@ public interface FileSystemInterface {
 
 	void deleteFile(String path);
 
-	void deleteDirectory(String path);
+	void deleteDirectory(String path) throws Exception;
 
 	long getFreeMem();
 
@@ -27,6 +27,6 @@ public interface FileSystemInterface {
 
 	void renameDirectory(String oldName, String newName) throws Exception;
 
-	void renameFile(String oldName, String newName);
+	void renameFile(String oldName, String newName) throws Exception;
 
 }
