@@ -2,7 +2,6 @@ package filesystem;
 
 import java.io.File;
 
-import utils.BlockSettings;
 import fileManager.FileManager;
 import fileManager.MetaData;
 
@@ -10,7 +9,7 @@ public class FileSystem implements FileSystemInterface {
 
 	FileManager fileManager;
 
-	public FileSystem(String path) {
+	public FileSystem(String path) throws Exception {
 		this.writeRoot();
 		fileManager = new FileManager(path);
 	}
@@ -92,7 +91,7 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	// Writes the root directory at position 0
-	private void writeRoot() {
+	private void writeRoot() throws Exception {
 		/*
 		 * TODO: Have to figure out who should convert real meta data in the
 		 * form of / String, long etc. to byte arrays. After writing root, we
@@ -103,6 +102,6 @@ public class FileSystem implements FileSystemInterface {
 		 */
 		MetaData rootMetaData = new MetaData(null);
 		fileManager.writeFile(0, rootMetaData,
-				new byte[(int) (BlockSettings.ROOT_SUPERBLOCK_SIZE)]);
+				new byte[(int) (utils.BlockSettings.ROOT_SUPERBLOCK_SIZE)]);
 	}
 }

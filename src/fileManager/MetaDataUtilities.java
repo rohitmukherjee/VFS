@@ -63,7 +63,7 @@ public class MetaDataUtilities {
 		return meta.array();
 	}
 
-	public MetaData bytesToMetaData(byte[] data) {
+	public MetaData bytesToMetaData(byte[] data) throws Exception {
 		ByteBuffer meta = ByteBuffer.allocate(BlockSettings.METADATA_LENGTH);
 		MetaData metaData = new MetaData(data);
 		meta.put(data);
@@ -78,6 +78,16 @@ public class MetaDataUtilities {
 		return metaData;
 	}
 
+	public static byte[] concaByteArrays(byte[] array1, byte[] array2) {
+		byte[] result = new byte[array1.length + array2.length];
+		for(int i = 0; i < array1.length; ++ i){
+			result[i] = array1[i];
+		}
+		for(int i = 0; i < array2.length; ++i) {
+			result[i+array1.length] = array2[i];
+		}
+		return result;
+	}
 	private static String fixedLengthString(String string) {
 		return String.format("%1$" + BlockSettings.FILENAME_LENGTH + "s",
 				string);
