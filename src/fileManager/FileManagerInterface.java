@@ -25,8 +25,9 @@ public interface FileManagerInterface {
 	 * @param position
 	 * @return
 	 * @throws IOException 
+	 * @throws Exception 
 	 */
-	byte[] getData(MetaData metaData) throws IOException;
+	byte[] getData(MetaData metaData) throws IOException, Exception;
 
 	/**
 	 * Returns a MetaData object containing information about the file/directory

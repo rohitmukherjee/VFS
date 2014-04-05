@@ -1,10 +1,14 @@
 package fileManager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import utils.BlockSettings;
 
@@ -99,5 +103,26 @@ public class MetaDataUtilities {
 			info[i] = data[startingPosition + i];
 		}
 		return MetaDataUtilities.bytesToLong(info);
+	}
+	
+	public static byte[] getCompressedBytes(byte[] data) {
+		Deflater deflator  = new Deflater();
+		deflator.setInput(data);
+		int compressedSize = deflator.deflate(data);
+		return Arrays.copyOf(data, compressedSize);
+	}
+	
+	public static byte[] getDecompressedBytes(byte[] compressedData) throws Exception, IOException {
+		Inflater inflater = new Inflater();
+		inflater.setInput(compressedData);
+		int uncompressedSize = 0;
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		byte[] temp = new byte[1024];
+		while(!inflater.finished()) {
+			uncompressedSize += inflater.inflate(temp);
+			stream.write(temp);
+		}
+		byte[] data = stream.toByteArray();
+		return Arrays.copyOf(data, uncompressedSize);
 	}
 }
