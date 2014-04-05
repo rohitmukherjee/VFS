@@ -1,20 +1,33 @@
 package FileManager;
 
+import java.io.IOException;
+
+import virtualDisk.BlockManager;
+
 public class FileManagerImpl {
+	private BlockManager blockManager;
 	
-	public void writeMeta(long position, MetaDeta meta) {
+	public FileManagerImpl(String host) {
+		blockManager = new BlockManager(host);
+	}
+	
+	public void writeMeta(MetaDeta meta) throws Exception {
+		blockManager.write(meta.getBytes(), meta.address);
+	}
+	
+	public byte[] getData(MetaDeta meta) {
+		return null;
+	}
+	
+	public MetaDeta getMeta(MetaDeta meta) throws IOException {
+		return new MetaDeta(blockManager.readBlock(meta.address));
+	}
+	
+	public void deleteFile(MetaDeta meta) {
 		
 	}
 	
-	public byte[] getData(long position) {
-		return null;
-	}
-	
-	public MetaDeta getMeta(long position) {
-		return null;
-	}
-	
-	public void writeFile(long position, MetaDeta meta, byte[] data) {
+	public void writeFile(MetaDeta meta, byte[] data) {
 		
 	}
 }
