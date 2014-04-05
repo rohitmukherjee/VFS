@@ -1,10 +1,23 @@
-package FileSystem;
+package fileSystem;
 
-public class FileSystemImpl implements FileSystemInterface{
+import java.io.File;
+
+import virtualDisk.BlockSettings;
+import fileManager.FileManager;
+import fileManager.MetaData;
+
+public class FileSystem implements FileSystemInterface {
+
+	FileManager fileManager;
+
+	public FileSystem(String path) {
+		this.writeRoot();
+		fileManager = new FileManager(path);
+	}
 
 	@Override
 	public boolean writeFile(String path, byte[] content) {
-		// TODO Auto-generated method stub
+		// Writes the data from the byte[] content to path
 		return false;
 	}
 
@@ -16,7 +29,7 @@ public class FileSystemImpl implements FileSystemInterface{
 
 	@Override
 	public String[] getChildren(String path) {
-		// TODO Auto-generated method stub
+		// get children bytes
 		return null;
 	}
 
@@ -35,19 +48,19 @@ public class FileSystemImpl implements FileSystemInterface{
 	@Override
 	public void addNewDirectory(String path) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteFile(String path) {
-		// TODO Auto-generated method stub
-		
+		File f = new File(path);
+		f.getAbsolutePath();
 	}
 
 	@Override
 	public void deleteDirectory(String path) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -71,15 +84,25 @@ public class FileSystemImpl implements FileSystemInterface{
 	@Override
 	public void renameDirectory(String oldName, String newName) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void renameFile(String oldName, String newName) {
 		// TODO Auto-generated method stub
-		
 	}
 
-
-
+	// Writes the root directory at position 0
+	private void writeRoot() {
+		/*
+		 * TODO: Have to figure out who should convert real meta data in the
+		 * form of / String, long etc. to byte arrays. After writing root, we
+		 * should forcefully allocate it some data space because our current
+		 * design doesn't allow us to grow files/folders. If we allocated some
+		 * space to it to store longs of sub - directories/files, it is easy to
+		 * add entries to it later on.
+		 */
+		MetaData rootMetaData = new MetaData(null);
+		fileManager.writeFile(0, rootMetaData,
+				new byte[(int) (BlockSettings.ROOT_SUPERBLOCK_SIZE)]);
+	}
 }

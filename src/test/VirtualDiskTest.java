@@ -36,4 +36,5 @@ public class VirtualDiskTest {
 		virtualDisk.deleteDisk();
 		assertFalse(f.exists());
 	}
+
 }
