@@ -54,6 +54,6 @@ public interface FileManagerInterface {
 
 	void deleteFile(MetaData metaData) throws Exception;
 	
-	void search(String path);
+	MetaData search(String path) throws IOException, Exception;
 
 }

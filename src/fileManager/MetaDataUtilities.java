@@ -92,4 +92,12 @@ public class MetaDataUtilities {
 		return String.format("%1$" + BlockSettings.FILENAME_LENGTH + "s",
 				string);
 	}
+
+	public static long getLong(byte[] data, int startingPosition) {
+		byte[] info = new byte[8];
+		for(int i = 0; i < info.length; ++i) {
+			info[i] = data[startingPosition + i];
+		}
+		return MetaDataUtilities.bytesToLong(info);
+	}
 }
