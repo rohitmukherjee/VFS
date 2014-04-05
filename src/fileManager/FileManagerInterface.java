@@ -41,4 +41,7 @@ public interface FileManagerInterface {
 	 * @param data
 	 */
 	void writeFile(long position, MetaData meta, byte[] data);
+
+	void search(String path);
+
 }
