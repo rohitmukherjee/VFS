@@ -20,13 +20,6 @@ public class BlockSettings {
 	public static final byte[] EMPTY_BUFFER = new byte[(int) DATA_LENGTH];
 
 	// MetaData specific constants
-	public static final int META_NAME_SIZE = (int) BLOCK_SIZE / 2;
-	public static final int META_PARENT_START = META_NAME_SIZE;
-	public static final int META_FILE_TYPE_START = META_PARENT_START + 8;
-	public static final int META_TIMESTAMP_START = META_FILE_TYPE_START + 4;
-	public static final int META_END = META_TIMESTAMP_START + 8;
-	public static final long META_LEFTOVER = DATA_LENGTH - META_NAME_SIZE
-			- META_FILE_TYPE_START - META_TIMESTAMP_START - META_PARENT_START;
 
 	public static final int METADATA_LENGTH = BLOCK_SIZE - HEADER_LENGTH
 			- NEXT_ADDRESS_LENGTH;
@@ -37,5 +30,4 @@ public class BlockSettings {
 	public static final int FILENAME_LENGTH = METADATA_LENGTH
 			- TIMESTAMP_LENGTH - FILETYPE_LENGTH - PARENT_LENGTH
 			- POSITION_LENGTH;
-
 }

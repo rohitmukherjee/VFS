@@ -48,22 +48,22 @@ public class MetaDataUtilities {
 		output.close();
 	}
 
-	public byte[] metaDataToBytes(MetaData metaData) {
+	public static byte[] metaDataToBytes(MetaData metaData) {
 		ByteBuffer meta = ByteBuffer.allocate(BlockSettings.METADATA_LENGTH);
 		byte[] name = StringToBytes(fixedLengthString(metaData.getName()));
 		byte[] parent = longToBytes(metaData.getParent());
 		byte[] position = longToBytes(metaData.getPosition());
 		byte[] timestamp = longToBytes(metaData.getTimestamp());
 		// Order of storing meta data inside a block
+		meta.put(position);
 		meta.put(metaData.getType());
 		meta.put(name);
-		meta.put(position);
 		meta.put(timestamp);
 		meta.put(parent);
 		return meta.array();
 	}
 
-	public MetaData bytesToMetaData(byte[] data) throws Exception {
+	public static MetaData bytesToMetaData(byte[] data) throws Exception {
 		ByteBuffer meta = ByteBuffer.allocate(BlockSettings.METADATA_LENGTH);
 		MetaData metaData = new MetaData(data);
 		meta.put(data);
