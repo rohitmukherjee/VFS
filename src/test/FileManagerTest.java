@@ -11,13 +11,13 @@ import fileManager.MetaData;
 
 public class FileManagerTest {
 
-	Logger logger;
-	private MetaData rootMetaData = new MetaData(BlockSettings.ROOT_NAME,
-			BlockSettings.ROOT_PARENT, BlockSettings.ROOT_TYPE,
-			BlockSettings.ROOT_TIMESTAMP);
+	static Logger logger;
+	private static MetaData rootMetaData = new MetaData(
+			BlockSettings.ROOT_NAME, BlockSettings.ROOT_PARENT,
+			BlockSettings.ROOT_TYPE, BlockSettings.ROOT_TIMESTAMP);
 
 	@BeforeClass
-	private void setUp() {
+	public static void setUp() {
 		logger = Logger.getLogger(FileManagerTest.class);
 		BasicConfigurator.configure();
 		rootMetaData.setParent(BlockSettings.ROOT_POSITION);
