@@ -12,6 +12,8 @@ public interface FileSystemInterface {
 	String[] getChildren(String path);
 
 	boolean isValidPath(String path);
+	
+	boolean isValidDirectory(String path);
 
 	boolean isValidFile(String path);
 
@@ -28,5 +30,7 @@ public interface FileSystemInterface {
 	void renameDirectory(String oldName, String newName) throws Exception;
 
 	void renameFile(String oldName, String newName) throws Exception;
+
+
 
 }

@@ -19,12 +19,20 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public boolean writeFile(String path, byte[] content) {
-
-		return false;
+		MetaData meta = fileManager.search(path);
+		if (isFile(meta)) {
+			throw new FileAlreadyExistsException();
+		} 
+		meta = 
 	}
 
 	@Override
 	public byte[] readFile(String path) {
+		MetaData meta = fileManager.search(path);
+		if (isFile(meta)) {
+			return fileManager.getData(meta.getPosition());
+		}
+		//TODO throw fileNotFoundException?
 		return null;
 	}
 
@@ -36,14 +44,27 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public boolean isValidPath(String path) {
-		// TODO Auto-generated method stub
-		return false;
+		return isValidDirectory(path) || isValidFile(path);
+	}
+
+	@Override
+	public boolean isValidDirectory(String path) {
+		MetaData meta = fileManager.search(path);
+		return isDirectory(meta);
+	}
+	
+	private boolean isDirectory(MetaData meta) {
+		return meta != null && meta.getType() == utils.BlockSettings.PATH_TYPE;
 	}
 
 	@Override
 	public boolean isValidFile(String path) {
-		// TODO Auto-generated method stub
-		return false;
+		MetaData meta = fileManager.search(path);
+		return isFile(meta);
+	}
+	
+	private boolean isFile(MetaData meta) {
+		return meta != null && meta.getType() == utils.BlockSettings.FILE_TYPE;
 	}
 
 	@Override
@@ -108,10 +129,6 @@ public class FileSystem implements FileSystemInterface {
 				|| metaData.getPosition() == BlockSettings.ROOT_POSITION;
 	}
 
-	private boolean isValidDirectory(String name) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 	@Override
 	public void renameFile(String oldName, String newName)
