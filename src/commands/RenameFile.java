@@ -1,7 +1,6 @@
 package commands;
 
 import cli.Console;
-import exceptions.InvalidFileException;
 
 public class RenameFile implements Command {
 	private Console console;
@@ -17,7 +16,7 @@ public class RenameFile implements Command {
 				console.fs.renameFile(params[0], params[1]);
 				console.print("New title is:" + params[1]);
 			}
-		} catch (InvalidFileException ex) {
+		} catch (Exception ex) {
 			console.print(ex.getMessage());
 		}
 	}

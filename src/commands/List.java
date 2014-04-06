@@ -1,7 +1,6 @@
 package commands;
 
 import cli.Console;
-import exceptions.DiskStructureException;
 
 public class List implements Command {
 	private Console console;
@@ -16,7 +15,7 @@ public class List implements Command {
 			String[] children = console.fs.getChildren(params[0]);
 			for (int i = 0; i < children.length; ++i)
 				console.print(children[i]);
-		} catch (DiskStructureException ex) {
+		} catch (Exception ex) {
 			console.print(ex.getMessage());
 		}
 	}

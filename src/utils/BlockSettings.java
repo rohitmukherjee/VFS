@@ -30,7 +30,9 @@ public class BlockSettings {
 	public static final int FILENAME_LENGTH = METADATA_LENGTH
 			- TIMESTAMP_LENGTH - FILETYPE_LENGTH - PARENT_LENGTH
 			- POSITION_LENGTH;
-
+	public static final byte DIRECTORY_TYPE = 0;
+	public static final byte FILE_TYPE = 1;
+	
 	// root specific constants
 
 	public static final String ROOT_NAME = "root";

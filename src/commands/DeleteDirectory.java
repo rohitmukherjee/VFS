@@ -1,7 +1,6 @@
 package commands;
 
 import cli.Console;
-import exceptions.InvalidDirectoryException;
 
 public class DeleteDirectory implements Command {
 	private Console console;
@@ -17,7 +16,7 @@ public class DeleteDirectory implements Command {
 				console.fs.deleteDirectory(params[0]);
 				console.print("successfully deleted");
 			}
-		} catch (InvalidDirectoryException ex) {
+		} catch (Exception ex) {
 			console.print(ex.getMessage());
 		}
 	}

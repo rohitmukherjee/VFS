@@ -16,8 +16,8 @@ public class FileSystem implements FileSystemInterface {
 	FileManager fileManager;
 
 	public FileSystem(String path) throws Exception {
-		this.writeRoot();
 		fileManager = new FileManager(path);
+		this.writeRoot();
 	}
 
 	@Override
@@ -32,11 +32,11 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public String[] getChildren(String path) throws DiskStructureException {
+	public String[] getChildren(String path) throws Exception {
 		MetaData[] childrenMetaData = null;
 		MetaData parent = fileManager.search(path);
 		if (isValidDirectory(parent))
-			childrenMetaData = fileManager.getChildrenMeta();
+			childrenMetaData = fileManager.getChildrenMeta(parent);
 		String[] childrenPaths = new String[childrenMetaData.length];
 		for (int i = 0; i < childrenMetaData.length; i++)
 			childrenPaths[i] = childrenMetaData[i].getName();
@@ -65,21 +65,23 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public void addNewDirectory(String path) {
-
+	public void addNewDirectory(String directoryName, String currentPath)
+			throws Exception {
+		MetaData parent = fileManager.search(currentPath);
+		MetaData newDirectoryMeta = new MetaData(directoryName,
+				parent.getPosition(), BlockSettings.DIRECTORY_TYPE,
+				new Date().getTime());
 	}
 
 	@Override
-	public void deleteFile(String path) {
+	public void deleteFile(String path) throws Exception {
 		MetaData fileMetaData = fileManager.search(path);
 		if (fileMetaData != null)
-		// Some kind of delete method inside fileManager
-		{
-		}
+			fileManager.deleteFile(fileMetaData);
 	}
 
 	@Override
-	public void deleteDirectory(String path) throws InvalidDirectoryException {
+	public void deleteDirectory(String path) throws Exception {
 		MetaData directoryMetaData = fileManager.search(path);
 		if (isValidDirectory(directoryMetaData.getName())
 				&& !(isRoot(directoryMetaData)))
@@ -122,7 +124,7 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public void renameDirectory(String oldName, String newName)
-			throws InvalidDirectoryException {
+			throws Exception {
 		MetaData originalMetaData = fileManager.search(oldName);
 		if (isValidDirectory(originalMetaData.getName())
 				&& !(isRoot(originalMetaData))) {
@@ -144,8 +146,7 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public void renameFile(String oldName, String newName)
-			throws InvalidFileException {
+	public void renameFile(String oldName, String newName) throws Exception {
 		MetaData originalMetaData = fileManager.search(oldName);
 		if (isValidFile(originalMetaData.getName())) {
 			originalMetaData.setName(newName);
@@ -161,8 +162,12 @@ public class FileSystem implements FileSystemInterface {
 				BlockSettings.ROOT_PARENT, BlockSettings.ROOT_TYPE,
 				BlockSettings.ROOT_TIMESTAMP);
 		rootMetaData.setPosition(BlockSettings.ROOT_POSITION);
-		// Currently sends a block of zeroes
-		fileManager.writeFile(BlockSettings.ROOT_POSITION, rootMetaData,
-				new byte[BlockSettings.ROOT_SUPERBLOCK_SIZE]);
+		fileManager.writeRoot(rootMetaData);
+	}
+
+	@Override
+	public void addNewDirectory(String path) {
+		// TODO Auto-generated method stub
+
 	}
 }

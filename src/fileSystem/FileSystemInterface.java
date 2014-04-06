@@ -1,6 +1,5 @@
 package fileSystem;
 
-
 public interface FileSystemInterface {
 
 	boolean writeFile(String path, byte[] content);
@@ -15,7 +14,7 @@ public interface FileSystemInterface {
 
 	boolean isValidFile(String path);
 
-	void deleteFile(String path);
+	void deleteFile(String path) throws Exception;
 
 	void deleteDirectory(String path) throws Exception;
 
@@ -28,5 +27,7 @@ public interface FileSystemInterface {
 	void renameDirectory(String oldName, String newName) throws Exception;
 
 	void renameFile(String oldName, String newName) throws Exception;
+
+	void addNewDirectory(String path, String currentPath) throws Exception;
 
 }
