@@ -1,5 +1,7 @@
 package fileManager;
 
+import java.io.IOException;
+
 public interface FileManagerInterface {
 
 	/**
@@ -8,9 +10,12 @@ public interface FileManagerInterface {
 	 * 
 	 * @param position
 	 * @param metaData
+	 * @throws Exception 
+	 * @throws IOException 
 	 */
-	void writeMetaData(long position, MetaData metaData);
+	void writeMetaData(long position, MetaData metaData) throws IOException, Exception;
 
+	void writeReplaceMetaData(MetaData metaData) throws IOException, Exception;
 	/**
 	 * Get the data of a particular file/directory starting at the position
 	 * passed in as a parameter. Data for a file is the actual content whereas
@@ -19,8 +24,10 @@ public interface FileManagerInterface {
 	 * 
 	 * @param position
 	 * @return
+	 * @throws IOException 
+	 * @throws Exception 
 	 */
-	byte[] getData(long position);
+	byte[] getData(MetaData metaData) throws IOException, Exception;
 
 	/**
 	 * Returns a MetaData object containing information about the file/directory
@@ -28,9 +35,12 @@ public interface FileManagerInterface {
 	 * 
 	 * @param position
 	 * @return
+	 * @throws Exception 
+	 * @throws IOException 
 	 */
-	MetaData getMetaData(long position);
+	MetaData getMetaData(long position) throws IOException, Exception;
 
+	MetaData getMetaData(MetaData metaData) throws IOException, Exception;
 	/**
 	 * Write a file/Directory starting at the position passed in as a parameter.
 	 * The first block is always the metadata followed by data in the following
@@ -39,9 +49,13 @@ public interface FileManagerInterface {
 	 * @param position
 	 * @param meta
 	 * @param data
+	 * @throws Exception 
 	 */
-	void writeFile(long position, MetaData meta, byte[] data);
+	void writeFile(MetaData meta, byte[] data) throws Exception;
 
-	void search(String path);
+	void deleteFile(MetaData metaData) throws Exception;
+	
+	MetaData search(String path) throws IOException, Exception;
 
+	void deleteRecurisively(MetaData metaData) throws Exception;
 }

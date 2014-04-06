@@ -1,16 +1,28 @@
 package fileManager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.util.Arrays;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 import utils.BlockSettings;
 
 public class MetaDataUtilities {
 
+	public static Key key = new SecretKeySpec("KEYVALUE".getBytes(), "AES");
+	
 	public static byte[] StringToBytes(String string) {
 		return string.getBytes();
 	}
@@ -85,8 +97,61 @@ public class MetaDataUtilities {
 		return metaData;
 	}
 
+	public static byte[] concaByteArrays(byte[] array1, byte[] array2) {
+		byte[] result = new byte[array1.length + array2.length];
+		for(int i = 0; i < array1.length; ++ i){
+			result[i] = array1[i];
+		}
+		for(int i = 0; i < array2.length; ++i) {
+			result[i+array1.length] = array2[i];
+		}
+		return result;
+	}
 	private static String fixedLengthString(String string) {
 		return String.format("%1$" + BlockSettings.FILENAME_LENGTH + "s",
 				string);
+	}
+
+	public static long getLong(byte[] data, int startingPosition) {
+		byte[] info = new byte[8];
+		for(int i = 0; i < info.length; ++i) {
+			info[i] = data[startingPosition + i];
+		}
+		return MetaDataUtilities.bytesToLong(info);
+	}
+	
+	public static byte[] getCompressedBytes(byte[] data) {
+		Deflater deflator  = new Deflater();
+		deflator.setInput(data);
+		int compressedSize = deflator.deflate(data);
+		return Arrays.copyOf(data, compressedSize);
+	}
+	
+	public static byte[] getDecompressedBytes(byte[] compressedData) throws Exception, IOException {
+		Inflater inflater = new Inflater();
+		inflater.setInput(compressedData);
+		int uncompressedSize = 0;
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		byte[] temp = new byte[1024];
+		while(!inflater.finished()) {
+			uncompressedSize += inflater.inflate(temp);
+			stream.write(temp);
+		}
+		byte[] data = stream.toByteArray();
+		return Arrays.copyOf(data, uncompressedSize);
+	}
+	
+	public static byte[] getEncryptedBytes(byte[] data) throws Exception, NoSuchPaddingException, InvalidKeyException {	
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.ENCRYPT_MODE, key);
+		byte[] encryptedData = cipher.doFinal(data);
+		return encryptedData;
+	}
+	
+	public static byte[] getDecryptedBytes(byte[] data) throws Exception{
+		Cipher cipher = Cipher.getInstance("AES");
+	    cipher.init(Cipher.DECRYPT_MODE, key);
+	    byte[] decryptedData = cipher.doFinal(data);
+	    return decryptedData;
 	}
 }
