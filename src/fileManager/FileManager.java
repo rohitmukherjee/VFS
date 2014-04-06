@@ -1,6 +1,7 @@
 package fileManager;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import utils.BlockSettings;
 import virtualDisk.BlockManager;
@@ -13,8 +14,8 @@ public class FileManager implements FileManagerInterface {
 		blockManager = new BlockManager(path);
 	}
 
-	public void writeRoot(MetaData meta) {
-
+	public void writeRoot(MetaData meta) throws Exception {
+		blockManager.write(meta.getBytes());
 	}
 
 	@Override
@@ -30,6 +31,7 @@ public class FileManager implements FileManagerInterface {
 	public void writeReplaceMetaData(MetaData metaData) throws IOException,
 			Exception {
 		long dataPosition = blockManager.getNextBlock(metaData.getPosition());
+		blockManager.write(metaData.getBytes(), metaData.getPosition());
 		metaData.setPosition(blockManager.getNextFreeBlock());
 		blockManager.write(metaData.getBytes(), metaData.getPosition());
 		blockManager.combineBlocks(metaData.getPosition(), dataPosition);
@@ -37,13 +39,11 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public MetaData getMetaData(long position) throws IOException, Exception {
-		// change to metaData.getPosition();
 		return new MetaData(blockManager.readBlock(position));
 	}
 
 	@Override
-	public MetaData getMetaData(MetaData metaData) throws IOException,
-			Exception {
+	public MetaData getMetaData(MetaData metaData) throws Exception {
 		return new MetaData(blockManager.readBlock(metaData.getPosition()));
 	}
 
@@ -59,13 +59,16 @@ public class FileManager implements FileManagerInterface {
 		blockManager.write(toWrite, dataPosition);
 		blockManager.combineBlocks(meta.getPosition(), dataPosition);
 
-		// grabs the parents and updates those values
-		MetaData parent = getMetaData(meta.getParent());
+		addToParent(getMetaData(meta.getParent()), meta.getPosition());
+		// grabs the parents and updates those values	
 
+	}
+	
+	private void addToParent(MetaData parent, long position) throws Exception{
 		byte[] parentDataRaw = getData(parent);
 		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
 		long[] newData = new long[1];
-		newData[0] = meta.getPosition();
+		newData[0] = position;
 		long[] parentDataNew = MetaDataUtilities.concaLongArrays(newData,
 				parentData);
 		byte[] parentDataToWrite = MetaDataUtilities
@@ -73,7 +76,6 @@ public class FileManager implements FileManagerInterface {
 		long parentDataLocation = blockManager.getNextFreeBlock();
 		blockManager.write(parentDataToWrite);
 		blockManager.combineBlocks(parent.getPosition(), parentDataLocation);
-
 	}
 
 	@Override
@@ -125,7 +127,26 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public void deleteFile(MetaData metaData) throws Exception {
-		// TODO: delete the file in the parents data!
+		MetaData parent = getMetaData(metaData.getParent());
+		
+		long positionToRemove = metaData.getPosition();
+		
+		byte[] parentDataRaw = getData(parent);
+		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
+		long[] newData = new long[parentData.length-1];
+		int location = Arrays.binarySearch(parentData, positionToRemove);
+		for(int i = 0; i < location; ++i){
+			newData[i] = parentData[i]; 
+		}
+		for(int i = location + 1; i < parentData.length; ++i){
+			newData[i-1] = parentData[i];
+		}
+		byte[] parentDataToWrite = MetaDataUtilities
+				.getByteArray(newData);
+		long parentDataLocation = blockManager.getNextFreeBlock();
+		blockManager.write(parentDataToWrite);
+		blockManager.combineBlocks(parent.getPosition(), parentDataLocation);
+		
 		blockManager.delete(metaData.getPosition());
 	}
 
@@ -168,7 +189,10 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public void createDirectory(MetaData meta) throws Exception {
-		// TODO Auto-generated method stub
-
+		MetaData parent = getMetaData(meta.getParent());
+		meta.setPosition(blockManager.getNextFreeBlock());
+		blockManager.write(meta.getBytes(), meta.getPosition());
+		addToParent(parent, meta.getPosition());
+		
 	}
 }
