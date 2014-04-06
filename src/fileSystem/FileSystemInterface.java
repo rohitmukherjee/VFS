@@ -1,13 +1,18 @@
-package filesystem;
+package fileSystem;
+
+import java.io.IOException;
+
+import exceptions.FileAlreadyExistsException;
+import exceptions.InvalidFileException;
 
 
 public interface FileSystemInterface {
 
-	boolean writeFile(String path, byte[] content);
+	boolean writeFile(String path, byte[] content) throws Exception;
 
 	void addNewDirectory(String path);
 
-	byte[] readFile(String path);
+	byte[] readFile(String path) throws Exception;
 
 	String[] getChildren(String path);
 
@@ -17,7 +22,7 @@ public interface FileSystemInterface {
 
 	boolean isValidFile(String path);
 
-	void deleteFile(String path);
+	void deleteFile(String path) throws IOException, Exception;
 
 	void deleteDirectory(String path) throws Exception;
 

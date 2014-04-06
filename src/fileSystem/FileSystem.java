@@ -1,8 +1,11 @@
-package filesystem;
+package fileSystem;
 
+import java.io.IOException;
 import java.util.Date;
 
 import utils.BlockSettings;
+import exceptions.FileAlreadyExistsException;
+import exceptions.IncorrectPathException;
 import exceptions.InvalidDirectoryException;
 import exceptions.InvalidFileException;
 import fileManager.FileManager;
@@ -18,22 +21,34 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public boolean writeFile(String path, byte[] content) {
-		MetaData meta = fileManager.search(path);
+	public boolean writeFile(String path, byte[] content) throws Exception {
+		MetaData meta;
+		meta = fileManager.search(path);
 		if (isFile(meta)) {
 			throw new FileAlreadyExistsException();
-		} 
-		meta = 
+		}
+
+		String[] pathTokens = path.split("/");
+		MetaData parentMeta = fileManager.search(path.substring(0,
+				path.length() - pathTokens[pathTokens.length].length() - 1));
+		if (isDirectory(parentMeta)) {
+			MetaData newMeta = new MetaData(pathTokens[pathTokens.length],
+					parentMeta.getPosition(), utils.BlockSettings.FILE_TYPE,
+					System.currentTimeMillis());
+			fileManager.writeFile(newMeta, content);
+			return true;
+		} else {
+			throw new IncorrectPathException("");
+		}
 	}
 
 	@Override
-	public byte[] readFile(String path) {
-		MetaData meta = fileManager.search(path);
-		if (isFile(meta)) {
-			return fileManager.getData(meta.getPosition());
-		}
-		//TODO throw fileNotFoundException?
-		return null;
+	public byte[] readFile(String path) throws Exception {
+			MetaData meta = fileManager.search(path);
+			if (isFile(meta)) {
+				return fileManager.getData(meta);
+			}
+			throw new InvalidFileException("");
 	}
 
 	@Override
@@ -49,20 +64,33 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public boolean isValidDirectory(String path) {
-		MetaData meta = fileManager.search(path);
-		return isDirectory(meta);
+		MetaData meta;
+		try {
+			meta = fileManager.search(path);
+			return isDirectory(meta);
+		} catch (Exception e) {
+			return false;
+		}
+
 	}
-	
+
 	private boolean isDirectory(MetaData meta) {
-		return meta != null && meta.getType() == utils.BlockSettings.PATH_TYPE;
+		return meta != null
+				&& meta.getType() == utils.BlockSettings.DIRECTORY_TYPE;
 	}
 
 	@Override
 	public boolean isValidFile(String path) {
-		MetaData meta = fileManager.search(path);
-		return isFile(meta);
+		MetaData meta;
+		try {
+			meta = fileManager.search(path);
+			return isFile(meta);
+		} catch (Exception e) {
+			return false;
+		}
+
 	}
-	
+
 	private boolean isFile(MetaData meta) {
 		return meta != null && meta.getType() == utils.BlockSettings.FILE_TYPE;
 	}
@@ -73,7 +101,7 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public void deleteFile(String path) {
+	public void deleteFile(String path) throws IOException, Exception {
 		MetaData fileMetaData = fileManager.search(path);
 		if (fileMetaData != null)
 		// Some kind of delete method inside fileManager
@@ -82,7 +110,7 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public void deleteDirectory(String path) throws InvalidDirectoryException {
+	public void deleteDirectory(String path) throws IOException, Exception {
 		MetaData directoryMetaData = fileManager.search(path);
 		if (isValidDirectory(directoryMetaData.getName())
 				&& !(isRoot(directoryMetaData)))
@@ -113,7 +141,7 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public void renameDirectory(String oldName, String newName)
-			throws InvalidDirectoryException {
+			throws IOException, Exception {
 		MetaData originalMetaData = fileManager.search(oldName);
 		if (isValidDirectory(originalMetaData.getName())
 				&& !(isRoot(originalMetaData))) {
@@ -129,10 +157,9 @@ public class FileSystem implements FileSystemInterface {
 				|| metaData.getPosition() == BlockSettings.ROOT_POSITION;
 	}
 
-
 	@Override
 	public void renameFile(String oldName, String newName)
-			throws InvalidFileException {
+			throws IOException, Exception {
 		MetaData originalMetaData = fileManager.search(oldName);
 		if (isValidFile(originalMetaData.getName())) {
 			originalMetaData.setName(newName);
