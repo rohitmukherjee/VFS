@@ -147,4 +147,32 @@ public class MetaDataUtilities {
 	    byte[] decryptedData = cipher.doFinal(data);
 	    return decryptedData;
 	}
+	
+	public static long[] getLongArray(byte[] data) throws Exception {
+		long[] result = new long[data.length / 8];
+		for(int i = 0; i < data.length / 8; ++ i) {
+			result[i] = getLong(data, i*8);
+		}
+		return result;
+	}
+
+	public static long[] concaLongArrays(long[] array1, long[] array2) {
+		long[] result = new long[array1.length + array2.length];
+		for(int i = 0; i < array1.length; ++ i){
+			result[i] = array1[i];
+		}
+		for(int i = 0; i < array2.length; ++i) {
+			result[i+array1.length] = array2[i];
+		}
+		return result;
+	}
+
+	public static byte[] getByteArray(long[] longArray) throws IOException {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		for(int i = 0; i < longArray.length; ++i) {
+			stream.write(MetaDataUtilities.longToBytes(longArray[i]));
+		}
+		byte[] data = stream.toByteArray();
+		return data;
+	}
 }

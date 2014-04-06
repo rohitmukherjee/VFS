@@ -51,7 +51,9 @@ public interface FileManagerInterface {
 	 * @param data
 	 * @throws Exception 
 	 */
-	void writeFile(MetaData meta, byte[] data) throws Exception;
+	void createFile(MetaData meta, byte[] data) throws Exception;
+	
+	void writeData(MetaData meta, byte[] data) throws Exception;
 
 	void deleteFile(MetaData metaData) throws Exception;
 	

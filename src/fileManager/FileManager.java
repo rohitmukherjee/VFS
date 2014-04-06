@@ -41,12 +41,30 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	@Override
-	public void writeFile(MetaData meta, byte[] data) throws Exception {
+	public void createFile(MetaData meta, byte[] data) throws Exception {
+		//Write the metadata and the data, then combines the blocks
 		meta.setPosition(blockManager.getNextFreeBlock());
+		long position = meta.getPosition();
 		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
 		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
-		blockManager.write(MetaDataUtilities.concaByteArrays(
-				meta.getBytes(), toWrite));
+		blockManager.write(meta.getBytes(), meta.getPosition());
+		long dataPosition = blockManager.getNextFreeBlock();
+		blockManager.write(toWrite, dataPosition);
+		blockManager.combineBlocks(meta.getPosition(), dataPosition);
+		
+		// grabs the parents and updates those values
+		MetaData parent  = getMetaData(meta.getParent());
+		
+		byte[] parentDataRaw = getData(parent);
+		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
+		long[] newData = new long[1];
+		newData[0] = meta.getPosition();
+		long[] parentDataNew = MetaDataUtilities.concaLongArrays(newData, parentData);
+		byte[] parentDataToWrite = MetaDataUtilities.getByteArray(parentDataNew);
+		long parentDataLocation = blockManager.getNextFreeBlock();
+		blockManager.write(parentDataToWrite);
+		blockManager.combineBlocks(parent.getPosition(), parentDataLocation);
+		
 	}
 
 	@Override
@@ -79,7 +97,7 @@ public class FileManager implements FileManagerInterface {
 
 	private MetaData[] getChildrenMeta(MetaData metaData) throws Exception {
 		byte[] data = getData(metaData);
-		MetaData[] result =  new MetaData[data.length % 8];
+		MetaData[] result =  new MetaData[data.length / 8];
 		for(int i = 0; i < result.length; ++i) {
 			result[i] = getMetaData(MetaDataUtilities.getLong(data, i*8));
 		}
@@ -95,6 +113,7 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public void deleteFile(MetaData metaData) throws Exception {
+		//TODO: delete the file in the parents data!
 		blockManager.delete(metaData.getPosition());
 		
 	}
@@ -112,5 +131,16 @@ public class FileManager implements FileManagerInterface {
 			//file
 			deleteFile(metaData);
 		}
+	}
+
+	@Override
+	public void writeData(MetaData meta, byte[] data) throws Exception {
+		blockManager.delete(blockManager.getNextBlock(meta.getPosition()));
+		long dataPosition = blockManager.getNextFreeBlock();
+		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
+		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
+		blockManager.write(toWrite, dataPosition);
+		blockManager.combineBlocks(meta.getPosition(), dataPosition);
+		
 	}
 }
