@@ -11,12 +11,12 @@ import org.apache.log4j.Logger;
 
 import utils.BlockSettings;
 
-
 public class BlockManager {
 
 	private VirtualDisk virtualDisk;
 	private long blockSize = Block.MAXIMUM_BLOCK_SIZE;
 	private Logger logger;
+	private long numberOfBlocks;
 
 	public BlockManager(String pathName) {
 		virtualDisk = new VirtualDisk(pathName);
@@ -103,6 +103,7 @@ public class BlockManager {
 
 	private void rwrite(byte[] data, int startPosInArray, long startPosInFile)
 			throws Exception {
+		++numberOfBlocks;
 		if (data.length - startPosInArray > BlockSettings.DATA_LENGTH) {
 			byte[] toWrite = subArray(data, startPosInArray,
 					(int) BlockSettings.DATA_LENGTH);
@@ -168,6 +169,7 @@ public class BlockManager {
 		long nextAddress = virtualDisk.readLong();
 
 		while (nextAddress != 0) {
+			--numberOfBlocks;
 			virtualDisk.seek(fileAddress);
 			virtualDisk.writeLong(0);
 			virtualDisk.seek(nextAddress);
@@ -315,5 +317,13 @@ public class BlockManager {
 		long nextBlockStart = this.getNextBlock();
 		virtualDisk.seek(currentPosition);
 		return nextBlockStart;
+	}
+
+	public long getTotalSpace() throws IOException {
+		return virtualDisk.getDiskSize();
+	}
+
+	public long getOccupiedSpace() {
+		return numberOfBlocks * BlockSettings.BLOCK_SIZE;
 	}
 }

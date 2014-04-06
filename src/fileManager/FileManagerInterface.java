@@ -42,6 +42,6 @@ public interface FileManagerInterface {
 	 */
 	void writeFile(long position, MetaData meta, byte[] data);
 
-	void search(String path);
+	MetaData search(String path);
 
 }

@@ -1,8 +1,10 @@
 package fileSystem;
 
+import java.io.IOException;
 import java.util.Date;
 
 import utils.BlockSettings;
+import exceptions.CannotAccessDiskException;
 import exceptions.InvalidDirectoryException;
 import exceptions.InvalidFileException;
 import fileManager.FileManager;
@@ -73,21 +75,33 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public long getFreeMem() {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getFreeMem() throws CannotAccessDiskException {
+		try {
+			return fileManager.getFreeMemory();
+		} catch (IOException ex) {
+			throw new CannotAccessDiskException(
+					"The getFreeMemory operation failed because the disk cannot be accessed");
+		}
 	}
 
 	@Override
-	public long getOccupiedMem() {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getOccupiedMem() throws CannotAccessDiskException {
+		try {
+			return fileManager.getOccupiedMemory();
+		} catch (IOException ex) {
+			throw new CannotAccessDiskException(
+					"The getOccupiedMemory operation failed because the disk cannot be accessed");
+		}
 	}
 
 	@Override
-	public long getTotalMem() {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getTotalMem() throws CannotAccessDiskException {
+		try {
+			return fileManager.getTotalMemory();
+		} catch (IOException ex) {
+			throw new CannotAccessDiskException(
+					"The getTotalMemory operation failed because the disk cannot be accessed");
+		}
 	}
 
 	@Override
