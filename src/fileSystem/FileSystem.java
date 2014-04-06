@@ -6,6 +6,8 @@ import java.util.Date;
 import utils.BlockSettings;
 import exceptions.CannotAccessDiskException;
 import exceptions.DiskStructureException;
+import exceptions.FileAlreadyExistsException;
+import exceptions.IncorrectPathException;
 import exceptions.InvalidDirectoryException;
 import exceptions.InvalidFileException;
 import fileManager.FileManager;
@@ -21,14 +23,37 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public boolean writeFile(String path, byte[] content) {
-
-		return false;
+	public boolean writeFile(String path, byte[] content) throws Exception {
+		MetaData meta;
+		meta = fileManager.search(path);
+		if (isFile(meta)) {
+			throw new FileAlreadyExistsException();
+		}
+		String[] pathTokens = path.split("/");
+		if (isDirectory(fileManager.search(path.substring(0, path.length()
+				- pathTokens[pathTokens.length].length() - 1)))) {
+			MetaData metaData = new MetaData(pathTokens[pathTokens.length],
+					fileManager.search(
+							path.substring(0, path.length()
+									- pathTokens[pathTokens.length].length()
+									- 1)).getPosition(),
+					utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
+			MetaData newMeta = metaData;
+			fileManager.createFile(newMeta, content);
+			return true;
+		} else {
+			throw new IncorrectPathException(
+					"Write File failed because of invalid path");
+		}
 	}
 
 	@Override
-	public byte[] readFile(String path) {
-		return null;
+	public byte[] readFile(String path) throws Exception {
+		MetaData meta = fileManager.search(path);
+		if (isFile(meta)) {
+			return fileManager.getData(meta);
+		}
+		throw new InvalidFileException("");
 	}
 
 	@Override
@@ -54,14 +79,40 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public boolean isValidPath(String path) {
-		// TODO Auto-generated method stub
-		return false;
+		return isValidDirectory(path) || isValidFile(path);
+	}
+
+	@Override
+	public boolean isValidDirectory(String path) {
+		MetaData meta;
+		try {
+			meta = fileManager.search(path);
+			return isDirectory(meta);
+		} catch (Exception e) {
+			return false;
+		}
+
+	}
+
+	private boolean isDirectory(MetaData meta) {
+		return meta != null
+				&& meta.getType() == utils.BlockSettings.DIRECTORY_TYPE;
 	}
 
 	@Override
 	public boolean isValidFile(String path) {
-		// TODO Auto-generated method stub
-		return false;
+		MetaData meta;
+		try {
+			meta = fileManager.search(path);
+			return isFile(meta);
+		} catch (Exception e) {
+			return false;
+		}
+
+	}
+
+	private boolean isFile(MetaData meta) {
+		return meta != null && meta.getType() == utils.BlockSettings.FILE_TYPE;
 	}
 
 	@Override
@@ -139,11 +190,6 @@ public class FileSystem implements FileSystemInterface {
 	private boolean isRoot(MetaData metaData) {
 		return metaData.getName().equals(BlockSettings.ROOT_NAME)
 				|| metaData.getPosition() == BlockSettings.ROOT_POSITION;
-	}
-
-	private boolean isValidDirectory(String name) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
