@@ -22,7 +22,7 @@ import utils.BlockSettings;
 public class MetaDataUtilities {
 
 	public static Key key = new SecretKeySpec("KEYVALUE".getBytes(), "AES");
-	
+
 	public static byte[] StringToBytes(String string) {
 		return string.getBytes();
 	}
@@ -32,9 +32,9 @@ public class MetaDataUtilities {
 		try {
 			string = new String(data, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			//return ""
+			// return ""
 		}
-		return string;
+		return string.trim();
 	}
 
 	public static byte[] longToBytes(long value) {
@@ -99,14 +99,15 @@ public class MetaDataUtilities {
 
 	public static byte[] concaByteArrays(byte[] array1, byte[] array2) {
 		byte[] result = new byte[array1.length + array2.length];
-		for(int i = 0; i < array1.length; ++ i){
+		for (int i = 0; i < array1.length; ++i) {
 			result[i] = array1[i];
 		}
-		for(int i = 0; i < array2.length; ++i) {
-			result[i+array1.length] = array2[i];
+		for (int i = 0; i < array2.length; ++i) {
+			result[i + array1.length] = array2[i];
 		}
 		return result;
 	}
+
 	private static String fixedLengthString(String string) {
 		return String.format("%1$" + BlockSettings.FILENAME_LENGTH + "s",
 				string);
@@ -114,69 +115,71 @@ public class MetaDataUtilities {
 
 	public static long getLong(byte[] data, int startingPosition) {
 		byte[] info = new byte[8];
-		for(int i = 0; i < info.length; ++i) {
+		for (int i = 0; i < info.length; ++i) {
 			info[i] = data[startingPosition + i];
 		}
 		return MetaDataUtilities.bytesToLong(info);
 	}
-	
+
 	public static byte[] getCompressedBytes(byte[] data) {
-		Deflater deflator  = new Deflater();
+		Deflater deflator = new Deflater();
 		deflator.setInput(data);
 		int compressedSize = deflator.deflate(data);
 		return Arrays.copyOf(data, compressedSize);
 	}
-	
-	public static byte[] getDecompressedBytes(byte[] compressedData) throws Exception, IOException {
+
+	public static byte[] getDecompressedBytes(byte[] compressedData)
+			throws Exception, IOException {
 		Inflater inflater = new Inflater();
 		inflater.setInput(compressedData);
 		int uncompressedSize = 0;
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		byte[] temp = new byte[1024];
-		while(!inflater.finished()) {
+		while (!inflater.finished()) {
 			uncompressedSize += inflater.inflate(temp);
 			stream.write(temp);
 		}
 		byte[] data = stream.toByteArray();
 		return Arrays.copyOf(data, uncompressedSize);
 	}
-	
-	public static byte[] getEncryptedBytes(byte[] data) throws Exception, NoSuchPaddingException, InvalidKeyException {	
+
+	public static byte[] getEncryptedBytes(byte[] data) throws Exception,
+			NoSuchPaddingException, InvalidKeyException {
 		Cipher cipher = Cipher.getInstance("AES");
 		cipher.init(Cipher.ENCRYPT_MODE, key);
 		byte[] encryptedData = cipher.doFinal(data);
 		return encryptedData;
 	}
-	
-	public static byte[] getDecryptedBytes(byte[] data) throws Exception{
+
+	public static byte[] getDecryptedBytes(byte[] data) throws Exception {
 		Cipher cipher = Cipher.getInstance("AES");
-	    cipher.init(Cipher.DECRYPT_MODE, key);
-	    byte[] decryptedData = cipher.doFinal(data);
-	    return decryptedData;
+		cipher.init(Cipher.DECRYPT_MODE, key);
+		byte[] decryptedData = cipher.doFinal(data);
+		return decryptedData;
 	}
-	
+
 	public static long[] getLongArray(byte[] data) throws Exception {
 		long[] result = new long[data.length / 8];
-		for(int i = 0; i < data.length / 8; ++ i) {
-			result[i] = getLong(data, i*8);
+		for (int i = 0; i < data.length / 8; ++i) {
+			result[i] = getLong(data, i * 8);
 		}
 		return result;
 	}
 
 	public static long[] concaLongArrays(long[] array1, long[] array2) {
 		long[] result = new long[array1.length + array2.length];
-		for(int i = 0; i < array1.length; ++ i){
+		for (int i = 0; i < array1.length; ++i) {
 			result[i] = array1[i];
 		}
-		for(int i = 0; i < array2.length; ++i) {
-			result[i+array1.length] = array2[i];
+		for (int i = 0; i < array2.length; ++i) {
+			result[i + array1.length] = array2[i];
 		}
 		return result;
 	}
 
 	public static byte[] getByteArray(long[] longArray) throws IOException {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		for(int i = 0; i < longArray.length; ++i) {
+		for (int i = 0; i < longArray.length; ++i) {
 			stream.write(MetaDataUtilities.longToBytes(longArray[i]));
 		}
 		byte[] data = stream.toByteArray();

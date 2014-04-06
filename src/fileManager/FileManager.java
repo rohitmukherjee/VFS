@@ -65,11 +65,11 @@ public class FileManager implements FileManagerInterface {
 		blockManager.combineBlocks(meta.getPosition(), dataPosition);
 
 		addToParent(getMetaData(meta.getParent()), meta.getPosition());
-		// grabs the parents and updates those values	
+		// grabs the parents and updates those values
 
 	}
-	
-	private void addToParent(MetaData parent, long position) throws Exception{
+
+	private void addToParent(MetaData parent, long position) throws Exception {
 		byte[] parentDataRaw = getData(parent);
 		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
 		long[] newData = new long[1];
@@ -133,25 +133,24 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void deleteFile(MetaData metaData) throws Exception {
 		MetaData parent = getMetaData(metaData.getParent());
-		
+
 		long positionToRemove = metaData.getPosition();
-		
+
 		byte[] parentDataRaw = getData(parent);
 		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
-		long[] newData = new long[parentData.length-1];
+		long[] newData = new long[parentData.length - 1];
 		int location = Arrays.binarySearch(parentData, positionToRemove);
-		for(int i = 0; i < location; ++i){
-			newData[i] = parentData[i]; 
+		for (int i = 0; i < location; ++i) {
+			newData[i] = parentData[i];
 		}
-		for(int i = location + 1; i < parentData.length; ++i){
-			newData[i-1] = parentData[i];
+		for (int i = location + 1; i < parentData.length; ++i) {
+			newData[i - 1] = parentData[i];
 		}
-		byte[] parentDataToWrite = MetaDataUtilities
-				.getByteArray(newData);
+		byte[] parentDataToWrite = MetaDataUtilities.getByteArray(newData);
 		long parentDataLocation = blockManager.getNextFreeBlock();
 		blockManager.write(parentDataToWrite);
 		blockManager.combineBlocks(parent.getPosition(), parentDataLocation);
-		
+
 		blockManager.delete(metaData.getPosition());
 	}
 
@@ -198,6 +197,9 @@ public class FileManager implements FileManagerInterface {
 		meta.setPosition(blockManager.getNextFreeBlock());
 		blockManager.write(meta.getBytes(), meta.getPosition());
 		addToParent(parent, meta.getPosition());
-		
+	}
+
+	public void deleteDisk() throws IOException {
+		blockManager.getVirtualDisk().deleteDisk();
 	}
 }
