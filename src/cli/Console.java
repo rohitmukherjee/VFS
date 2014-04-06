@@ -22,8 +22,8 @@ public class Console {
 	 *            Source of input.
 	 * @param aPrinter
 	 *            Destination of output.
-	 * @param aCalc
-	 *            Calculator object.
+	 * @param afs
+	 *            FileSystem object.
 	 */
 	public Console(BufferedReader aReader, PrintWriter aWriter, FileSystem afs) {
 		reader = aReader;
@@ -100,5 +100,4 @@ public class Console {
 			print("Command not found.");
 		}
 	}
-
 }

@@ -307,6 +307,14 @@ public class BlockManager {
 		}
 	}
 
+	public void separateBlocks(long position) throws IOException {
+		long currentPosition = virtualDisk.getFilePosition();
+		virtualDisk.seek(position + BlockSettings.NEXT_ADDRESS_START);
+		virtualDisk.writeLong(BlockSettings.UNUSED);
+		// Resetting file Pointer
+		virtualDisk.seek(currentPosition);
+	}
+
 	public boolean hasNextBlock() throws IOException {
 		return getNextBlock() != -1;
 	}

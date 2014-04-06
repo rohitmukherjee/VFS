@@ -71,6 +71,7 @@ public class FileSystem implements FileSystemInterface {
 		MetaData newDirectoryMeta = new MetaData(directoryName,
 				parent.getPosition(), BlockSettings.DIRECTORY_TYPE,
 				new Date().getTime());
+		fileManager.createDirectory(newDirectoryMeta);
 	}
 
 	@Override

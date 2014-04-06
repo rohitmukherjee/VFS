@@ -11,6 +11,11 @@ public class FileManager implements FileManagerInterface {
 
 	public FileManager(String path) {
 		blockManager = new BlockManager(path);
+		try {
+			blockManager.setupBlocks();
+		} catch (Exception e) {
+			// TODO: Some meaningful logging
+		}
 	}
 
 	public void writeRoot(MetaData meta) {
