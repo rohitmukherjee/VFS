@@ -1,5 +1,6 @@
 package fileSystem;
 
+
 public interface FileSystemInterface {
 
 	boolean writeFile(String path, byte[] content);
@@ -8,7 +9,7 @@ public interface FileSystemInterface {
 
 	byte[] readFile(String path);
 
-	String[] getChildren(String path);
+	String[] getChildren(String path) throws Exception;
 
 	boolean isValidPath(String path);
 

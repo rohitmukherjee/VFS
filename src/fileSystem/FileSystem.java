@@ -5,6 +5,7 @@ import java.util.Date;
 
 import utils.BlockSettings;
 import exceptions.CannotAccessDiskException;
+import exceptions.DiskStructureException;
 import exceptions.InvalidDirectoryException;
 import exceptions.InvalidFileException;
 import fileManager.FileManager;
@@ -31,9 +32,24 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public String[] getChildren(String path) {
-		// get children bytes
-		return null;
+	public String[] getChildren(String path) throws DiskStructureException {
+		MetaData[] childrenMetaData = null;
+		MetaData parent = fileManager.search(path);
+		if (isValidDirectory(parent))
+			childrenMetaData = fileManager.getChildrenMeta();
+		String[] childrenPaths = new String[childrenMetaData.length];
+		for (int i = 0; i < childrenMetaData.length; i++)
+			childrenPaths[i] = childrenMetaData[i].getName();
+		if (childrenPaths != null)
+			return childrenPaths;
+		else
+			throw new DiskStructureException(
+					"Cannot getChildren because the disk structure is invalid");
+	}
+
+	private boolean isValidDirectory(MetaData parent) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override

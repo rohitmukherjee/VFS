@@ -57,4 +57,9 @@ public class FileManager implements FileManagerInterface {
 		return blockManager.getTotalSpace();
 	}
 
+	public MetaData[] getChildrenMeta() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
