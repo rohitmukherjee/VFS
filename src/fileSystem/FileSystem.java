@@ -212,9 +212,4 @@ public class FileSystem implements FileSystemInterface {
 		fileManager.writeRoot(rootMetaData);
 	}
 
-	@Override
-	public void addNewDirectory(String path) {
-		// TODO Auto-generated method stub
-
-	}
 }

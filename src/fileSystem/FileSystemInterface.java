@@ -5,8 +5,6 @@ public interface FileSystemInterface {
 
 	boolean writeFile(String path, byte[] content) throws Exception;
 
-	void addNewDirectory(String path);
-
 	byte[] readFile(String path) throws Exception;
 
 	String[] getChildren(String path) throws Exception;
