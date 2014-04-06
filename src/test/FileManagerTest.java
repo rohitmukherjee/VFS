@@ -25,7 +25,7 @@ public class FileManagerTest {
 
 	@Test
 	public void getFreeOccupiedTotalMemoryShouldWork() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
+		FileManager fileManager = new FileManager(TestUtilities.POSIX_PATH);
 		fileManager.writeRoot(rootMetaData);
 		logger.info(fileManager.getTotalMemory());
 		logger.info(fileManager.getOccupiedMemory());
