@@ -20,6 +20,7 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	public void writeRoot(MetaData meta) throws Exception {
+		meta.setPosition(blockManager.getNextFreeBlock());
 		blockManager.write(meta.getBytes());
 	}
 
