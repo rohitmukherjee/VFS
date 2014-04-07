@@ -10,8 +10,13 @@ public class CreateDirectory implements Command{
 	}
 	@Override
 	public void execute(String[] params) {
-		console.fs.addNewDirectory(params[0]);
-		console.print(params[0]);
+		try {
+			console.fs.addNewDirectory(params[0], console.path);
+			console.print(params[0]);
+		} catch (Exception e) {
+			console.print(e.getMessage());
+		}
+		
 	}
 
 }
