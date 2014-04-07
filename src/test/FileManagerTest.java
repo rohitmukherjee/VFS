@@ -3,7 +3,6 @@ package test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Date;
 
 import org.apache.log4j.BasicConfigurator;
@@ -68,15 +67,12 @@ public class FileManagerTest {
 			throws Exception {
 		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
 		fileManager.writeRoot(rootMetaData);
-		MetaData fileMeta = new MetaData("test.mp3", 0, (byte) 1,
+		MetaData fileMeta = new MetaData("test.c", 0, (byte) 1,
 				new Date().getTime());
 		byte[] fileData = MetaDataUtilities
 				.fileToBytes(TestUtilities.WINDOWS_FILE_TEST);
 		fileManager.createFile(fileMeta, fileData);
-		byte[] retrievedFile = fileManager.getData(fileMeta);
-		FileOutputStream fs = new FileOutputStream(
-				TestUtilities.WINDOWS_OUTPUT_DIR);
-		fs.write(retrievedFile);
-		fs.close();
+		MetaData retrieved = fileManager.search("test.c");
+		assertEquals(fileMeta.getName(), retrieved.getName());
 	}
 }

@@ -3,6 +3,9 @@ package fileManager;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+
 import utils.BlockSettings;
 import virtualDisk.BlockManager;
 
@@ -10,7 +13,11 @@ public class FileManager implements FileManagerInterface {
 
 	private BlockManager blockManager;
 
+	Logger logger;
+
 	public FileManager(String path) {
+		logger = Logger.getLogger(FileManager.class);
+		BasicConfigurator.configure();
 		blockManager = new BlockManager(path);
 		try {
 			blockManager.setupBlocks();
@@ -21,6 +28,7 @@ public class FileManager implements FileManagerInterface {
 
 	public void writeRoot(MetaData meta) throws Exception {
 		meta.setPosition(blockManager.getNextFreeBlock());
+		logger.warn("Position of root is " + meta.getPosition());
 		blockManager.write(meta.getBytes());
 	}
 
@@ -62,7 +70,7 @@ public class FileManager implements FileManagerInterface {
 		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
 		blockManager.write(meta.getBytes(), meta.getPosition());
 		long dataPosition = blockManager.getNextFreeBlock();
-		blockManager.write(toWrite, dataPosition);
+		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getPosition(), dataPosition);
 
 		addToParent(getMetaData(meta.getParent()), meta.getPosition());
@@ -127,8 +135,9 @@ public class FileManager implements FileManagerInterface {
 	public byte[] getData(MetaData metaData) throws Exception {
 		byte[] tempData = blockManager.read(blockManager.getNextBlock(metaData
 				.getPosition()));
-		return MetaDataUtilities.getDecryptedBytes(MetaDataUtilities
-				.getDecompressedBytes(tempData));
+		// return MetaDataUtilities.getDecryptedBytes(MetaDataUtilities
+		// .getDecompressedBytes(tempData));
+		return tempData;
 	}
 
 	@Override
@@ -175,7 +184,7 @@ public class FileManager implements FileManagerInterface {
 		long dataPosition = blockManager.getNextFreeBlock();
 		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
 		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
-		blockManager.write(toWrite, dataPosition);
+		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getPosition(), dataPosition);
 
 	}

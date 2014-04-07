@@ -21,7 +21,8 @@ import utils.BlockSettings;
 
 public class MetaDataUtilities {
 
-	public static Key key = new SecretKeySpec("KEYVALUE".getBytes(), "AES");
+	public static Key key = new SecretKeySpec("KEYVALUEKEYVALUE".getBytes(),
+			"AES");
 
 	public static byte[] StringToBytes(String string) {
 		return string.getBytes();
@@ -131,7 +132,7 @@ public class MetaDataUtilities {
 	public static byte[] getDecompressedBytes(byte[] compressedData)
 			throws Exception, IOException {
 		Inflater inflater = new Inflater();
-		inflater.setInput(compressedData);
+		inflater.setInput(compressedData, 0, compressedData.length);
 		int uncompressedSize = 0;
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		byte[] temp = new byte[1024];
