@@ -20,7 +20,9 @@ public class MetaData {
 		metaBuffer.flip();
 		byte[] name = new byte[BlockSettings.FILENAME_LENGTH];
 		// Order of extracting data from the MetaData block
-		this.setPosition(metaBuffer.getLong());
+		long positionToStore = metaBuffer.getLong();
+		System.out.println("position of block: " + positionToStore);
+		this.setPosition(positionToStore);
 		this.setType(metaBuffer.get());
 		metaBuffer.get(name);
 		this.setName(MetaDataUtilities.bytesToString(name));
