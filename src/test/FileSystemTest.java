@@ -62,9 +62,6 @@ public class FileSystemTest {
 		fs.writeFile(utils.BlockSettings.ROOT_NAME+"/directory1/nested1/nestedfile2", 
 				Files.readAllBytes(Paths.get("anotherinnested1.txt")));
 
-
-
-
 	}
 	
 	@Test
@@ -91,7 +88,11 @@ public class FileSystemTest {
 		//
 	}
 	
-	public void testDeleteDirectory() {
+	@Test
+	public void testDeleteDirectory() throws Exception {
+		setUpFS();
 		
 	}
+	
+	
 }
