@@ -184,19 +184,19 @@ public class BlockManager {
 	}
 
 	/**
-	 * Function scans the disk for free memory and returns the absolute position
-	 * of the first free block
+	 * Function scans the disk for free memory and returns number of the first
+	 * free block
 	 * 
-	 * @return position of the first available/free block
+	 * @return number of the first available/free block
 	 * @throws Exception
 	 */
 	public long getNextFreeBlock() throws Exception {
 		logger.debug("getNextFreeBlock was called");
 		long currentPosition = virtualDisk.getFilePosition();
 		logger.debug("Stored current position: " + currentPosition);
-		long result = getNextFreeBlock(0);
+		long freeBlockNumber = getNextFreeBlock(0);
 		virtualDisk.seek(currentPosition);
-		return result;
+		return freeBlockNumber;
 	}
 
 	private long getNextFreeBlock(long blockNumber) throws IOException {
@@ -272,38 +272,20 @@ public class BlockManager {
 		}
 	}
 
-	/**
-	 * returns the next block for computation
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	public long getNextBlock() throws IOException {
-		long currentPosition = virtualDisk.getFilePosition();
-		long nextStartingAddress = -1;
-		try {
-			virtualDisk.seek(getCurrentBlockNumber() * BlockSettings.BLOCK_SIZE
-					+ BlockSettings.NEXT_ADDRESS_START);
-			nextStartingAddress = virtualDisk.readLong();
-		} catch (Exception ex) {
-			// TODO: some meaningful logging
-			ex.printStackTrace();
-		} finally {
-			virtualDisk.seek(currentPosition);
-		}
-		return getBlockNumber(nextStartingAddress);
-	}
-
 	public void combineBlocks(long firstOffset, long secondOffset)
 			throws IOException {
+		long currentPosition = virtualDisk.getFilePosition();
 		try {
-			long offset = firstOffset + BlockSettings.NEXT_ADDRESS_START;
-			virtualDisk.seek(offset);
+			long positionToWriteSecondOffset = firstOffset
+					+ BlockSettings.NEXT_ADDRESS_START;
+			virtualDisk.seek(positionToWriteSecondOffset);
 			virtualDisk.writeLong(secondOffset);
+			logger.info("Successfully combined block");
 		} catch (Exception ex) {
-			// TODO: Some meaningful logging
+			logger.error("Couldn't combine blocks, first offset was "
+					+ firstOffset + " and second offset was " + secondOffset);
 		} finally {
-			virtualDisk.seek(secondOffset);
+			virtualDisk.seek(currentPosition);
 		}
 	}
 
@@ -315,16 +297,28 @@ public class BlockManager {
 		virtualDisk.seek(currentPosition);
 	}
 
-	public boolean hasNextBlock() throws IOException {
-		return getNextBlock() != -1;
+	public boolean hasNextBlock(long blockNumber) throws IOException {
+		return getNextBlock(blockNumber) != -1;
 	}
 
 	public long getNextBlock(long blockNumber) throws IOException {
 		long currentPosition = virtualDisk.getFilePosition();
-		virtualDisk.seek(getOffset(blockNumber));
-		long nextBlockStart = this.getNextBlock();
+		long nextBlockPosition = -1;
+		try {
+			logger.debug(getOffset(blockNumber)
+					+ BlockSettings.NEXT_ADDRESS_START);
+			virtualDisk.seek(getOffset(blockNumber)
+					+ BlockSettings.NEXT_ADDRESS_START);
+			nextBlockPosition = virtualDisk.readLong();
+		} catch (Exception ex) {
+			logger.error("Couldn't return next block, failed");
+		}
 		virtualDisk.seek(currentPosition);
-		return nextBlockStart;
+		return getBlockNumber(nextBlockPosition);
+	}
+
+	public long getNextBlock() throws IOException {
+		return getNextBlock(getCurrentBlockNumber());
 	}
 
 	public long getTotalSpace() throws IOException {
