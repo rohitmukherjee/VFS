@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -47,8 +46,7 @@ public class BlockManager {
 	 */
 	public byte[] read(long blockNumber, int offset, int length)
 			throws IOException {
-		byte[] temp = read(blockNumber);
-		byte[] result = Arrays.copyOfRange(temp, offset, offset + length);
+		byte[] result = read(blockNumber);
 		return result;
 	}
 

@@ -1,7 +1,8 @@
 package test;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -84,7 +85,7 @@ public class FileManagerTest {
 		logger.info(fileManager.getFreeMemory());
 	}
 
-	@Test
+	@Ignore
 	public void testCreateDirectory() throws Exception {
 		FileManager fm = new FileManager(TestUtilities.POSIX_PATH);
 		fm.writeRoot(rootMetaData);
@@ -186,11 +187,12 @@ public class FileManagerTest {
 		
 	}
 	
-	@Ignore
+	@Test
 	public void checkIfRootIsProperlyWritten() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
+		FileManager fileManager = new FileManager(TestUtilities.POSIX_PATH);
 		fileManager.writeRoot(rootMetaData);
-		MetaData rootMetaReadFromDisk = fileManager.getMetaData(0);
+		long zero = 0;
+		MetaData rootMetaReadFromDisk = fileManager.getMetaData(zero);
 		assertEquals(BlockSettings.ROOT_NAME, rootMetaReadFromDisk.getName());
 		assertEquals(BlockSettings.ROOT_PARENT,
 				rootMetaReadFromDisk.getParent());
@@ -202,7 +204,7 @@ public class FileManagerTest {
 				(int) rootMetaReadFromDisk.getType());
 	}
 
-	@Test
+	@Ignore
 	public void writingABigFileAfterRootShouldBeReadCorrectly()
 			throws Exception {
 		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
