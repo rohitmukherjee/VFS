@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -33,8 +34,20 @@ public class BlockManager {
 	}
 
 	public byte[] readBlock(long blockNumber) throws IOException {
-		return this.read(blockNumber, (int) BlockSettings.HEADER_LENGTH,
-				(int) BlockSettings.DATA_LENGTH);
+		long currentPosition = virtualDisk.getFilePosition();
+		byte[] data;
+		// readBlock should read length of data in case less than DATA_LENGTH
+		// else one full block
+		virtualDisk.seek(getOffset(blockNumber));
+		long lengthOfData = virtualDisk.readLong();
+		virtualDisk.seek(getOffset(blockNumber) + BlockSettings.HEADER_LENGTH);
+		if (lengthOfData >= BlockSettings.DATA_LENGTH)
+			data = new byte[BlockSettings.DATA_LENGTH];
+		else
+			data = new byte[(int) lengthOfData];
+		virtualDisk.read(data);
+		virtualDisk.seek(currentPosition);
+		return data;
 	}
 
 	/**
@@ -46,7 +59,9 @@ public class BlockManager {
 	 */
 	public byte[] read(long blockNumber, int offset, int length)
 			throws IOException {
-		byte[] result = read(blockNumber);
+		byte[] temp = read(blockNumber);
+		logger.warn(temp.length);
+		byte[] result = Arrays.copyOfRange(temp, offset, offset + length);
 		return result;
 	}
 
@@ -77,10 +92,12 @@ public class BlockManager {
 		virtualDisk.seek(getOffset(blockNumber)
 				+ BlockSettings.NEXT_ADDRESS_START);
 		long nextAddress = virtualDisk.readLong();
-		if (nextAddress == 0)
+		if (nextAddress == 0 || nextAddress == getOffset(blockNumber))
 			return results.toByteArray();
-		else
+		else {
+			logger.warn("Reading:  " + nextAddress);
 			return read(results, getBlockNumber(nextAddress));
+		}
 	}
 
 	/**
@@ -147,7 +164,7 @@ public class BlockManager {
 		return offset / BlockSettings.BLOCK_SIZE;
 	}
 
-	private long getOffset(long blockNumber) {
+	public long getOffset(long blockNumber) {
 		return blockNumber * BlockSettings.BLOCK_SIZE;
 	}
 

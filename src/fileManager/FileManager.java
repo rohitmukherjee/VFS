@@ -53,7 +53,7 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public MetaData getMetaData(long position) throws IOException, Exception {
-		return new MetaData(blockManager.readBlock(position));
+		return new MetaData(blockManager.readBlock(position/BlockSettings.BLOCK_SIZE));
 	}
 
 	@Override
@@ -68,11 +68,12 @@ public class FileManager implements FileManagerInterface {
 		long position = meta.getPosition();
 		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
 		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
+		logger.warn("ERGESTHSGESGRSERG" + meta.getName());
 		blockManager.write(meta.getBytes(), meta.getPosition());
 		long dataPosition = blockManager.getNextFreeBlock();
 		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getPosition(), dataPosition);
-
+		logger.warn("parent{ " + meta.getParent());
 		addToParent(getMetaData(meta.getParent()), meta.getPosition());
 		// grabs the parents and updates those values
 
@@ -80,6 +81,7 @@ public class FileManager implements FileManagerInterface {
 
 	private void addToParent(MetaData parent, long position) throws Exception {
 		byte[] parentDataRaw = getData(parent);
+		
 		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
 		long[] newData = new long[1];
 		newData[0] = position;
@@ -87,9 +89,10 @@ public class FileManager implements FileManagerInterface {
 				parentData);
 		byte[] parentDataToWrite = MetaDataUtilities
 				.getByteArray(parentDataNew);
+		
 		long parentDataLocation = blockManager.getNextFreeBlock();
 		blockManager.write(parentDataToWrite);
-		blockManager.combineBlocks(parent.getPosition(), parentDataLocation);
+		blockManager.combineBlocks(blockManager.getOffset(parent.getPosition()), blockManager.getOffset(parentDataLocation));
 	}
 
 	@Override
@@ -133,6 +136,10 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public byte[] getData(MetaData metaData) throws Exception {
+		logger.warn("nextBlock: " + blockManager.getNextBlock(metaData
+				.getPosition()));
+		if(blockManager.getNextBlock(metaData
+				.getPosition()) == 0) {return new byte[0];};
 		byte[] tempData = blockManager.read(blockManager.getNextBlock(metaData
 				.getPosition()));
 		// return MetaDataUtilities.getDecryptedBytes(MetaDataUtilities
