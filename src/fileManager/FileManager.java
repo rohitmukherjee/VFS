@@ -53,8 +53,8 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public MetaData getMetaData(long position) throws IOException, Exception {
-		return new MetaData(blockManager.readBlock(position
-				/ BlockSettings.BLOCK_SIZE));
+		return new MetaData(blockManager.readBlock(position));
+//				/ BlockSettings.BLOCK_SIZE));
 	}
 
 	@Override
@@ -65,21 +65,23 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void createFile(MetaData meta, byte[] data) throws Exception {
 		// Write the metadata and the data, then combines the blocks
-		meta.setPosition(blockManager.getNextFreeBlock()
-				* BlockSettings.BLOCK_SIZE);
+		meta.setPosition(blockManager.getNextFreeBlock());
+//				* BlockSettings.BLOCK_SIZE);
 		long position = meta.getPosition();
 		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
 		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
-		logger.warn("ERGESTHSGESGRSERG" + meta.getName());
 		blockManager.write(meta.getBytes(), meta.getPosition());
-		long dataPosition = blockManager.getNextFreeBlock()
-				* BlockSettings.BLOCK_SIZE;
+		long dataPosition = blockManager.getNextFreeBlock();
+	//			* BlockSettings.BLOCK_SIZE;
+		logger.warn("ERGETDYFJHTGRFGRSHTRDJYTUYJYDHSGARESTRDYTYJRHTEGREFAWGRESTRDYT" + meta.getName()+meta.getPosition()+dataPosition);
+		
 		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getPosition(), dataPosition);
-		logger.warn("parent{ " + meta.getParent());
+		logger.warn("pos{ " +  meta.getPosition());
+		
 		addToParent(getMetaData(meta.getParent()), meta.getPosition());
 		// grabs the parents and updates those values
-
+		
 	}
 
 	private void addToParent(MetaData parent, long position) throws Exception {
@@ -95,9 +97,7 @@ public class FileManager implements FileManagerInterface {
 
 		long parentDataLocation = blockManager.getNextFreeBlock();
 		blockManager.write(parentDataToWrite);
-		blockManager.combineBlocks(
-				blockManager.getOffset(parent.getPosition()),
-				blockManager.getOffset(parentDataLocation));
+		blockManager.combineBlocks(parent.getPosition(),parentDataLocation);
 	}
 
 	@Override
@@ -135,6 +135,7 @@ public class FileManager implements FileManagerInterface {
 		MetaData[] result = new MetaData[data.length / 8];
 		for (int i = 0; i < result.length; ++i) {
 			result[i] = getMetaData(MetaDataUtilities.getLong(data, i * 8));
+			logger.warn("ERGERGERGERGERGERG" + result[i].getName()+ MetaDataUtilities.getLong(data, i * 8));
 		}
 		return result;
 	}
@@ -146,7 +147,7 @@ public class FileManager implements FileManagerInterface {
 		if (blockManager.getNextBlock(metaData.getPosition()) == 0) {
 			return new byte[0];
 		}
-		;
+		
 		byte[] tempData = blockManager.read(blockManager.getNextBlock(metaData
 				.getPosition()));
 		// return MetaDataUtilities.getDecryptedBytes(MetaDataUtilities

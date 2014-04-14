@@ -73,11 +73,11 @@ public class BlockManager {
 	 * @throws IOException
 	 */
 	public byte[] read(long blockNumber) throws IOException {
-		logger.debug("Starting to read the blockNumber: " + blockNumber);
+	//	logger.debug("Starting to read the blockNumber: " + blockNumber);
 		ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
 		long positionBeforeReading = virtualDisk.getFilePosition();
 		byte[] results = read(resultStream, blockNumber);
-		logger.debug("Resetting file Pointer to previous position");
+	//	logger.debug("Resetting file Pointer to previous position");
 		virtualDisk.seek(positionBeforeReading);
 		return results;
 	}
@@ -95,7 +95,7 @@ public class BlockManager {
 		if (nextAddress == 0 || nextAddress == getOffset(blockNumber))
 			return results.toByteArray();
 		else {
-			logger.warn("Reading:  " + nextAddress);
+//			logger.warn("Reading:  " + nextAddress);
 			return read(results, getBlockNumber(nextAddress));
 		}
 	}
@@ -177,7 +177,7 @@ public class BlockManager {
 		virtualDisk.seek(getOffset(blockNumber));
 		virtualDisk.writeLong(BlockSettings.UNUSED);
 		// get the address of next block
-		logger.debug("deleting data in block " + blockNumber);
+	//	logger.debug("deleting data in block " + blockNumber);
 		virtualDisk.seek(getOffset(blockNumber)
 				+ BlockSettings.NEXT_ADDRESS_START);
 		long fileAddress = virtualDisk.getFilePosition();
@@ -206,9 +206,7 @@ public class BlockManager {
 	 * @throws Exception
 	 */
 	public long getNextFreeBlock() throws Exception {
-		logger.debug("getNextFreeBlock was called");
 		long currentPosition = virtualDisk.getFilePosition();
-		logger.debug("Stored current position: " + currentPosition);
 		long freeBlockNumber = getNextFreeBlock(0);
 		virtualDisk.seek(currentPosition);
 		return freeBlockNumber;
@@ -216,8 +214,8 @@ public class BlockManager {
 
 	private long getNextFreeBlock(long blockNumber) throws IOException {
 		virtualDisk.seek(blockNumber * BlockSettings.BLOCK_SIZE);
-		logger.debug("virtualDisk file pointer is now at position: "
-				+ virtualDisk.getFilePosition());
+//		logger.debug("virtualDisk file pointer is now at position: "
+	//			+ virtualDisk.getFilePosition());
 		try {
 			long result = virtualDisk.readLong();
 			logger.debug("BlockNumber: " + blockNumber + " header length: "
@@ -287,8 +285,10 @@ public class BlockManager {
 		}
 	}
 
-	public void combineBlocks(long firstOffset, long secondOffset)
+	public void combineBlocks(long firstBlock, long secondBlock)
 			throws IOException {
+		long firstOffset = getOffset(firstBlock);
+		long secondOffset = getOffset(secondBlock);
 		long currentPosition = virtualDisk.getFilePosition();
 		try {
 			long positionToWriteSecondOffset = firstOffset
