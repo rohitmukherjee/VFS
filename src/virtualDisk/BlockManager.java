@@ -164,7 +164,7 @@ public class BlockManager {
 		return offset / BlockSettings.BLOCK_SIZE;
 	}
 
-	private long getOffset(long blockNumber) {
+	public long getOffset(long blockNumber) {
 		return blockNumber * BlockSettings.BLOCK_SIZE;
 	}
 

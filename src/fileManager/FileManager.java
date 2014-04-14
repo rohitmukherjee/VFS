@@ -68,6 +68,7 @@ public class FileManager implements FileManagerInterface {
 		long position = meta.getPosition();
 		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
 		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
+		logger.warn("ERGESTHSGESGRSERG" + meta.getName());
 		blockManager.write(meta.getBytes(), meta.getPosition());
 		long dataPosition = blockManager.getNextFreeBlock();
 		blockManager.write(data, dataPosition);
@@ -80,6 +81,7 @@ public class FileManager implements FileManagerInterface {
 
 	private void addToParent(MetaData parent, long position) throws Exception {
 		byte[] parentDataRaw = getData(parent);
+		
 		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
 		long[] newData = new long[1];
 		newData[0] = position;
@@ -87,9 +89,10 @@ public class FileManager implements FileManagerInterface {
 				parentData);
 		byte[] parentDataToWrite = MetaDataUtilities
 				.getByteArray(parentDataNew);
+		
 		long parentDataLocation = blockManager.getNextFreeBlock();
 		blockManager.write(parentDataToWrite);
-		blockManager.combineBlocks(parent.getPosition(), parentDataLocation);
+		blockManager.combineBlocks(blockManager.getOffset(parent.getPosition()), blockManager.getOffset(parentDataLocation));
 	}
 
 	@Override

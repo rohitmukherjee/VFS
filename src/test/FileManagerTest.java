@@ -216,9 +216,9 @@ public class FileManagerTest {
 				.fileToBytes(TestUtilities.BADASH_FILE_TEST);
 		fileManager.createFile(fileMeta, fileData);
 		MetaData rootMeta = fileManager.getMetaData(0);
-	//	children = fileManager.getChildrenMeta(rootMeta);
+		children = fileManager.getChildrenMeta(rootMeta);
 	    for(int i = 0; i < children.length; ++i) {logger.warn(children[i].getName());}
-		//MetaData retrieved = fileManager.search("test.c");
-		//assertEquals(fileMeta.getName(), retrieved.getName());
+//		MetaData retrieved = fileManager.search("root/test.c");
+//		assertEquals(fileMeta.getName(), retrieved.getName());
 	}
 }
