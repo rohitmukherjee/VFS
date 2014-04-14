@@ -52,9 +52,8 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	@Override
-	public MetaData getMetaData(long position) throws IOException, Exception {
-		return new MetaData(blockManager.readBlock(position));
-//				/ BlockSettings.BLOCK_SIZE));
+	public MetaData getMetaData(long blockNumber) throws IOException, Exception {
+		return new MetaData(blockManager.readBlock(blockNumber));
 	}
 
 	@Override
