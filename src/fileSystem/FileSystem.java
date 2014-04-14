@@ -36,7 +36,7 @@ public class FileSystem implements FileSystemInterface {
 					fileManager.search(
 							path.substring(0, path.length()
 									- pathTokens[pathTokens.length].length()
-									- 1)).getPosition(),
+									- 1)).getBlockNumber(),
 					utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
 			MetaData newMeta = metaData;
 			fileManager.createFile(newMeta, content);
@@ -120,7 +120,7 @@ public class FileSystem implements FileSystemInterface {
 			throws Exception {
 		MetaData parent = fileManager.search(currentPath);
 		MetaData newDirectoryMeta = new MetaData(directoryName,
-				parent.getPosition(), BlockSettings.DIRECTORY_TYPE,
+				parent.getBlockNumber(), BlockSettings.DIRECTORY_TYPE,
 				new Date().getTime());
 		fileManager.createDirectory(newDirectoryMeta);
 	}
@@ -189,7 +189,7 @@ public class FileSystem implements FileSystemInterface {
 
 	private boolean isRoot(MetaData metaData) {
 		return metaData.getName().equals(BlockSettings.ROOT_NAME)
-				|| metaData.getPosition() == BlockSettings.ROOT_POSITION;
+				|| metaData.getBlockNumber() == BlockSettings.ROOT_POSITION;
 	}
 
 	@Override
@@ -208,7 +208,7 @@ public class FileSystem implements FileSystemInterface {
 		MetaData rootMetaData = new MetaData(BlockSettings.ROOT_NAME,
 				BlockSettings.ROOT_PARENT, BlockSettings.ROOT_TYPE,
 				BlockSettings.ROOT_TIMESTAMP);
-		rootMetaData.setPosition(BlockSettings.ROOT_POSITION);
+		rootMetaData.setBlockNumber(BlockSettings.ROOT_POSITION);
 		fileManager.writeRoot(rootMetaData);
 	}
 

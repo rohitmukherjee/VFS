@@ -72,10 +72,10 @@ public class MetaDataUtilities {
 		ByteBuffer meta = ByteBuffer.allocate(BlockSettings.METADATA_LENGTH);
 		byte[] name = StringToBytes(fixedLengthString(metaData.getName()));
 		byte[] parent = longToBytes(metaData.getParent());
-		byte[] position = longToBytes(metaData.getPosition());
+		byte[] blockNumber = longToBytes(metaData.getBlockNumber());
 		byte[] timestamp = longToBytes(metaData.getTimestamp());
 		// Order of storing meta data inside a block
-		meta.put(position);
+		meta.put(blockNumber);
 		meta.put(metaData.getType());
 		meta.put(name);
 		meta.put(timestamp);
@@ -92,7 +92,7 @@ public class MetaDataUtilities {
 		byte[] name = new byte[BlockSettings.FILENAME_LENGTH];
 		meta.get(name);
 		metaData.setName(bytesToString(name));
-		metaData.setPosition(meta.getLong());
+		metaData.setBlockNumber(meta.getLong());
 		metaData.setTimestamp(meta.getLong());
 		metaData.setParent(meta.getLong());
 		return metaData;

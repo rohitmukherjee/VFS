@@ -10,8 +10,8 @@ import utils.BlockSettings;
 public class MetaData {
 
 	private String name;
-	private Byte type;
-	private long position;
+	private byte type;
+	private long blockNumber;
 	private long parent;
 	private long timestamp;
 	Logger logger;
@@ -25,7 +25,7 @@ public class MetaData {
 		// Order of extracting data from the MetaData block
 		long positionToStore = metaBuffer.getLong();
 		System.out.println("position of block: " + positionToStore);
-		this.setPosition(positionToStore);
+		this.setBlockNumber(positionToStore);
 		this.setType(metaBuffer.get());
 		metaBuffer.get(name);
 		this.setName(MetaDataUtilities.bytesToString(name));
@@ -85,11 +85,11 @@ public class MetaData {
 		this.parent = parent;
 	}
 
-	public long getPosition() {
-		return position;
+	public long getBlockNumber() {
+		return blockNumber;
 	}
 
-	public void setPosition(long position) {
-		this.position = position;
+	public void setBlockNumber(long position) {
+		this.blockNumber = position;
 	}
 }

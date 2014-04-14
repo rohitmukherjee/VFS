@@ -12,9 +12,9 @@ public class TestUtilities {
 			1, 0, 1, 0, 1, 0, 1, 0, 1 };
 
 	public static final byte[] testBlockData2Blocks = new byte[2 * (int) BlockSettings.DATA_LENGTH];
-	public static final String WINDOWS_FILE_TEST = "D:/Music/1976 - Led Zeppelin - The Song Remains The Same/1976 - Led Zeppelin - The Song Remains The Same/CD1/source.c";
-	public static final String WINDOWS_OUTPUT_DIR = "D:/test.mp3";
-	
+	public static final String WINDOWS_FILE_TEST = "D:/test.c";
+	public static final String WINDOWS_OUTPUT_DIR = "D:/test.c";
+
 	public static final String BADASH_FILE_TEST = "/Users/jessebadash/Desktop/AOL_example.txt";
 	public static final String BADASH_OUTPUT_DIR = "~\\Desktop";
 
