@@ -53,7 +53,7 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public MetaData getMetaData(long position) throws IOException, Exception {
-		return new MetaData(blockManager.readBlock(position));
+		return new MetaData(blockManager.readBlock(position/BlockSettings.BLOCK_SIZE));
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class FileManager implements FileManagerInterface {
 		long dataPosition = blockManager.getNextFreeBlock();
 		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getPosition(), dataPosition);
-
+		logger.warn("parent{ " + meta.getParent());
 		addToParent(getMetaData(meta.getParent()), meta.getPosition());
 		// grabs the parents and updates those values
 
@@ -133,6 +133,10 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public byte[] getData(MetaData metaData) throws Exception {
+		logger.warn("nextBlock: " + blockManager.getNextBlock(metaData
+				.getPosition()));
+		if(blockManager.getNextBlock(metaData
+				.getPosition()) == 0) {return new byte[0];};
 		byte[] tempData = blockManager.read(blockManager.getNextBlock(metaData
 				.getPosition()));
 		// return MetaDataUtilities.getDecryptedBytes(MetaDataUtilities

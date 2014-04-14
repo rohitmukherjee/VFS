@@ -3,6 +3,8 @@ package fileManager;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import utils.BlockSettings;
 
 public class MetaData {
@@ -12,6 +14,7 @@ public class MetaData {
 	private long position;
 	private long parent;
 	private long timestamp;
+	Logger logger;
 
 	public MetaData(byte[] data) {
 		ByteBuffer metaBuffer = ByteBuffer

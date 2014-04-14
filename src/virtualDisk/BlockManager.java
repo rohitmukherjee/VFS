@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -33,8 +34,8 @@ public class BlockManager {
 	}
 
 	public byte[] readBlock(long blockNumber) throws IOException {
-		return this.read(blockNumber, (int) BlockSettings.HEADER_LENGTH,
-				(int) BlockSettings.DATA_LENGTH);
+		return this.read(blockNumber);//, (int) BlockSettings.HEADER_LENGTH,
+//				(int) BlockSettings.DATA_LENGTH);
 	}
 
 	/**
@@ -46,7 +47,9 @@ public class BlockManager {
 	 */
 	public byte[] read(long blockNumber, int offset, int length)
 			throws IOException {
-		byte[] result = read(blockNumber);
+		byte[] temp = read(blockNumber);
+		logger.warn(temp.length);
+		byte[] result = Arrays.copyOfRange(temp, offset, offset + length);
 		return result;
 	}
 
@@ -77,10 +80,10 @@ public class BlockManager {
 		virtualDisk.seek(getOffset(blockNumber)
 				+ BlockSettings.NEXT_ADDRESS_START);
 		long nextAddress = virtualDisk.readLong();
-		if (nextAddress == 0)
+		if (nextAddress == 0 || nextAddress == getOffset(blockNumber))
 			return results.toByteArray();
-		else
-			return read(results, getBlockNumber(nextAddress));
+		else{logger.warn("Reading:  " + nextAddress);
+			return read(results, getBlockNumber(nextAddress));}
 	}
 
 	/**
