@@ -88,7 +88,6 @@ public class FileManager implements FileManagerInterface {
 
 	private void addToParent(MetaData parent, long position) throws Exception {
 		byte[] parentDataRaw = getData(parent);
-
 		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
 		long[] newData = new long[1];
 		newData[0] = position;
@@ -96,10 +95,11 @@ public class FileManager implements FileManagerInterface {
 				parentData);
 		byte[] parentDataToWrite = MetaDataUtilities
 				.getByteArray(parentDataNew);
-
-		long parentDataLocation = blockManager.getNextFreeBlock();
+		long newParentDataBlock = blockManager.getNextFreeBlock();
 		blockManager.write(parentDataToWrite);
-		blockManager.combineBlocks(parent.getBlockNumber(), parentDataLocation);
+		// Have to find a way of deleting the unused space to prevent
+		// unnecessary growing
+		blockManager.combineBlocks(parent.getBlockNumber(), newParentDataBlock);
 	}
 
 	@Override
@@ -113,9 +113,16 @@ public class FileManager implements FileManagerInterface {
 			String[] pathComponents) throws Exception {
 		MetaData[] contents = getChildrenMeta(metaData);
 		for (int i = 0; i < contents.length; ++i) {
+			System.out.println(" Looking at " + contents[i].getName()
+					+ " at position " + contents[i].getBlockNumber()
+					+ " and type " + contents[i].getType());
 			if (location == pathComponents.length - 1) {
 				// looking for a file now
 				if (contents[i].getType() == BlockSettings.FILE_TYPE
+						&& contents[i].getName().equals(
+								pathComponents[location])) {
+					return contents[i];
+				} else if (contents[i].getType() == BlockSettings.DIRECTORY_TYPE
 						&& contents[i].getName().equals(
 								pathComponents[location])) {
 					return contents[i];
