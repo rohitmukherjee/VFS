@@ -35,16 +35,18 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void writeMetaData(long position, MetaData metaData)
 			throws IOException, Exception {
-		long dataPosition = blockManager.getNextBlock(metaData.getBlockNumber());
+		long dataBlockNumber = blockManager.getNextBlock(metaData
+				.getBlockNumber());
 		metaData.setBlockNumber(position);
 		blockManager.write(metaData.getBytes(), position);
-		blockManager.combineBlocks(metaData.getBlockNumber(), dataPosition);
+		blockManager.combineBlocks(metaData.getBlockNumber(), dataBlockNumber);
 	}
 
 	@Override
 	public void writeReplaceMetaData(MetaData metaData) throws IOException,
 			Exception {
-		long dataPosition = blockManager.getNextBlock(metaData.getBlockNumber());
+		long dataPosition = blockManager
+				.getNextBlock(metaData.getBlockNumber());
 		blockManager.write(metaData.getBytes(), metaData.getBlockNumber());
 		metaData.setBlockNumber(blockManager.getNextFreeBlock());
 		blockManager.write(metaData.getBytes(), metaData.getBlockNumber());
@@ -65,22 +67,23 @@ public class FileManager implements FileManagerInterface {
 	public void createFile(MetaData meta, byte[] data) throws Exception {
 		// Write the metadata and the data, then combines the blocks
 		meta.setBlockNumber(blockManager.getNextFreeBlock());
-//				* BlockSettings.BLOCK_SIZE);
+		// * BlockSettings.BLOCK_SIZE);
 		long position = meta.getBlockNumber();
 		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
 		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
 		blockManager.write(meta.getBytes(), meta.getBlockNumber());
 		long dataPosition = blockManager.getNextFreeBlock();
-	//			* BlockSettings.BLOCK_SIZE;
-		logger.warn("ERGETDYFJHTGRFGRSHTRDJYTUYJYDHSGARESTRDYTYJRHTEGREFAWGRESTRDYT" + meta.getName()+meta.getBlockNumber()+dataPosition);
-		
+		// * BlockSettings.BLOCK_SIZE;
+		logger.warn("ERGETDYFJHTGRFGRSHTRDJYTUYJYDHSGARESTRDYTYJRHTEGREFAWGRESTRDYT"
+				+ meta.getName() + meta.getBlockNumber() + dataPosition);
+
 		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getBlockNumber(), dataPosition);
-		logger.warn("pos{ " +  meta.getBlockNumber());
-		
+		logger.warn("pos{ " + meta.getBlockNumber());
+
 		addToParent(getMetaData(meta.getParent()), meta.getBlockNumber());
 		// grabs the parents and updates those values
-		
+
 	}
 
 	private void addToParent(MetaData parent, long position) throws Exception {
@@ -96,7 +99,7 @@ public class FileManager implements FileManagerInterface {
 
 		long parentDataLocation = blockManager.getNextFreeBlock();
 		blockManager.write(parentDataToWrite);
-		blockManager.combineBlocks(parent.getBlockNumber(),parentDataLocation);
+		blockManager.combineBlocks(parent.getBlockNumber(), parentDataLocation);
 	}
 
 	@Override
@@ -134,7 +137,6 @@ public class FileManager implements FileManagerInterface {
 		MetaData[] result = new MetaData[data.length / 8];
 		for (int i = 0; i < result.length; ++i) {
 			result[i] = getMetaData(MetaDataUtilities.getLong(data, i * 8));
-			logger.warn("ERGERGERGERGERGERG" + result[i].getName()+ MetaDataUtilities.getLong(data, i * 8));
 		}
 		return result;
 	}
@@ -146,7 +148,7 @@ public class FileManager implements FileManagerInterface {
 		if (blockManager.getNextBlock(metaData.getBlockNumber()) == 0) {
 			return new byte[0];
 		}
-		
+
 		byte[] tempData = blockManager.read(blockManager.getNextBlock(metaData
 				.getBlockNumber()));
 		// return MetaDataUtilities.getDecryptedBytes(MetaDataUtilities

@@ -285,10 +285,10 @@ public class BlockManager {
 		}
 	}
 
-	public void combineBlocks(long firstBlock, long secondBlock)
+	public void combineBlocks(long firstBlockNumber, long secondBlockNumber)
 			throws IOException {
-		long firstOffset = getOffset(firstBlock);
-		long secondOffset = getOffset(secondBlock);
+		long firstOffset = getOffset(firstBlockNumber);
+		long secondOffset = getOffset(secondBlockNumber);
 		long currentPosition = virtualDisk.getFilePosition();
 		try {
 			long positionToWriteSecondOffset = firstOffset

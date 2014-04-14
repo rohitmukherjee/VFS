@@ -1,5 +1,6 @@
 package test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -62,8 +63,9 @@ public class FileManagerTest {
 		MetaData metaFile1 = new MetaData("file1", meta1.getBlockNumber(),
 				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
 		fm.createFile(metaFile1, Files.readAllBytes(Paths.get("indir1.txt")));
-		MetaData metaFile2 = new MetaData("nestedfile1", meta2.getBlockNumber(),
-				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
+		MetaData metaFile2 = new MetaData("nestedfile1",
+				meta2.getBlockNumber(), utils.BlockSettings.FILE_TYPE,
+				System.currentTimeMillis());
 		fm.createFile(metaFile2, Files.readAllBytes(Paths.get("innested1.txt")));
 		MetaData metaFile3 = new MetaData("file2", meta1.getBlockNumber(),
 				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
@@ -221,19 +223,20 @@ public class FileManagerTest {
 			throws Exception {
 		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
 		fileManager.writeRoot(rootMetaData);
-		MetaData[] children = fileManager.getChildrenMeta(rootMetaData);
 		MetaData fileMeta = new MetaData("test.c", 0, (byte) 1,
 				new Date().getTime());
 		byte[] fileData = MetaDataUtilities
 				.fileToBytes(TestUtilities.WINDOWS_FILE_TEST);
 		fileManager.createFile(fileMeta, fileData);
-		MetaData rootMeta = fileManager.getMetaData(0);
-		children = fileManager.getChildrenMeta(rootMeta);
-		for (int i = 0; i < children.length; ++i) {
-			logger.warn(children[i].getName());
-		}
 		MetaData retrieved = fileManager
 				.search(TestUtilities.WINDOWS_FILE_TEST);
+		/* This bit checks the Meta Data retrieval */
+		assertEquals(fileMeta.getBlockNumber(), retrieved.getBlockNumber());
+		assertEquals(fileMeta.getType(), retrieved.getType());
 		assertEquals(fileMeta.getName(), retrieved.getName());
+		assertEquals(fileMeta.getTimestamp(), retrieved.getTimestamp());
+		assertEquals(fileMeta.getParent(), retrieved.getParent());
+		assertArrayEquals(fileMeta.getBytes(), retrieved.getBytes());
+
 	}
 }
