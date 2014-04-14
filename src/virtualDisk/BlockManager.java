@@ -34,8 +34,20 @@ public class BlockManager {
 	}
 
 	public byte[] readBlock(long blockNumber) throws IOException {
-		return this.read(blockNumber);//, (int) BlockSettings.HEADER_LENGTH,
-//				(int) BlockSettings.DATA_LENGTH);
+		long currentPosition = virtualDisk.getFilePosition();
+		byte[] data;
+		// readBlock should read length of data in case less than DATA_LENGTH
+		// else one full block
+		virtualDisk.seek(getOffset(blockNumber));
+		long lengthOfData = virtualDisk.readLong();
+		virtualDisk.seek(getOffset(blockNumber) + BlockSettings.HEADER_LENGTH);
+		if (lengthOfData >= BlockSettings.DATA_LENGTH)
+			data = new byte[BlockSettings.DATA_LENGTH];
+		else
+			data = new byte[(int) lengthOfData];
+		virtualDisk.read(data);
+		virtualDisk.seek(currentPosition);
+		return data;
 	}
 
 	/**
@@ -82,8 +94,10 @@ public class BlockManager {
 		long nextAddress = virtualDisk.readLong();
 		if (nextAddress == 0 || nextAddress == getOffset(blockNumber))
 			return results.toByteArray();
-		else{logger.warn("Reading:  " + nextAddress);
-			return read(results, getBlockNumber(nextAddress));}
+		else {
+			logger.warn("Reading:  " + nextAddress);
+			return read(results, getBlockNumber(nextAddress));
+		}
 	}
 
 	/**

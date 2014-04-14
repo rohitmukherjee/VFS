@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 
 import org.junit.After;
 import org.junit.Ignore;
@@ -45,7 +46,7 @@ public class BlockManagerTest {
 		blockManager.getVirtualDisk().deleteDisk();
 	}
 
-	@Test
+	@Ignore
 	public void diskReadTestsForBlockData() throws Exception {
 		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
 		blockManager.setupBlocks();
@@ -196,5 +197,20 @@ public class BlockManagerTest {
 		blockManager.write(TestUtilities.testBlockDataFullBlock);
 		return blockManager.getNextFreeBlock();
 
+	}
+
+	@Test
+	public void readBlockTest() throws Exception {
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
+		blockManager.setupBlocks();
+		blockManager.write(TestUtilities.testBlockDataLessThan);
+		assertEquals(0, blockManager.getNextBlock());
+		byte[] readData = blockManager.readBlock(0);
+		assertArrayEquals(TestUtilities.testBlockDataLessThan, readData);
+		blockManager.write(TestUtilities.testBlockData2Blocks);
+		ByteBuffer buffer = ByteBuffer.allocate(2 * BlockSettings.DATA_LENGTH);
+		buffer.put(blockManager.readBlock(1));
+		buffer.put(blockManager.readBlock(2));
+		assertArrayEquals(TestUtilities.testBlockData2Blocks, buffer.array());
 	}
 }

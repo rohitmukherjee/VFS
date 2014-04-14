@@ -10,7 +10,7 @@ public class BlockSettings {
 	public static final byte[] MAGIC_NUMBER = { 1, 1, 1, 1, 1, 1, 1, 1 };
 	public static final int NEXT_ADDRESS_START = BLOCK_SIZE
 			- NEXT_ADDRESS_LENGTH;
-	public static final long DATA_LENGTH = BLOCK_SIZE - NEXT_ADDRESS_LENGTH
+	public static final int DATA_LENGTH = BLOCK_SIZE - NEXT_ADDRESS_LENGTH
 			- HEADER_LENGTH;
 	public static final long BLOCKS_TO_INITIALIZE = 8;
 	public static final long BYTES_TO_GROW = BLOCKS_TO_INITIALIZE * BLOCK_SIZE;
@@ -32,7 +32,7 @@ public class BlockSettings {
 			- POSITION_LENGTH;
 	public static final byte DIRECTORY_TYPE = 0;
 	public static final byte FILE_TYPE = 1;
-	
+
 	// root specific constants
 
 	public static final String ROOT_NAME = "root";
