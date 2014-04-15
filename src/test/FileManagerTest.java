@@ -90,50 +90,6 @@ public class FileManagerTest {
 	}
 
 	@Ignore
-	public void testCreateDirectory() throws Exception {
-		FileManager fm = new FileManager(TestUtilities.POSIX_PATH);
-		fm.writeRoot(rootMetaData);
-
-		// test that a directory not already present
-		assertEquals(null, fm.search("root/dir1"));
-
-		// create a directory in root
-		MetaData meta1 = new MetaData("dir1", 0,
-				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
-		fm.createDirectory(meta1);
-		assertEquals(meta1, fm.search(BlockSettings.ROOT_NAME + "/dir1"));
-
-		// create a directory inside another directory
-		MetaData meta2 = new MetaData("nestedDir1", meta1.getBlockNumber(),
-				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
-		fm.createDirectory(meta2);
-		assertEquals(meta1, fm.search(BlockSettings.ROOT_NAME + "/dir1"));
-		assertEquals(meta2,
-				fm.search(BlockSettings.ROOT_NAME + "/dir1/nestedDir1"));
-
-		// create 2 directories on the same level
-		MetaData meta3 = new MetaData("dir2", 0,
-				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
-		fm.createDirectory(meta3);
-		assertEquals(meta1, fm.search(BlockSettings.ROOT_NAME + "/dir1"));
-		assertEquals(meta3, fm.search(BlockSettings.ROOT_NAME + "/dir2"));
-
-		// try to create a directory inside a file
-		MetaData metaFile = new MetaData("file1", meta1.getBlockNumber(),
-				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
-		fm.createFile(metaFile, Files.readAllBytes(Paths.get("indir1.txt")));
-		MetaData meta4 = new MetaData("fail", metaFile.getBlockNumber(),
-				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
-		try {
-			fm.createDirectory(meta4);
-			logger.error("Created a directory in a file. Should throw");
-		} catch (Exception e) {
-
-		}
-
-	}
-
-	@Test
 	public void testDeleteDirectory() throws Exception {
 		FileManager fm = setUpDisk();
 
@@ -163,7 +119,7 @@ public class FileManagerTest {
 
 	}
 
-	@Test
+	@Ignore
 	public void testDeleteDirectoryWithFile() throws Exception {
 		FileManager fm = setUpDisk();
 		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir1/nestedDir1");
@@ -177,8 +133,7 @@ public class FileManagerTest {
 		assertTrue(fm.search(BlockSettings.ROOT_NAME + "/dir1") != null);
 	}
 
-
-	@Test
+	@Ignore
 	public void testDeleteMetaDirectory() throws Exception {
 		FileManager fm = setUpDisk();
 		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir1");
@@ -194,8 +149,7 @@ public class FileManagerTest {
 		assertEquals(null, fm.search(BlockSettings.ROOT_NAME + "/dir1"));
 	}
 
-
-	@Test
+	@Ignore
 	public void testSearch() throws Exception {
 		FileManager fm = setUpDisk();
 
@@ -210,17 +164,17 @@ public class FileManagerTest {
 		// search for partially correct path name
 		meta = fm.search(BlockSettings.ROOT_NAME + "/dir1/nestedFile1");
 		assertEquals(null, meta);
-		
+
 		// search for valid directory
 		meta = fm.search(BlockSettings.ROOT_NAME + "/dir1");
 		assertTrue(meta != null);
 		assertEquals("dir1", meta.getName());
 		assertEquals(rootMetaData.getBlockNumber(), meta.getParent());
-		
-		//search for the root
+
+		// search for the root
 		meta = fm.search(BlockSettings.ROOT_NAME);
 		assertEquals(rootMetaData, meta);
-		
+
 		// search for valid file
 		meta = fm.search(BlockSettings.ROOT_NAME + "/dir1/file1");
 		assertTrue(meta != null);
@@ -266,29 +220,60 @@ public class FileManagerTest {
 	}
 
 	@Test
-	public void writingADirectorAfterRootShouldBeCorrectly() throws Exception {
+	public void writingDirectoriesFilesAndNestedDirectoriesShouldBeRetrievedCorrectly() throws Exception {
 		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
 		fileManager.writeRoot(rootMetaData);
 		MetaData meta1 = new MetaData("dir1", 0,
 				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
 		fileManager.createDirectory(meta1);
 		MetaData retrieved1 = fileManager.search("root/dir1");
+		// creating a nested directory
 		MetaData meta2 = new MetaData("nestedDir1",
 				retrieved1.getBlockNumber(),
 				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
 		fileManager.createDirectory(meta2);
+		// creating another directory at the same level as nestedDir1
+		MetaData meta3 = new MetaData("dir2", 0,
+				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
+		fileManager.createDirectory(meta3);
+		MetaData retrieved3 = fileManager.search("root/dir2");
 		MetaData retrieved2 = fileManager.search("root/dir1/nestedDir1");
+		// checking dir1
 		assertEquals(meta1.getName(), retrieved1.getName());
 		assertEquals(meta1.getType(), retrieved1.getType());
 		assertEquals(meta1.getName(), retrieved1.getName());
 		assertEquals(meta1.getTimestamp(), retrieved1.getTimestamp());
 		assertEquals(meta1.getParent(), retrieved1.getParent());
 		assertArrayEquals(meta1.getBytes(), retrieved1.getBytes());
+		// checking dir2
+		assertEquals(meta3.getName(), retrieved3.getName());
+		assertEquals(meta3.getType(), retrieved3.getType());
+		assertEquals(meta3.getName(), retrieved3.getName());
+		assertEquals(meta3.getTimestamp(), retrieved3.getTimestamp());
+		assertEquals(meta3.getParent(), retrieved3.getParent());
+		assertArrayEquals(meta1.getBytes(), retrieved1.getBytes());
+		// checking nestedDir1
 		assertEquals(meta2.getName(), retrieved2.getName());
-		// assertEquals(meta2.getType(), retrieved2.getType());
-		// assertEquals(meta2.getName(), retrieved2.getName());
-		// assertEquals(meta2.getTimestamp(), retrieved2.getTimestamp());
-		// assertEquals(meta2.getParent(), retrieved2.getParent());
-		// assertArrayEquals(meta2.getBytes(), retrieved2.getBytes());
+		assertEquals(meta2.getType(), retrieved2.getType());
+		assertEquals(meta2.getName(), retrieved2.getName());
+		assertEquals(meta2.getTimestamp(), retrieved2.getTimestamp());
+		assertEquals(meta2.getParent(), retrieved2.getParent());
+		assertArrayEquals(meta2.getBytes(), retrieved2.getBytes());
+		// Trying to create a file inside a directory should fail
+		MetaData metaFile = new MetaData("file1", retrieved1.getBlockNumber(),
+				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
+		fileManager.createFile(metaFile,
+				Files.readAllBytes(Paths.get("indir1.txt")));
+		MetaData retrievedFile = fileManager.search("root/dir1/file1");
+		assertEquals(metaFile.getName(), retrievedFile.getName());
+		MetaData meta4 = new MetaData("fail", retrievedFile.getBlockNumber(),
+				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
+		try {
+			fileManager.createDirectory(meta4);
+			logger.error("Created a directory in a file. Should throw");
+		} catch (Exception e) {
+			System.out.println("It works ;)");
+		}
+
 	}
 }
