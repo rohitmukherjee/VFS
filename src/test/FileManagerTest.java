@@ -224,13 +224,8 @@ public class FileManagerTest {
 
 		
 	}
-<<<<<<< HEAD
 
-	@Test
-=======
-	
 	@Ignore
->>>>>>> d56266937697d4f250bbbbd893c0ee608933af11
 	public void checkIfRootIsProperlyWritten() throws Exception {
 		FileManager fileManager = new FileManager(TestUtilities.POSIX_PATH);
 		fileManager.writeRoot(rootMetaData);
