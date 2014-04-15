@@ -17,6 +17,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import utils.BlockSettings;
+import exceptions.FileOrDirectoryNotFoundException;
 import fileManager.FileManager;
 import fileManager.MetaData;
 import fileManager.MetaDataUtilities;
@@ -149,36 +150,83 @@ public class FileManagerTest {
 		assertEquals(null, fm.search(BlockSettings.ROOT_NAME + "/dir1"));
 	}
 
-	@Ignore
-	public void testSearch() throws Exception {
-		FileManager fm = setUpDisk();
+	@Test
+	public void searchingForFilesAndFolders() throws Exception {
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
+		fileManager.writeRoot(rootMetaData);
+		MetaData meta1 = new MetaData("dir1", 0,
+				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
+		fileManager.createDirectory(meta1);
+		MetaData meta3 = new MetaData("dir2", 0,
+				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
+		fileManager.createDirectory(meta3);
+		MetaData retrievedDir1 = fileManager.search("root/dir1");
+		MetaData meta2 = new MetaData("nestedDir1",
+				retrievedDir1.getBlockNumber(),
+				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
+		fileManager.createDirectory(meta2);
+
+		MetaData metaFile1 = new MetaData("file1",
+				retrievedDir1.getBlockNumber(), utils.BlockSettings.FILE_TYPE,
+				System.currentTimeMillis());
+		fileManager.createFile(metaFile1,
+				Files.readAllBytes(Paths.get("indir1.txt")));
+		MetaData retrievedNestedDir1 = fileManager
+				.search("root/dir1/nestedDir1");
+		MetaData metaFile2 = new MetaData("nestedfile1",
+				retrievedNestedDir1.getBlockNumber(),
+				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
+		fileManager.createFile(metaFile2,
+				Files.readAllBytes(Paths.get("innested1.txt")));
+		MetaData metaFile3 = new MetaData("file2",
+				retrievedDir1.getBlockNumber(), utils.BlockSettings.FILE_TYPE,
+				System.currentTimeMillis());
+		fileManager.createFile(metaFile3,
+				Files.readAllBytes(Paths.get("indir1.txt")));
 
 		// search for nonexistant file
-		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir2/file1");
-		assertEquals(null, meta);
+		try {
+			MetaData meta = fileManager.search(BlockSettings.ROOT_NAME
+					+ "/dir2/file1");
+		} catch (FileOrDirectoryNotFoundException ex) {
+			System.out.println("Caught exception");
+		}
 
 		// search for nonexistant directory
-		meta = fm.search(BlockSettings.ROOT_NAME + "/dir2/nestedDir1");
-		assertEquals(null, meta);
+		try {
+			MetaData meta = fileManager.search(BlockSettings.ROOT_NAME
+					+ "/dir2/nestedDir1");
+		} catch (FileOrDirectoryNotFoundException ex) {
+			System.out.println("Caught exception");
+		}
 
 		// search for partially correct path name
-		meta = fm.search(BlockSettings.ROOT_NAME + "/dir1/nestedFile1");
-		assertEquals(null, meta);
+		try {
+			MetaData meta = fileManager.search(BlockSettings.ROOT_NAME
+					+ "/dir1/nestedDir1/nestedfile2");
+		} catch (FileOrDirectoryNotFoundException ex) {
+			System.out.println("Caught exception");
+		}
 
 		// search for valid directory
-		meta = fm.search(BlockSettings.ROOT_NAME + "/dir1");
-		assertTrue(meta != null);
-		assertEquals("dir1", meta.getName());
-		assertEquals(rootMetaData.getBlockNumber(), meta.getParent());
+		assertEquals("dir1", retrievedDir1.getName());
+		assertEquals(rootMetaData.getBlockNumber(), retrievedDir1.getParent());
 
 		// search for the root
-		meta = fm.search(BlockSettings.ROOT_NAME);
-		assertEquals(rootMetaData, meta);
+		MetaData retrievedRoot = fileManager.search(BlockSettings.ROOT_NAME);
+		assertEquals(rootMetaData.getName(), retrievedRoot.getName());
+		assertArrayEquals(rootMetaData.getBytes(), retrievedRoot.getBytes());
 
 		// search for valid file
-		meta = fm.search(BlockSettings.ROOT_NAME + "/dir1/file1");
-		assertTrue(meta != null);
-		assertEquals("file1", meta.getName());
+		MetaData retrievedFile1 = fileManager.search(BlockSettings.ROOT_NAME
+				+ "/dir1/file1");
+		assertArrayEquals(metaFile1.getBytes(), retrievedFile1.getBytes());
+
+		// search for nested file1
+		MetaData retrievedNestedFile1 = fileManager
+				.search(BlockSettings.ROOT_NAME
+						+ "/dir1/nestedDir1/nestedfile1");
+		assertArrayEquals(metaFile2.getBytes(), retrievedNestedFile1.getBytes());
 
 	}
 
@@ -219,8 +267,9 @@ public class FileManagerTest {
 		assertArrayEquals(fileMeta.getBytes(), retrieved.getBytes());
 	}
 
-	@Test
-	public void writingDirectoriesFilesAndNestedDirectoriesShouldBeRetrievedCorrectly() throws Exception {
+	@Ignore
+	public void writingDirectoriesFilesAndNestedDirectoriesShouldBeRetrievedCorrectly()
+			throws Exception {
 		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
 		fileManager.writeRoot(rootMetaData);
 		MetaData meta1 = new MetaData("dir1", 0,

@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import utils.BlockSettings;
 import virtualDisk.BlockManager;
+import exceptions.FileOrDirectoryNotFoundException;
 
 public class FileManager implements FileManagerInterface {
 
@@ -103,9 +104,12 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	@Override
-	public MetaData search(String path) throws IOException, Exception {
+	public MetaData search(String path) throws Exception {
 		String[] pathComponents = path.split("/");
 		MetaData root = getMetaData(0);
+		// Incase the path is only one word, return root
+		if (pathComponents.length == 1)
+			return root;
 		return rsearch(root, 1, pathComponents);
 	}
 
@@ -136,7 +140,7 @@ public class FileManager implements FileManagerInterface {
 				}
 			}
 		}
-		return null;
+		throw new FileOrDirectoryNotFoundException();
 	}
 
 	public MetaData[] getChildrenMeta(MetaData metaData) throws Exception {
