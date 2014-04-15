@@ -133,6 +133,7 @@ public class FileManagerTest {
 
 	}
 
+	@Test
 	public void testDeleteDirectory() throws Exception {
 		FileManager fm = setUpDisk();
 
@@ -162,6 +163,7 @@ public class FileManagerTest {
 
 	}
 
+	@Test
 	public void testDeleteDirectoryWithFile() throws Exception {
 		FileManager fm = setUpDisk();
 		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir1/nestedDir1");
@@ -175,6 +177,8 @@ public class FileManagerTest {
 		assertTrue(fm.search(BlockSettings.ROOT_NAME + "/dir1") != null);
 	}
 
+
+	@Test
 	public void testDeleteMetaDirectory() throws Exception {
 		FileManager fm = setUpDisk();
 		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir1");
@@ -190,14 +194,37 @@ public class FileManagerTest {
 		assertEquals(null, fm.search(BlockSettings.ROOT_NAME + "/dir1"));
 	}
 
+
+	@Test
 	public void testSearch() throws Exception {
 		FileManager fm = setUpDisk();
 
 		// search for nonexistant file
+		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir2/file1");
+		assertEquals(null, meta);
+
 		// search for nonexistant directory
+		meta = fm.search(BlockSettings.ROOT_NAME + "/dir2/nestedDir1");
+		assertEquals(null, meta);
+
 		// search for partially correct path name
+		meta = fm.search(BlockSettings.ROOT_NAME + "/dir1/nestedFile1");
+		assertEquals(null, meta);
+		
 		// search for valid directory
+		meta = fm.search(BlockSettings.ROOT_NAME + "/dir1");
+		assertTrue(meta != null);
+		assertEquals("dir1", meta.getName());
+		assertEquals(rootMetaData.getBlockNumber(), meta.getParent());
+		
+		//search for the root
+		meta = fm.search(BlockSettings.ROOT_NAME);
+		assertEquals(rootMetaData, meta);
+		
 		// search for valid file
+		meta = fm.search(BlockSettings.ROOT_NAME + "/dir1/file1");
+		assertTrue(meta != null);
+		assertEquals("file1", meta.getName());
 
 	}
 
