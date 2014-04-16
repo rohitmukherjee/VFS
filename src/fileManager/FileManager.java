@@ -196,11 +196,15 @@ public class FileManager implements FileManagerInterface {
 		if (metaData.getType() == utils.BlockSettings.DIRECTORY_TYPE) {
 			// directory
 			MetaData[] childrenMetaData = getChildrenMeta(metaData);
+			// need to delete the current directory Meta as well
 			for (int i = 0; i < childrenMetaData.length; ++i) {
+				System.out.println("Deleting child "
+						+ childrenMetaData[i].getName());
 				deleteRecursively(childrenMetaData[i]);
 			}
 		} else {
 			// file
+			System.out.println("Deleting file " + metaData.getName());
 			deleteFile(metaData);
 		}
 	}
@@ -238,5 +242,17 @@ public class FileManager implements FileManagerInterface {
 
 	public void deleteDisk() throws IOException {
 		blockManager.getVirtualDisk().deleteDisk();
+	}
+
+	public void deleteMetaData(MetaData metaData) throws Exception {
+		blockManager.deleteBlock(metaData.getBlockNumber());
+	}
+
+	public void deleteDirectory(MetaData metaData) throws Exception {
+		deleteRecursively(metaData);
+		// Parent MetaData has to change after deletion so search for it by name
+		// again
+		MetaData retrieved = search(metaData.getName());
+		deleteMetaData(retrieved);
 	}
 }

@@ -120,18 +120,35 @@ public class FileManagerTest {
 
 	}
 
-	@Ignore
+	@Test(expected = FileOrDirectoryNotFoundException.class)
 	public void testDeleteDirectoryWithFile() throws Exception {
-		FileManager fm = setUpDisk();
-		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir1/nestedDir1");
-		fm.deleteRecursively(meta);
-		assertEquals(null,
-				fm.search(BlockSettings.ROOT_NAME + "/dir1/nestedDir1"));
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
+		fileManager.writeRoot(rootMetaData);
+		MetaData meta1 = new MetaData("dir1", 0,
+				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
+		fileManager.createDirectory(meta1);
+		MetaData retrievedDir1 = fileManager.search("root/dir1");
+		MetaData meta2 = new MetaData("nestedDir1",
+				retrievedDir1.getBlockNumber(),
+				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
+		fileManager.createDirectory(meta2);
+		MetaData retrievedNestedDir1 = fileManager
+				.search("root/dir1/nestedDir1");
+		MetaData metaFile2 = new MetaData("nestedfile1",
+				retrievedNestedDir1.getBlockNumber(),
+				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
+		fileManager.createFile(metaFile2,
+				Files.readAllBytes(Paths.get("innested1.txt")));
+
+		fileManager.deleteDirectory(meta2);
+		retrievedNestedDir1 = fileManager.search(BlockSettings.ROOT_NAME
+				+ "/dir1/nestedDir1");
+		assertTrue(fileManager.search(BlockSettings.ROOT_NAME + "/dir1") != null);
 		assertEquals(
 				null,
-				fm.search(BlockSettings.ROOT_NAME
+				fileManager.search(BlockSettings.ROOT_NAME
 						+ "/dir1/nestedDir1/nestedFile1"));
-		assertTrue(fm.search(BlockSettings.ROOT_NAME + "/dir1") != null);
+
 	}
 
 	@Ignore
@@ -150,7 +167,7 @@ public class FileManagerTest {
 		assertEquals(null, fm.search(BlockSettings.ROOT_NAME + "/dir1"));
 	}
 
-	@Test
+	@Ignore
 	public void searchingForFilesAndFolders() throws Exception {
 		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
 		fileManager.writeRoot(rootMetaData);
