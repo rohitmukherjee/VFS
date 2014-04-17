@@ -43,6 +43,8 @@ public class MetaData {
 		this.parent = parent;
 		this.type = type;
 		this.timestamp = timestamp;
+		//set to a dummy value so we get errors in case we never properly set block number
+		this.blockNumber = -1;
 	}
 
 	/**
@@ -146,4 +148,48 @@ public class MetaData {
 	public void setBlockNumber(long blockNumber) {
 		this.blockNumber = blockNumber;
 	}
+
+	/**
+	 * Override hashCode since we overrode the equals method
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (blockNumber ^ (blockNumber >>> 32));
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (int) (parent ^ (parent >>> 32));
+		result = prime * result + type;
+		return result;
+	}
+
+	/**
+	 * Override equals method for MetaData
+	 * Checks if all fields are the same except for timestamp since we might not know that 
+	 * when searching
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MetaData other = (MetaData) obj;
+		if (blockNumber != other.blockNumber)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (parent != other.parent)
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
+	}
+	
+	
 }
