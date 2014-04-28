@@ -13,10 +13,8 @@
     <Label style="-fx-font: NORMAL 12 Tahoma" text="Present Working Directory"                
         GridPane.columnIndex="0" GridPane.rowIndex="0">
     </Label>
-    <TableView fx:id="tableView" GridPane.columnIndex="0" 
-        GridPane.rowIndex="1">
-        
-    </TableView>
+    <fx:include source="children_list_view.fxml" GridPane.columnIndex="0" 
+        GridPane.rowIndex="1"/>
     <HBox spacing="10" alignment="bottom_right" GridPane.columnIndex="0" 
           GridPane.rowIndex="2">
           <!-- change the onAction tags for these to match -->

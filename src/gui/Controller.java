@@ -39,7 +39,8 @@ public class Controller implements Initializable {
 	
 	@FXML
 	public void handleAddDirectory(ActionEvent event) {
-		App.console.runCommand("", new String[] {App.source, App.destination});
+		App.listController.addChild("lskdfjsl");
+		//App.console.runCommand("", new String[] {App.source, App.destination});
 	}
 
 	@FXML

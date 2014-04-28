@@ -18,6 +18,8 @@ public class App extends Application {
 	private static FileSystem fs;
 	public static Console console;
 	
+	public static ListViewController listController;
+	
     @Override
     public void start(Stage primaryStage) throws Exception {
     	
@@ -27,7 +29,13 @@ public class App extends Application {
     	console = new Console(reader, pw, fs);
     	*/
     	
+        FXMLLoader loader = new FXMLLoader(gui.ListViewController.class.getResource("children_list_view.fxml")); 
+        
         Parent root = FXMLLoader.load(gui.Controller.class.getResource("gui_root.fxml"));
+
+        loader.load();
+        listController = loader.getController();
+       // ListViewController listController = new ListViewController(root.get)
         /*Button btn = new Button();
         btn.setText("Import File");
         btn.setOnAction(new EventHandler<ActionEvent>() {
