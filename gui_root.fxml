@@ -1,0 +1,36 @@
+<!-- <?xml version = 1.0 encoding = "UTF-8"?>
+<?import javafx.scene.control.*?>
+-->
+<GridPane alignment="CENTER" hgap="10.0" vgap="10.0"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:controller="gui.Controller">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+    <Label style="-fx-font: NORMAL 12" text="Present Working Directory"                
+        GridPane.columnIndex="0" GridPane.rowIndex="0">
+    </Label>
+    <TableView fx:id="tableView" GridPane.columnIndex="0" 
+        GridPane.rowIndex="1">
+        <Label text = "child1" />
+        <Lable text = "child2"/>
+    </TableView>
+    <HBox spacing="10" alignment="bottom_right" GridPane.columnIndex="0" 
+          GridPane.rowIndex="2">
+          <!-- change the onAction tags for these to match -->
+          <Button text="Import File" onAction="#handleImportFile"/>
+          <Button text="Export File" onAction="#handleExportFile"/>
+          <Button text="Copy File" onAction="#handleCopyFile"/>
+          <Button text="Move File" onAction="#handleMoveFile"/>
+          <Button text="Add Directory" onAction="#handleAddDirectory"/>
+          <Button text="Move Directory" onAction="#handleMoveDirectory"/>
+          <Button text="Delete Directory" onAction="#handleDeleteDirectory"/>     
+    </HBox>
+    <HBox spacing = "10" alignment = "bottom_right" GridPane.columnIndex = "0" 
+    GridPane.rowIndex = "3">
+        <TextField fx:id="sourceField" promptText = "Source"
+        prefWidth = "90"/>
+        <TextField fx:id="destinationField" promtText = "Destination"
+        prefWidth = "90"/>
+    </HBox>
+</GridPane>
