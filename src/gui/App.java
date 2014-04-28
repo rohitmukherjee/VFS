@@ -2,17 +2,14 @@ package gui;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
-import java.io.Reader;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import cli.Console;
 import fileSystem.FileSystem;
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
  
 public class App extends Application {
     
@@ -23,12 +20,15 @@ public class App extends Application {
 	
     @Override
     public void start(Stage primaryStage) throws Exception {
-    	fs = new FileSystem(null);//FIX THIS IT WILL NOT WORK AT ALL
+    	
+    	/*fs = new FileSystem(null);//FIX THIS IT WILL NOT WORK AT ALL
     	PrintWriter pw = new PrintWriter(System.out);
     	BufferedReader reader = new BufferedReader(null);
     	console = new Console(reader, pw, fs);
+    	*/
     	
-        Button btn = new Button();
+        Parent root = FXMLLoader.load(gui.Controller.class.getResource("gui_root.fxml"));
+        /*Button btn = new Button();
         btn.setText("Import File");
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -38,11 +38,11 @@ public class App extends Application {
         });
         
         StackPane root = new StackPane();
-        root.getChildren().add(btn);
+        root.getChildren().add(btn); */
 
         Scene scene = new Scene(root, 300, 250);
 
-        primaryStage.setTitle("Hello World!");
+        //primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
