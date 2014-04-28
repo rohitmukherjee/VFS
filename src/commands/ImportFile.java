@@ -12,7 +12,8 @@ public class ImportFile implements Command {
 	}
 
 	/*
-	 * @param params first is source second is destination on real machine.
+	 * @param params first is source on real machine 
+	 * second is destination on VFS.
 	 */
 	@Override
 	public void execute(String[] params) {
