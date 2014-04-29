@@ -137,9 +137,8 @@ public class FileSystem implements FileSystemInterface {
 		MetaData directoryMetaData = fileManager.search(path);
 		if (isValidDirectory(directoryMetaData.getName())
 				&& !(isRoot(directoryMetaData)))
-		// Some kind of recursive delete method inside fileManager
-		{
-		} else
+			fileManager.deleteDirectory(directoryMetaData);
+		else
 			throw new InvalidDirectoryException(
 					"The directory cannot be deleted");
 	}
@@ -211,5 +210,4 @@ public class FileSystem implements FileSystemInterface {
 		rootMetaData.setBlockNumber(BlockSettings.ROOT_POSITION);
 		fileManager.writeRoot(rootMetaData);
 	}
-
 }

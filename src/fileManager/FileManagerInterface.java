@@ -62,8 +62,7 @@ public interface FileManagerInterface {
 
 	void deleteFile(MetaData metaData) throws Exception;
 
+	void deleteDirectory(MetaData metaData) throws Exception;
+
 	MetaData search(String path) throws IOException, Exception;
-
-	void deleteRecursively(MetaData metaData) throws Exception;
-
 }

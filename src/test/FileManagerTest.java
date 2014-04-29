@@ -96,7 +96,7 @@ public class FileManagerTest {
 
 		// try deleting the root
 		try {
-			fm.deleteRecursively(rootMetaData);
+			fm.deleteDirectory(rootMetaData);
 			logger.error("Allowed deleting of the root. Should throw somewhere or not allow");
 		} catch (Exception e) {
 
@@ -107,7 +107,7 @@ public class FileManagerTest {
 			MetaData fakeMeta = new MetaData("fakeDir", 0,
 					utils.BlockSettings.DIRECTORY_TYPE,
 					System.currentTimeMillis());
-			fm.deleteRecursively(fakeMeta);
+			fm.deleteDirectory(fakeMeta);
 			logger.error("Allowed deleting of a nonexistant directory without throwing");
 		} catch (Exception e) {
 
@@ -115,7 +115,7 @@ public class FileManagerTest {
 
 		// delete an empty directory
 		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir2");
-		fm.deleteRecursively(meta);
+		fm.deleteDirectory(meta);
 		assertEquals(null, fm.search(BlockSettings.ROOT_NAME + "/dir2"));
 
 	}
@@ -155,7 +155,7 @@ public class FileManagerTest {
 	public void testDeleteMetaDirectory() throws Exception {
 		FileManager fm = setUpDisk();
 		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir1");
-		fm.deleteRecursively(meta);
+		fm.deleteDirectory(meta);
 		assertEquals(null,
 				fm.search(BlockSettings.ROOT_NAME + "/dir1/nestedDir1"));
 		assertEquals(

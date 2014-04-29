@@ -77,14 +77,11 @@ public class FileManager implements FileManagerInterface {
 		// * BlockSettings.BLOCK_SIZE;
 		logger.warn("ERGETDYFJHTGRFGRSHTRDJYTUYJYDHSGARESTRDYTYJRHTEGREFAWGRESTRDYT"
 				+ meta.getName() + meta.getBlockNumber() + dataPosition);
-
 		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getBlockNumber(), dataPosition);
 		logger.warn("pos{ " + meta.getBlockNumber());
-
 		addToParent(getMetaData(meta.getParent()), meta.getBlockNumber());
 		// grabs the parents and updates those values
-
 	}
 
 	private void addToParent(MetaData parent, long position) throws Exception {
@@ -192,24 +189,6 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	@Override
-	public void deleteRecursively(MetaData metaData) throws Exception {
-		if (metaData.getType() == utils.BlockSettings.DIRECTORY_TYPE) {
-			// directory
-			MetaData[] childrenMetaData = getChildrenMeta(metaData);
-			// need to delete the current directory Meta as well
-			for (int i = 0; i < childrenMetaData.length; ++i) {
-				System.out.println("Deleting child "
-						+ childrenMetaData[i].getName());
-				deleteRecursively(childrenMetaData[i]);
-			}
-		} else {
-			// file
-			System.out.println("Deleting file " + metaData.getName());
-			deleteFile(metaData);
-		}
-	}
-
-	@Override
 	public void writeData(MetaData meta, byte[] data) throws Exception {
 		blockManager.delete(blockManager.getNextBlock(meta.getBlockNumber()));
 		long dataPosition = blockManager.getNextFreeBlock();
@@ -248,11 +227,29 @@ public class FileManager implements FileManagerInterface {
 		blockManager.deleteBlock(metaData.getBlockNumber());
 	}
 
+	@Override
 	public void deleteDirectory(MetaData metaData) throws Exception {
 		deleteRecursively(metaData);
 		// Parent MetaData has to change after deletion so search for it by name
 		// again
 		MetaData retrieved = search(metaData.getName());
 		deleteMetaData(retrieved);
+	}
+
+	private void deleteRecursively(MetaData metaData) throws Exception {
+		if (metaData.getType() == utils.BlockSettings.DIRECTORY_TYPE) {
+			// directory
+			MetaData[] childrenMetaData = getChildrenMeta(metaData);
+			// need to delete the current directory Meta as well
+			for (int i = 0; i < childrenMetaData.length; ++i) {
+				System.out.println("Deleting child "
+						+ childrenMetaData[i].getName());
+				deleteRecursively(childrenMetaData[i]);
+			}
+		} else {
+			// file
+			System.out.println("Deleting file " + metaData.getName());
+			deleteFile(metaData);
+		}
 	}
 }
