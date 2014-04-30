@@ -13,7 +13,7 @@ public class GetFreeSpace implements Command {
 	@Override
 	public void execute(String[] params) {
 		try {
-			console.print(String.valueOf(console.fs.getFreeMem()));
+			console.print(String.valueOf(console.fs.getFreeMemory()));
 		} catch (CannotAccessDiskException ex) {
 			console.print(ex.getMessage());
 		}

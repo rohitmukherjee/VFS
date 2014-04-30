@@ -27,17 +27,6 @@ public class VirtualDisk implements VirtualDiskInterface {
 		}
 		disk = new RandomAccessFile(new File(path), "rw");
 		logger.info("Successfully created disk");
-		setupSuperBlock();
-		setupRootDirectory();
-	}
-
-	private void setupSuperBlock() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void setupRootDirectory() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override

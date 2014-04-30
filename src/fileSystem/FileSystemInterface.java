@@ -1,6 +1,5 @@
 package fileSystem;
 
-
 public interface FileSystemInterface {
 
 	boolean writeFile(String path, byte[] content) throws Exception;
@@ -19,11 +18,11 @@ public interface FileSystemInterface {
 
 	void deleteDirectory(String path) throws Exception;
 
-	long getFreeMem() throws Exception;
+	long getFreeMemory() throws Exception;
 
-	long getOccupiedMem() throws Exception;
+	long getOccupiedMemory() throws Exception;
 
-	long getTotalMem() throws Exception;
+	long getTotalMemory() throws Exception;
 
 	void renameDirectory(String oldName, String newName) throws Exception;
 

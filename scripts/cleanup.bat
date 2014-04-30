@@ -1,0 +1,2 @@
+del D:\test*
+exit

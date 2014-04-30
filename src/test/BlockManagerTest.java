@@ -18,18 +18,18 @@ public class BlockManagerTest {
 
 	@After
 	public void method() {
-		File f = new File(TestUtilities.WINDOWS_PATH);
+		File f = new File(TestUtilities.WINDOWS_PATH_1);
 		f.deleteOnExit();
 	}
 
 	@Ignore
 	public void settingUpDiskUsingBlockManagerShouldWriteFirstBlock()
 			throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH_1);
 		blockManager.setupBlocks();
 		byte[] result = new byte[8];
 		RandomAccessFile file = new RandomAccessFile(
-				TestUtilities.WINDOWS_PATH, "r");
+				TestUtilities.WINDOWS_PATH_1, "r");
 		file.read(result);
 		assertEquals(0, blockManager.getCurrentBlockNumber());
 		assertEquals(0, blockManager.getCurrentBlockStartingAddress());
@@ -48,7 +48,7 @@ public class BlockManagerTest {
 
 	@Ignore
 	public void diskReadTestsForBlockData() throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH_1);
 		blockManager.setupBlocks();
 		assertEquals(0, blockManager.getCurrentBlockNumber());
 		assertEquals(0, blockManager.getNextFreeBlock());
@@ -82,7 +82,7 @@ public class BlockManagerTest {
 
 	@Ignore
 	public void diskDeleteFileGeneral() throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH_1);
 		blockManager.setupBlocks();
 		long initialNextFreeBlock = setUpDeleteTests(blockManager);
 		TestUtilities.twoBlockSetup();
@@ -117,7 +117,7 @@ public class BlockManagerTest {
 
 	@Ignore
 	public void diskDeleteFileMiddle() throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH_1);
 		blockManager.setupBlocks();
 		long initialNextFreeBlock = setUpDeleteTests(blockManager);
 
@@ -144,7 +144,7 @@ public class BlockManagerTest {
 
 	@Ignore
 	public void diskDeleteFileInterleaved() throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH_1);
 		blockManager.setupBlocks();
 		long initialNextFreeBlock = setUpDeleteTests(blockManager);
 
@@ -201,7 +201,7 @@ public class BlockManagerTest {
 
 	@Test
 	public void readBlockTest() throws Exception {
-		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH);
+		BlockManager blockManager = new BlockManager(TestUtilities.WINDOWS_PATH_1);
 		blockManager.setupBlocks();
 		blockManager.write(TestUtilities.testBlockDataLessThan);
 		assertEquals(0, blockManager.getNextBlock());

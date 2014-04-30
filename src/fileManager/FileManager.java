@@ -23,7 +23,7 @@ public class FileManager implements FileManagerInterface {
 		try {
 			blockManager.setupBlocks();
 		} catch (Exception e) {
-			// TODO: Some meaningful logging
+			logger.error("Couldn't setup blocks inside disk");
 		}
 	}
 

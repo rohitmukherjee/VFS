@@ -31,7 +31,7 @@ public class FileManagerTest {
 
 	@After
 	public void cleanUp() {
-		File f = new File(TestUtilities.WINDOWS_PATH);
+		File f = new File(TestUtilities.WINDOWS_PATH_1);
 		f.delete();
 	}
 
@@ -122,7 +122,7 @@ public class FileManagerTest {
 
 	@Test(expected = FileOrDirectoryNotFoundException.class)
 	public void testDeleteDirectoryWithFile() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
 		fileManager.writeRoot(rootMetaData);
 		MetaData meta1 = new MetaData("dir1", 0,
 				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
@@ -169,7 +169,7 @@ public class FileManagerTest {
 
 	@Ignore
 	public void searchingForFilesAndFolders() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
 		fileManager.writeRoot(rootMetaData);
 		MetaData meta1 = new MetaData("dir1", 0,
 				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
@@ -266,7 +266,7 @@ public class FileManagerTest {
 
 	@Ignore
 	public void writingAFileAfterRootShouldBeReadCorrectly() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
 		fileManager.writeRoot(rootMetaData);
 		MetaData fileMeta = new MetaData("test.c", 0, (byte) 1,
 				new Date().getTime());
@@ -287,7 +287,7 @@ public class FileManagerTest {
 	@Ignore
 	public void writingDirectoriesFilesAndNestedDirectoriesShouldBeRetrievedCorrectly()
 			throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
 		fileManager.writeRoot(rootMetaData);
 		MetaData meta1 = new MetaData("dir1", 0,
 				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());

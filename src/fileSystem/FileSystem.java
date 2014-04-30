@@ -53,7 +53,7 @@ public class FileSystem implements FileSystemInterface {
 		if (isFile(meta)) {
 			return fileManager.getData(meta);
 		}
-		throw new InvalidFileException("");
+		throw new InvalidFileException("Could not read file");
 	}
 
 	@Override
@@ -144,7 +144,7 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public long getFreeMem() throws CannotAccessDiskException {
+	public long getFreeMemory() throws CannotAccessDiskException {
 		try {
 			return fileManager.getFreeMemory();
 		} catch (IOException ex) {
@@ -154,7 +154,7 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public long getOccupiedMem() throws CannotAccessDiskException {
+	public long getOccupiedMemory() throws CannotAccessDiskException {
 		try {
 			return fileManager.getOccupiedMemory();
 		} catch (IOException ex) {
@@ -164,7 +164,7 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public long getTotalMem() throws CannotAccessDiskException {
+	public long getTotalMemory() throws CannotAccessDiskException {
 		try {
 			return fileManager.getTotalMemory();
 		} catch (IOException ex) {

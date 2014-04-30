@@ -13,7 +13,7 @@ public class GetOccupiedSpace implements Command {
 	@Override
 	public void execute(String[] params) {
 		try {
-			console.print(String.valueOf(console.fs.getOccupiedMem()));
+			console.print(String.valueOf(console.fs.getOccupiedMemory()));
 		} catch (CannotAccessDiskException ex) {
 			console.print(ex.getMessage());
 		}
