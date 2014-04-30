@@ -11,6 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import exceptions.FileOrDirectoryAlreadyExistsException;
 import fileSystem.FileSystem;
 
 public class FileSystemTest {
@@ -91,5 +92,14 @@ public class FileSystemTest {
 				+ "/directory1/nested1/supernested1"));
 		assertTrue(fs.isValidDirectory(utils.BlockSettings.ROOT_NAME
 				+ "/directory1/nested1/supernested2"));
+
+	}
+
+	@Test(expected = FileOrDirectoryAlreadyExistsException.class)
+	public void tryingToAddAnExistingDirectoryShouldThrowException()
+			throws Exception {
+		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_4);
+		fs.addNewDirectory("directory1", utils.BlockSettings.ROOT_NAME);
+		fs.addNewDirectory("directory1", utils.BlockSettings.ROOT_NAME);
 	}
 }

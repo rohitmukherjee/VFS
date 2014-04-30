@@ -7,6 +7,8 @@ import utils.BlockSettings;
 import exceptions.CannotAccessDiskException;
 import exceptions.DiskStructureException;
 import exceptions.FileAlreadyExistsException;
+import exceptions.FileOrDirectoryAlreadyExistsException;
+import exceptions.FileOrDirectoryNotFoundException;
 import exceptions.IncorrectPathException;
 import exceptions.InvalidDirectoryException;
 import exceptions.InvalidFileException;
@@ -118,6 +120,9 @@ public class FileSystem implements FileSystemInterface {
 	@Override
 	public void addNewDirectory(String directoryName, String currentPath)
 			throws Exception {
+		if (directoryExists(currentPath + "/" + directoryName))
+			throw new FileOrDirectoryAlreadyExistsException(
+					"Directory already exists");
 		MetaData parent = fileManager.search(currentPath);
 		MetaData newDirectoryMeta = new MetaData(directoryName,
 				parent.getBlockNumber(), BlockSettings.DIRECTORY_TYPE,
@@ -209,5 +214,14 @@ public class FileSystem implements FileSystemInterface {
 				BlockSettings.ROOT_TIMESTAMP);
 		rootMetaData.setBlockNumber(BlockSettings.ROOT_POSITION);
 		fileManager.writeRoot(rootMetaData);
+	}
+
+	private boolean directoryExists(String path) throws Exception {
+		try {
+			MetaData meta = fileManager.search(path);
+			return true;
+		} catch (FileOrDirectoryNotFoundException ex) {
+			return false;
+		}
 	}
 }
