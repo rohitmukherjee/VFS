@@ -15,7 +15,7 @@ import fileManager.MetaData;
 
 public class FileSystem implements FileSystemInterface {
 
-	FileManager fileManager;
+	private FileManager fileManager;
 
 	public FileSystem(String path) throws Exception {
 		fileManager = new FileManager(path);
