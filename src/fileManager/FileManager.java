@@ -29,7 +29,7 @@ public class FileManager implements FileManagerInterface {
 
 	public void writeRoot(MetaData meta) throws Exception {
 		meta.setBlockNumber(blockManager.getNextFreeBlock());
-		logger.warn("Position of root is " + meta.getBlockNumber());
+		// logger.warn("Position of root is " + meta.getBlockNumber());
 		blockManager.write(meta.getBytes());
 	}
 
@@ -74,12 +74,9 @@ public class FileManager implements FileManagerInterface {
 		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
 		blockManager.write(meta.getBytes(), meta.getBlockNumber());
 		long dataPosition = blockManager.getNextFreeBlock();
-		// * BlockSettings.BLOCK_SIZE;
-		logger.warn("ERGETDYFJHTGRFGRSHTRDJYTUYJYDHSGARESTRDYTYJRHTEGREFAWGRESTRDYT"
-				+ meta.getName() + meta.getBlockNumber() + dataPosition);
 		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getBlockNumber(), dataPosition);
-		logger.warn("pos{ " + meta.getBlockNumber());
+		// logger.warn("pos{ " + meta.getBlockNumber());
 		addToParent(getMetaData(meta.getParent()), meta.getBlockNumber());
 		// grabs the parents and updates those values
 	}
@@ -151,8 +148,7 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public byte[] getData(MetaData metaData) throws Exception {
-		logger.warn("nextBlock: "
-				+ blockManager.getNextBlock(metaData.getBlockNumber()));
+		// Limited to one block, so only metaData and no data
 		if (blockManager.getNextBlock(metaData.getBlockNumber()) == 0) {
 			return new byte[0];
 		}

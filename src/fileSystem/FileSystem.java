@@ -3,9 +3,11 @@ package fileSystem;
 import java.io.IOException;
 import java.util.Date;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+
 import utils.BlockSettings;
 import exceptions.CannotAccessDiskException;
-import exceptions.DiskStructureException;
 import exceptions.FileAlreadyExistsException;
 import exceptions.FileOrDirectoryAlreadyExistsException;
 import exceptions.FileOrDirectoryNotFoundException;
@@ -18,28 +20,39 @@ import fileManager.MetaData;
 public class FileSystem implements FileSystemInterface {
 
 	private FileManager fileManager;
+	private Logger logger;
 
 	public FileSystem(String path) throws Exception {
 		fileManager = new FileManager(path);
+		logger = Logger.getLogger(FileSystem.class);
+		BasicConfigurator.configure();
 		this.writeRoot();
 	}
 
 	@Override
 	public boolean writeFile(String path, byte[] content) throws Exception {
 		MetaData meta;
-		meta = fileManager.search(path);
-		if (isFile(meta)) {
-			throw new FileAlreadyExistsException();
+		try {
+			meta = fileManager.search(path);
+			if (isFile(meta)) {
+				throw new FileAlreadyExistsException();
+			}
+		} catch (FileOrDirectoryNotFoundException ex) {
+			logger.info("File not found, so can continue with writing");
 		}
+
 		String[] pathTokens = path.split("/");
 		if (isDirectory(fileManager.search(path.substring(0, path.length()
-				- pathTokens[pathTokens.length].length() - 1)))) {
-			MetaData metaData = new MetaData(pathTokens[pathTokens.length],
+				- pathTokens[pathTokens.length - 1].length() - 1)))) {
+			MetaData metaData = new MetaData(pathTokens[pathTokens.length - 1],
 					fileManager.search(
-							path.substring(0, path.length()
-									- pathTokens[pathTokens.length].length()
-									- 1)).getBlockNumber(),
-					utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
+							path.substring(
+									0,
+									path.length()
+											- pathTokens[pathTokens.length - 1]
+													.length() - 1))
+							.getBlockNumber(), utils.BlockSettings.FILE_TYPE,
+					System.currentTimeMillis());
 			MetaData newMeta = metaData;
 			fileManager.createFile(newMeta, content);
 			return true;
@@ -52,6 +65,7 @@ public class FileSystem implements FileSystemInterface {
 	@Override
 	public byte[] readFile(String path) throws Exception {
 		MetaData meta = fileManager.search(path);
+		System.out.println(meta.getName());
 		if (isFile(meta)) {
 			return fileManager.getData(meta);
 		}
@@ -67,11 +81,7 @@ public class FileSystem implements FileSystemInterface {
 		String[] childrenPaths = new String[childrenMetaData.length];
 		for (int i = 0; i < childrenMetaData.length; i++)
 			childrenPaths[i] = childrenMetaData[i].getName();
-		if (childrenPaths != null)
-			return childrenPaths;
-		else
-			throw new DiskStructureException(
-					"Cannot getChildren because the disk structure is invalid");
+		return childrenPaths;
 	}
 
 	private boolean isValidDirectory(MetaData parent) {

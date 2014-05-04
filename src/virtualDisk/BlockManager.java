@@ -60,7 +60,6 @@ public class BlockManager {
 	public byte[] read(long blockNumber, int offset, int length)
 			throws IOException {
 		byte[] temp = read(blockNumber);
-		logger.warn(temp.length);
 		byte[] result = Arrays.copyOfRange(temp, offset, offset + length);
 		return result;
 	}
@@ -218,14 +217,14 @@ public class BlockManager {
 		// + virtualDisk.getFilePosition());
 		try {
 			long result = virtualDisk.readLong();
-			logger.debug("BlockNumber: " + blockNumber + " header length: "
-					+ result);
+			// logger.debug("BlockNumber: " + blockNumber + " header length: "
+			// + result);
 			if (isUnused(result))
 				return blockNumber;
 			else
 				return getNextFreeBlock(blockNumber + 1);
 		} catch (EOFException ex) {
-			logger.debug("Creating free space");
+			// logger.debug("Creating free space");
 			setupEmptyBlock(blockNumber);
 			return blockNumber;
 		}
@@ -295,7 +294,7 @@ public class BlockManager {
 					+ BlockSettings.NEXT_ADDRESS_START;
 			virtualDisk.seek(positionToWriteSecondOffset);
 			virtualDisk.writeLong(secondOffset);
-			logger.info("Successfully combined block");
+			// logger.info("Successfully combined block");
 		} catch (Exception ex) {
 			logger.error("Couldn't combine blocks, first offset was "
 					+ firstOffset + " and second offset was " + secondOffset);

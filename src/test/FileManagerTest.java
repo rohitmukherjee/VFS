@@ -120,7 +120,8 @@ public class FileManagerTest {
 
 	}
 
-	@Test(expected = FileOrDirectoryNotFoundException.class)
+	@Ignore
+	// (expected = FileOrDirectoryNotFoundException.class)
 	public void testDeleteDirectoryWithFile() throws Exception {
 		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
 		fileManager.writeRoot(rootMetaData);
@@ -167,7 +168,7 @@ public class FileManagerTest {
 		assertEquals(null, fm.search(BlockSettings.ROOT_NAME + "/dir1"));
 	}
 
-	@Ignore
+	@Test
 	public void searchingForFilesAndFolders() throws Exception {
 		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
 		fileManager.writeRoot(rootMetaData);
@@ -244,7 +245,8 @@ public class FileManagerTest {
 				.search(BlockSettings.ROOT_NAME
 						+ "/dir1/nestedDir1/nestedfile1");
 		assertArrayEquals(metaFile2.getBytes(), retrievedNestedFile1.getBytes());
-
+		assertArrayEquals(fileManager.getData(metaFile2),
+				fileManager.getData(retrievedNestedFile1));
 	}
 
 	@Ignore
