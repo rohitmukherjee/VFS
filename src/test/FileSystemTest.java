@@ -1,5 +1,7 @@
 package test;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -14,6 +16,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import utils.BlockSettings;
+import fileManager.MetaDataUtilities;
 import fileSystem.FileSystem;
 
 public class FileSystemTest {
@@ -109,12 +113,12 @@ public class FileSystemTest {
 		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_5);
 		byte[] fileToWrite = Files.readAllBytes(Paths.get("root.txt"));
 		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot", fileToWrite);
-		// byte retrievedFile[] = fs.readFile(BlockSettings.ROOT_NAME
-		// + "/fileAtRoot");
-		// MetaDataUtilities.bytesToFile(retrievedFile,
-		// "D:\\Pictures\\root_retr.txt");
-		// // length of byte arrays stored and retrieved should be equal
-		// assertEquals(fileToWrite.length, retrievedFile.length);
-		// assertArrayEquals(fileToWrite, retrievedFile);
+		byte retrievedFile[] = fs.readFile(BlockSettings.ROOT_NAME
+				+ "/fileAtRoot");
+		MetaDataUtilities.bytesToFile(retrievedFile,
+				"D:\\Pictures\\root_retr.txt");
+		// length of byte arrays stored and retrieved should be equal
+		assertEquals(fileToWrite.length, retrievedFile.length);
+		assertArrayEquals(fileToWrite, retrievedFile);
 	}
 }

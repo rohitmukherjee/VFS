@@ -206,15 +206,15 @@ public class BlockManager {
 	 */
 	public long getNextFreeBlock() throws Exception {
 		long currentPosition = virtualDisk.getFilePosition();
-		long freeBlockNumber = getNextFreeBlock(0);
+		long freeBlockNumber = getNextFreeBlock(getBlockNumber(currentPosition));
 		virtualDisk.seek(currentPosition);
 		return freeBlockNumber;
 	}
 
 	private long getNextFreeBlock(long blockNumber) throws IOException {
 		virtualDisk.seek(blockNumber * BlockSettings.BLOCK_SIZE);
-		// logger.debug("virtualDisk file pointer is now at position: "
-		// + virtualDisk.getFilePosition());
+		logger.debug("virtualDisk file pointer is now at position: "
+				+ virtualDisk.getFilePosition());
 		try {
 			long result = virtualDisk.readLong();
 			// logger.debug("BlockNumber: " + blockNumber + " header length: "
