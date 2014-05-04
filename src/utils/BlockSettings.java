@@ -2,7 +2,7 @@ package utils;
 
 public class BlockSettings {
 
-	public static final int BLOCK_SIZE = 256;
+	public static final int BLOCK_SIZE = 8192;
 	public static final int NEXT_ADDRESS_LENGTH = 8;
 	public static final int HEADER_LENGTH = 8;
 	public static final int MAGIC_NUMBER_LENGTH = 8;

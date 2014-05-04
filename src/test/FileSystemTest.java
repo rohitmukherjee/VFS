@@ -6,8 +6,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -111,12 +109,13 @@ public class FileSystemTest {
 	@Test
 	public void tryingToWriteAFileToRoot() throws Exception {
 		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_5);
-		byte[] fileToWrite = Files.readAllBytes(Paths.get("root.txt"));
+		byte[] fileToWrite = MetaDataUtilities.fileToBytes("root.txt");
 		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot", fileToWrite);
 		byte retrievedFile[] = fs.readFile(BlockSettings.ROOT_NAME
 				+ "/fileAtRoot");
 		MetaDataUtilities.bytesToFile(retrievedFile,
 				"D:\\Pictures\\root_retr.txt");
+		MetaDataUtilities.bytesToFile(fileToWrite, "D:\\Pictures\\root.txt");
 		// length of byte arrays stored and retrieved should be equal
 		assertEquals(fileToWrite.length, retrievedFile.length);
 		assertArrayEquals(fileToWrite, retrievedFile);

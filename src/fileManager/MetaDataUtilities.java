@@ -3,11 +3,13 @@ package fileManager;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.util.Arrays;
@@ -53,17 +55,8 @@ public class MetaDataUtilities {
 	}
 
 	public static byte[] fileToBytes(String path) throws IOException {
-		// return Files.readAllBytes(Paths.get(path));
-		File file = new File(path);
-		FileInputStream fin = new FileInputStream(file);
-		byte[] buf = new byte[(int) file.length()];
-		try {
-			fin.read(buf);
-			fin.close();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		return buf;
+		Path filePath = Paths.get(path);
+		return Files.readAllBytes(filePath);
 	}
 
 	/**
@@ -74,8 +67,11 @@ public class MetaDataUtilities {
 	 * @throws IOException
 	 */
 	public static void bytesToFile(byte[] data, String path) throws IOException {
-		FileOutputStream output = new FileOutputStream(new File(path));
+		File file = new File(path);
+		FileOutputStream output = new FileOutputStream(file);
 		BufferedOutputStream bos = new BufferedOutputStream(output);
+		output.flush();
+		bos.flush();
 		bos.write(data);
 		bos.close();
 		output.close();
