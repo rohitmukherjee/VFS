@@ -10,11 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidKeyException;
 import java.security.Key;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import fileManager.MetaData;
@@ -126,21 +123,6 @@ public class MetaDataUtilities {
 			info[i] = data[startingPosition + i];
 		}
 		return MetaDataUtilities.bytesToLong(info);
-	}
-
-	public static byte[] getEncryptedBytes(byte[] data) throws Exception,
-			NoSuchPaddingException, InvalidKeyException {
-		Cipher cipher = Cipher.getInstance("AES");
-		cipher.init(Cipher.ENCRYPT_MODE, key);
-		byte[] encryptedData = cipher.doFinal(data);
-		return encryptedData;
-	}
-
-	public static byte[] getDecryptedBytes(byte[] data) throws Exception {
-		Cipher cipher = Cipher.getInstance("AES");
-		cipher.init(Cipher.DECRYPT_MODE, key);
-		byte[] decryptedData = cipher.doFinal(data);
-		return decryptedData;
 	}
 
 	public static long[] getLongArray(byte[] data) throws Exception {
