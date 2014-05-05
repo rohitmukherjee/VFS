@@ -1,4 +1,4 @@
-package fileManager;
+package utils;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,15 +12,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.Key;
-import java.util.Arrays;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import utils.BlockSettings;
+import fileManager.MetaData;
 
 public class MetaDataUtilities {
 
@@ -129,28 +126,6 @@ public class MetaDataUtilities {
 			info[i] = data[startingPosition + i];
 		}
 		return MetaDataUtilities.bytesToLong(info);
-	}
-
-	public static byte[] getCompressedBytes(byte[] data) {
-		Deflater deflator = new Deflater();
-		deflator.setInput(data);
-		int compressedSize = deflator.deflate(data);
-		return Arrays.copyOf(data, compressedSize);
-	}
-
-	public static byte[] getDecompressedBytes(byte[] compressedData)
-			throws Exception, IOException {
-		Inflater inflater = new Inflater();
-		inflater.setInput(compressedData, 0, compressedData.length);
-		int uncompressedSize = 0;
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		byte[] temp = new byte[1024];
-		while (!inflater.finished()) {
-			uncompressedSize += inflater.inflate(temp);
-			stream.write(temp);
-		}
-		byte[] data = stream.toByteArray();
-		return Arrays.copyOf(data, uncompressedSize);
 	}
 
 	public static byte[] getEncryptedBytes(byte[] data) throws Exception,

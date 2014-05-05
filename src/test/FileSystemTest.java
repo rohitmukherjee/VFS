@@ -14,8 +14,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import utils.BlockSettings;
+import utils.MetaDataUtilities;
 import exceptions.FileOrDirectoryAlreadyExistsException;
-import fileManager.MetaDataUtilities;
 import fileSystem.FileSystem;
 
 public class FileSystemTest {

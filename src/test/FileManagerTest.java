@@ -17,10 +17,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import utils.BlockSettings;
+import utils.MetaDataUtilities;
 import exceptions.FileOrDirectoryNotFoundException;
 import fileManager.FileManager;
 import fileManager.MetaData;
-import fileManager.MetaDataUtilities;
 
 public class FileManagerTest {
 

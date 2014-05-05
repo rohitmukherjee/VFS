@@ -14,8 +14,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import utils.BlockSettings;
+import utils.MetaDataUtilities;
 import fileManager.MetaData;
-import fileManager.MetaDataUtilities;
 
 public class MetaDataTest {
 
@@ -151,9 +151,9 @@ public class MetaDataTest {
 		for (int i = 0; i < bytes.length; ++i) {
 				bytes[i] = (byte) string.charAt(i);
 		}
-		byte[] stringInBytes = fileManager.MetaDataUtilities.StringToBytes(string);
-		assertArrayEquals(bytes, fileManager.MetaDataUtilities.StringToBytes(string));
-		assertEquals(string, fileManager.MetaDataUtilities.bytesToString(bytes));
+		byte[] stringInBytes = utils.MetaDataUtilities.StringToBytes(string);
+		assertArrayEquals(bytes, utils.MetaDataUtilities.StringToBytes(string));
+		assertEquals(string, utils.MetaDataUtilities.bytesToString(bytes));
 	}
 
 	@Test
@@ -166,8 +166,8 @@ public class MetaDataTest {
 		//test 0
 		long zero = 0;
 		byte[] zeroBytes = {0,0,0,0,0,0,0,0};
-		assertEquals(zero, fileManager.MetaDataUtilities.bytesToLong(zeroBytes));
-		assertArrayEquals(zeroBytes, fileManager.MetaDataUtilities.longToBytes(zero));
+		assertEquals(zero, utils.MetaDataUtilities.bytesToLong(zeroBytes));
+		assertArrayEquals(zeroBytes, utils.MetaDataUtilities.longToBytes(zero));
 		
 		//test any negative number
 		long negNum = -2323255;
@@ -186,9 +186,9 @@ public class MetaDataTest {
 					}
 				}
 		}
-		byte[] test = fileManager.MetaDataUtilities.longToBytes(negNum);
-		assertEquals(negNum, fileManager.MetaDataUtilities.bytesToLong(negBytes));
-		assertArrayEquals(negBytes, fileManager.MetaDataUtilities.longToBytes(negNum));
+		byte[] test = utils.MetaDataUtilities.longToBytes(negNum);
+		assertEquals(negNum, utils.MetaDataUtilities.bytesToLong(negBytes));
+		assertArrayEquals(negBytes, utils.MetaDataUtilities.longToBytes(negNum));
 		
 		
 		//test any positive number
@@ -197,8 +197,8 @@ public class MetaDataTest {
 		for (int i = 0; i < 8; ++i) {
 			bytes[i] = (byte) ((byte) (number/Math.pow(256, 7-i))%256);
 		}
-		assertEquals(number, fileManager.MetaDataUtilities.bytesToLong(bytes));
-		assertArrayEquals(bytes, fileManager.MetaDataUtilities.longToBytes(number));
+		assertEquals(number, utils.MetaDataUtilities.bytesToLong(bytes));
+		assertArrayEquals(bytes, utils.MetaDataUtilities.longToBytes(number));
 	}
 
 	@Test

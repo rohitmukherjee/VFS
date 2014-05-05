@@ -7,6 +7,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import utils.BlockSettings;
+import utils.MetaDataUtilities;
 import virtualDisk.BlockManager;
 import exceptions.FileOrDirectoryNotFoundException;
 
@@ -69,9 +70,6 @@ public class FileManager implements FileManagerInterface {
 		// Write the metadata and the data, then combines the blocks
 		meta.setBlockNumber(blockManager.getNextFreeBlock());
 		// * BlockSettings.BLOCK_SIZE);
-		long position = meta.getBlockNumber();
-		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
-		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
 		blockManager.write(meta.getBytes(), meta.getBlockNumber());
 		long dataPosition = blockManager.getNextFreeBlock();
 		blockManager.write(data, dataPosition);
@@ -188,11 +186,8 @@ public class FileManager implements FileManagerInterface {
 	public void writeData(MetaData meta, byte[] data) throws Exception {
 		blockManager.delete(blockManager.getNextBlock(meta.getBlockNumber()));
 		long dataPosition = blockManager.getNextFreeBlock();
-		byte[] compressed = MetaDataUtilities.getCompressedBytes(data);
-		byte[] toWrite = MetaDataUtilities.getEncryptedBytes(compressed);
 		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getBlockNumber(), dataPosition);
-
 	}
 
 	public long getFreeMemory() throws IOException {
