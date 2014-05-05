@@ -11,10 +11,10 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import utils.BlockSettings;
+import exceptions.FileOrDirectoryAlreadyExistsException;
 import fileManager.MetaDataUtilities;
 import fileSystem.FileSystem;
 
@@ -47,13 +47,13 @@ public class FileSystemTest {
 		//
 	}
 
-	@Ignore
+	@Test
 	public void rootShouldBeWrittenProperly() throws Exception {
 		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_1);
 		assertTrue(fs.isValidDirectory(utils.BlockSettings.ROOT_NAME));
 	}
 
-	@Ignore
+	@Test
 	public void getFreeOccupiedTotalMemoryShouldWork() throws Exception {
 		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_2);
 		logger.info(fs.getTotalMemory());
@@ -61,7 +61,7 @@ public class FileSystemTest {
 		logger.info(fs.getFreeMemory());
 	}
 
-	@Ignore
+	@Test
 	public void directoriesShouldBeAddedAndRetrievedCorrectly()
 			throws Exception {
 		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_3);
@@ -98,7 +98,7 @@ public class FileSystemTest {
 
 	}
 
-	// @Test(expected = FileOrDirectoryAlreadyExistsException.class)
+	@Test(expected = FileOrDirectoryAlreadyExistsException.class)
 	public void tryingToAddAnExistingDirectoryShouldThrowException()
 			throws Exception {
 		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_4);

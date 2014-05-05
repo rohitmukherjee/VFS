@@ -7,6 +7,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import utils.BlockSettings;
+import utils.CompressionUtilities;
 import exceptions.CannotAccessDiskException;
 import exceptions.FileAlreadyExistsException;
 import exceptions.FileOrDirectoryAlreadyExistsException;
@@ -31,6 +32,7 @@ public class FileSystem implements FileSystemInterface {
 
 	@Override
 	public boolean writeFile(String path, byte[] content) throws Exception {
+		content = CompressionUtilities.compress(content);
 		MetaData meta;
 		try {
 			meta = fileManager.search(path);
@@ -67,7 +69,7 @@ public class FileSystem implements FileSystemInterface {
 		MetaData meta = fileManager.search(path);
 		System.out.println(meta.getName());
 		if (isFile(meta)) {
-			return fileManager.getData(meta);
+			return CompressionUtilities.decompress(fileManager.getData(meta));
 		}
 		throw new InvalidFileException("Could not read file");
 	}

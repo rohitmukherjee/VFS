@@ -14,7 +14,7 @@ public class FileManager implements FileManagerInterface {
 
 	private BlockManager blockManager;
 
-	Logger logger;
+	private static Logger logger;
 
 	public FileManager(String path) {
 		logger = Logger.getLogger(FileManager.class);
