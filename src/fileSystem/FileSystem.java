@@ -216,9 +216,11 @@ public class FileSystem implements FileSystemInterface {
 	@Override
 	public void renameFile(String oldName, String newName) throws Exception {
 		MetaData originalMetaData = fileManager.search(oldName);
-		if (isValidFile(originalMetaData.getName())) {
-			originalMetaData.setName(newName);
+		if (isValidFile(oldName)) {
+			String[] pathComponents = newName.split("/");
+			originalMetaData.setName(pathComponents[pathComponents.length - 1]);
 			originalMetaData.setTimestamp(new Date().getTime());
+			fileManager.rewriteMetaData(originalMetaData);
 		} else
 			throw new InvalidFileException(
 					"Rename file failed because the file is invalid");

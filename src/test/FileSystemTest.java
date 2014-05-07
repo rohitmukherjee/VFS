@@ -181,12 +181,41 @@ public class FileSystemTest {
 	}
 
 	@Test
-	public void renameFileShouldWork() {
-
+	public void renameFileShouldWork() throws Exception {
+		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_9);
+		fs.addNewDirectory("directory1", utils.BlockSettings.ROOT_NAME);
+		byte[] directoryFileToWrite = MetaDataUtilities
+				.fileToBytes("testFiles/indir1.txt");
+		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/directory1/file",
+				directoryFileToWrite);
+		fs.renameFile(BlockSettings.ROOT_NAME + "/directory1/file",
+				BlockSettings.ROOT_NAME + "/directory/file2");
+		assertTrue(fs.isValidDirectory(BlockSettings.ROOT_NAME + "/directory1"));
+		assertFalse(fs
+				.isValidFile(BlockSettings.ROOT_NAME + "/directory1/file"));
+		assertTrue(fs
+				.isValidFile(BlockSettings.ROOT_NAME + "/directory1/file2"));
 	}
 
 	@Test
-	public void moveFileShouldWork() {
+	public void renameFileAndDirectoryShouldWork() throws Exception {
+		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_10);
+		fs.addNewDirectory("directory1", utils.BlockSettings.ROOT_NAME);
+		byte[] directoryFileToWrite = MetaDataUtilities
+				.fileToBytes("testFiles/indir1.txt");
+		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/directory1/file",
+				directoryFileToWrite);
+		fs.renameFile(BlockSettings.ROOT_NAME + "/directory1/file",
+				BlockSettings.ROOT_NAME + "/directory/file2");
+		fs.renameDirectory(BlockSettings.ROOT_NAME + "/directory1",
+				BlockSettings.ROOT_NAME + "/directory2");
+		assertTrue(fs.isValidDirectory(BlockSettings.ROOT_NAME + "/directory2"));
+		assertFalse(fs
+				.isValidFile(BlockSettings.ROOT_NAME + "/directory1/file"));
+		assertFalse(fs.isValidFile(BlockSettings.ROOT_NAME
+				+ "/directory1/file2"));
+		assertTrue(fs
+				.isValidFile(BlockSettings.ROOT_NAME + "/directory2/file2"));
 
 	}
 
