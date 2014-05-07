@@ -10,16 +10,10 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Key;
-
-import javax.crypto.spec.SecretKeySpec;
 
 import fileManager.MetaData;
 
 public class MetaDataUtilities {
-
-	public static Key key = new SecretKeySpec("KEYVALUEKEYVALUE".getBytes(),
-			"AES");
 
 	public static byte[] StringToBytes(String string) {
 		return string.getBytes();

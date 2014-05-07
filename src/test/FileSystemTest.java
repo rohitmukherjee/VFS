@@ -34,19 +34,6 @@ public class FileSystemTest {
 				"cmd /c start D:\\ETH_Dev\\teambatman\\scripts\\cleanup.bat");
 	}
 
-	public void setUpFS() throws Exception {
-
-		// fs.writeFile(utils.BlockSettings.ROOT_NAME + "/directory1/file",
-		// Files.readAllBytes(Paths.get("indir1.txt")));
-		// fs.writeFile(utils.BlockSettings.ROOT_NAME
-		// + "/directory1/nested1/nestedfile",
-		// Files.readAllBytes(Paths.get("innested1.txt")));
-		// fs.writeFile(utils.BlockSettings.ROOT_NAME
-		// + "/directory1/nested1/nestedfile2",
-		// Files.readAllBytes(Paths.get("anotherinnested1.txt")));
-		//
-	}
-
 	@Test
 	public void rootShouldBeWrittenProperly() throws Exception {
 		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_1);
@@ -109,15 +96,41 @@ public class FileSystemTest {
 	@Test
 	public void tryingToWriteAFileToRoot() throws Exception {
 		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_5);
-		byte[] fileToWrite = MetaDataUtilities.fileToBytes("root.txt");
-		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot", fileToWrite);
+		byte[] rootFileToWrite = MetaDataUtilities
+				.fileToBytes("testFiles/root.txt");
+		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot",
+				rootFileToWrite);
+		byte[] directoryFileToWrite = MetaDataUtilities
+				.fileToBytes("testFiles/indir1.txt");
+		byte[] nestedFileToWrite = MetaDataUtilities
+				.fileToBytes("testFiles/innested1.txt");
+		byte[] nestedFileToWrite2 = MetaDataUtilities
+				.fileToBytes("testFiles/anotherinnested1.txt");
+		// Adding directories
+		fs.addNewDirectory("directory1", utils.BlockSettings.ROOT_NAME);
+		fs.addNewDirectory("nested1", utils.BlockSettings.ROOT_NAME
+				+ "/directory1");
+
+		// Writing Files
+		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/directory1/file",
+				directoryFileToWrite);
+		fs.writeFile(utils.BlockSettings.ROOT_NAME
+				+ "/directory1/nested1/nestedfile", nestedFileToWrite);
+		fs.writeFile(utils.BlockSettings.ROOT_NAME
+				+ "/directory1/nested1/nestedfile2", nestedFileToWrite2);
+
 		byte retrievedFile[] = fs.readFile(BlockSettings.ROOT_NAME
 				+ "/fileAtRoot");
+		byte retrievedDirectoryFile[] = fs.readFile(BlockSettings.ROOT_NAME
+				+ "/directory1/file");
 		MetaDataUtilities.bytesToFile(retrievedFile,
 				"D:\\Pictures\\root_retr.txt");
-		MetaDataUtilities.bytesToFile(fileToWrite, "D:\\Pictures\\root.txt");
+		MetaDataUtilities
+				.bytesToFile(rootFileToWrite, "D:\\Pictures\\root.txt");
 		// length of byte arrays stored and retrieved should be equal
-		assertEquals(fileToWrite.length, retrievedFile.length);
-		assertArrayEquals(fileToWrite, retrievedFile);
+		assertEquals(rootFileToWrite.length, retrievedFile.length);
+		assertArrayEquals(rootFileToWrite, retrievedFile);
+		assertEquals(directoryFileToWrite.length, retrievedDirectoryFile.length);
+		assertArrayEquals(directoryFileToWrite, retrievedDirectoryFile);
 	}
 }
