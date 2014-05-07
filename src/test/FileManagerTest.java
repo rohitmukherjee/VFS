@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Date;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,10 +31,9 @@ public class FileManagerTest {
 			BlockSettings.ROOT_NAME, BlockSettings.ROOT_PARENT,
 			BlockSettings.ROOT_TYPE, BlockSettings.ROOT_TIMESTAMP);
 
-	@After
-	public void cleanUp() {
-		File f = new File(TestUtilities.WINDOWS_PATH_1);
-		f.delete();
+	@AfterClass
+	public static void cleanUp() throws IOException {
+		Runtime.getRuntime().exec("cmd /c start scripts\\cleanup.bat");
 	}
 
 	@BeforeClass
@@ -50,7 +51,7 @@ public class FileManagerTest {
 	 * @throws Exception
 	 */
 	public static FileManager setUpDisk() throws Exception {
-		FileManager fm = new FileManager(TestUtilities.POSIX_PATH);
+		FileManager fm = new FileManager(TestUtilities.WINDOWS_PATH_1);
 		fm.writeRoot(rootMetaData);
 		MetaData meta1 = new MetaData("dir1", 0,
 				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
@@ -63,14 +64,17 @@ public class FileManagerTest {
 		fm.createDirectory(meta3);
 		MetaData metaFile1 = new MetaData("file1", meta1.getBlockNumber(),
 				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
-		fm.createFile(metaFile1, Files.readAllBytes(Paths.get("indir1.txt")));
+		fm.createFile(metaFile1,
+				Files.readAllBytes(Paths.get("testFiles/indir1.txt")));
 		MetaData metaFile2 = new MetaData("nestedfile1",
 				meta2.getBlockNumber(), utils.BlockSettings.FILE_TYPE,
 				System.currentTimeMillis());
-		fm.createFile(metaFile2, Files.readAllBytes(Paths.get("innested1.txt")));
+		fm.createFile(metaFile2,
+				Files.readAllBytes(Paths.get("testFiles/innested1.txt")));
 		MetaData metaFile3 = new MetaData("file2", meta1.getBlockNumber(),
 				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
-		fm.createFile(metaFile3, Files.readAllBytes(Paths.get("indir1.txt")));
+		fm.createFile(metaFile3,
+				Files.readAllBytes(Paths.get("testFiles/indir1.txt")));
 
 		return fm;
 	}
@@ -81,16 +85,16 @@ public class FileManagerTest {
 		f.delete();
 	}
 
-	@Ignore
+	@Test
 	public void getFreeOccupiedTotalMemoryShouldWork() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.POSIX_PATH);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_2);
 		fileManager.writeRoot(rootMetaData);
 		logger.info(fileManager.getTotalMemory());
 		logger.info(fileManager.getOccupiedMemory());
 		logger.info(fileManager.getFreeMemory());
 	}
 
-	@Ignore
+	@Test
 	public void testDeleteDirectory() throws Exception {
 		FileManager fm = setUpDisk();
 
@@ -102,7 +106,7 @@ public class FileManagerTest {
 
 		}
 
-		// delete a nonexistant directory
+		// delete a non - existent directory
 		try {
 			MetaData fakeMeta = new MetaData("fakeDir", 0,
 					utils.BlockSettings.DIRECTORY_TYPE,
@@ -116,14 +120,16 @@ public class FileManagerTest {
 		// delete an empty directory
 		MetaData meta = fm.search(BlockSettings.ROOT_NAME + "/dir2");
 		fm.deleteDirectory(meta);
-		assertEquals(null, fm.search(BlockSettings.ROOT_NAME + "/dir2"));
-
+		try {
+			fm.search(BlockSettings.ROOT_NAME + "/dir2");
+		} catch (FileOrDirectoryNotFoundException ex) {
+			logger.info("search didn't return anything, expected behaviour");
+		}
 	}
 
-	@Ignore
-	// (expected = FileOrDirectoryNotFoundException.class)
+	@Test(expected = FileOrDirectoryNotFoundException.class)
 	public void testDeleteDirectoryWithFile() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_3);
 		fileManager.writeRoot(rootMetaData);
 		MetaData meta1 = new MetaData("dir1", 0,
 				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
@@ -139,7 +145,7 @@ public class FileManagerTest {
 				retrievedNestedDir1.getBlockNumber(),
 				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
 		fileManager.createFile(metaFile2,
-				Files.readAllBytes(Paths.get("innested1.txt")));
+				Files.readAllBytes(Paths.get("testFiles/innested1.txt")));
 
 		fileManager.deleteDirectory(meta2);
 		retrievedNestedDir1 = fileManager.search(BlockSettings.ROOT_NAME
@@ -170,7 +176,7 @@ public class FileManagerTest {
 
 	@Test
 	public void searchingForFilesAndFolders() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_4);
 		fileManager.writeRoot(rootMetaData);
 		MetaData meta1 = new MetaData("dir1", 0,
 				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());
@@ -188,19 +194,19 @@ public class FileManagerTest {
 				retrievedDir1.getBlockNumber(), utils.BlockSettings.FILE_TYPE,
 				System.currentTimeMillis());
 		fileManager.createFile(metaFile1,
-				Files.readAllBytes(Paths.get("indir1.txt")));
+				Files.readAllBytes(Paths.get("testFiles/indir1.txt")));
 		MetaData retrievedNestedDir1 = fileManager
 				.search("root/dir1/nestedDir1");
 		MetaData metaFile2 = new MetaData("nestedfile1",
 				retrievedNestedDir1.getBlockNumber(),
 				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
 		fileManager.createFile(metaFile2,
-				Files.readAllBytes(Paths.get("innested1.txt")));
+				Files.readAllBytes(Paths.get("testFiles/innested1.txt")));
 		MetaData metaFile3 = new MetaData("file2",
 				retrievedDir1.getBlockNumber(), utils.BlockSettings.FILE_TYPE,
 				System.currentTimeMillis());
 		fileManager.createFile(metaFile3,
-				Files.readAllBytes(Paths.get("indir1.txt")));
+				Files.readAllBytes(Paths.get("testFiles/indir1.txt")));
 
 		// search for nonexistant file
 		try {
@@ -251,7 +257,7 @@ public class FileManagerTest {
 
 	@Ignore
 	public void checkIfRootIsProperlyWritten() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.POSIX_PATH);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_5);
 		fileManager.writeRoot(rootMetaData);
 		long zero = 0;
 		MetaData rootMetaReadFromDisk = fileManager.getMetaData(zero);
@@ -268,7 +274,7 @@ public class FileManagerTest {
 
 	@Ignore
 	public void writingAFileAfterRootShouldBeReadCorrectly() throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_6);
 		fileManager.writeRoot(rootMetaData);
 		MetaData fileMeta = new MetaData("test.c", 0, (byte) 1,
 				new Date().getTime());
@@ -289,7 +295,7 @@ public class FileManagerTest {
 	@Ignore
 	public void writingDirectoriesFilesAndNestedDirectoriesShouldBeRetrievedCorrectly()
 			throws Exception {
-		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_1);
+		FileManager fileManager = new FileManager(TestUtilities.WINDOWS_PATH_7);
 		fileManager.writeRoot(rootMetaData);
 		MetaData meta1 = new MetaData("dir1", 0,
 				utils.BlockSettings.DIRECTORY_TYPE, System.currentTimeMillis());

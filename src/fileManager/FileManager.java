@@ -232,6 +232,9 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public void deleteDirectory(MetaData metaData) throws Exception {
+		if (metaData.getName().equals(BlockSettings.ROOT_NAME)
+				|| metaData.getBlockNumber() == BlockSettings.ROOT_POSITION)
+			return;
 		deleteRecursively(metaData);
 		// Parent MetaData has to change after deletion so search for it by name
 		// again
@@ -249,6 +252,8 @@ public class FileManager implements FileManagerInterface {
 						+ childrenMetaData[i].getName());
 				deleteRecursively(childrenMetaData[i]);
 			}
+			if (childrenMetaData.length == 0)
+				deleteFile(metaData);
 		} else {
 			// file
 			System.out.println("Deleting file " + metaData.getName());
