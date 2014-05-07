@@ -238,4 +238,33 @@ public class FileSystemTest {
 				fs.readFile(BlockSettings.ROOT_NAME
 						+ "/directory2/file_changed"));
 	}
+
+	@Test
+	public void moveDirectoryShouldWork() throws Exception {
+		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_12);
+		fs.addNewDirectory("directory1", utils.BlockSettings.ROOT_NAME);
+		fs.addNewDirectory("directory2", utils.BlockSettings.ROOT_NAME);
+		fs.addNewDirectory("directory3", utils.BlockSettings.ROOT_NAME
+				+ "/directory2");
+		byte[] directoryFileToWrite = MetaDataUtilities
+				.fileToBytes("testFiles/indir1.txt");
+		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/directory1/file",
+				directoryFileToWrite);
+		fs.moveDirectory(BlockSettings.ROOT_NAME + "/directory1",
+				BlockSettings.ROOT_NAME + "/directory2/directory1");
+		assertFalse(fs
+				.isValidDirectory(BlockSettings.ROOT_NAME + "/directory1"));
+		assertTrue(fs.isValidDirectory(BlockSettings.ROOT_NAME
+				+ "/directory2/directory1"));
+		assertFalse(fs
+				.isValidFile(BlockSettings.ROOT_NAME + "/directory1/file"));
+		assertTrue(fs.isValidFile(BlockSettings.ROOT_NAME
+				+ "/directory2/directory1/file"));
+		assertTrue(fs.isValidDirectory(BlockSettings.ROOT_NAME
+				+ "/directory2/directory3"));
+		assertArrayEquals(
+				directoryFileToWrite,
+				fs.readFile(BlockSettings.ROOT_NAME
+						+ "/directory2/directory1/file"));
+	}
 }

@@ -258,22 +258,41 @@ public class FileSystem implements FileSystemInterface {
 		String pathWithoutFileName = newPath.substring(0,
 				newPath.lastIndexOf("/"));
 		String newFileName = newPath.substring(newPath.lastIndexOf("/") + 1);
-		MetaData newPathMeta = fileManager.search(pathWithoutFileName);
-		if (!isValidDirectory(newPathMeta))
+		MetaData newParentMeta = fileManager.search(pathWithoutFileName);
+		if (!isValidDirectory(newParentMeta))
 			throw new FileOrDirectoryNotFoundException(
 					"Destination directory doesn't exist");
 
 		// First get data of the original file
 		byte[] fileContents = fileManager.getData(fileToMoveMetaData);
 		fileManager.deleteFile(fileToMoveMetaData);
-		fileToMoveMetaData.setParent(newPathMeta.getBlockNumber());
+		fileToMoveMetaData.setParent(newParentMeta.getBlockNumber());
 		fileToMoveMetaData.setName(newFileName);
 		fileManager.createFile(fileToMoveMetaData, fileContents);
 	}
 
 	@Override
 	public void moveDirectory(String oldPath, String newPath) throws Exception {
-		// TODO Auto-generated method stub
+		MetaData directoryToMoveMetaData = fileManager.search(oldPath);
+		if (!isValidDirectory(directoryToMoveMetaData)
+				|| isRoot(directoryToMoveMetaData))
+			throw new FileOrDirectoryNotFoundException(
+					"Couldn't move directory because it couldn't be found or it is the root directory");
+		String newPathWithoutFileName = newPath.substring(0,
+				newPath.lastIndexOf("/"));
+		String newDirectoryName = newPath
+				.substring(newPath.lastIndexOf("/") + 1);
+		MetaData newParentMeta = fileManager.search(newPathWithoutFileName);
+		if (!isValidDirectory(newParentMeta))
+			throw new FileOrDirectoryNotFoundException(
+					"Destination directory doesn't exist");
 
+		// get contents of directory
+		byte[] directoryContents = fileManager.getData(directoryToMoveMetaData);
+		fileManager.deleteFile(directoryToMoveMetaData);
+		directoryToMoveMetaData.setParent(newParentMeta.getBlockNumber());
+		directoryToMoveMetaData.setName(newDirectoryName);
+		// a filled directory is a special file, so creation is the same
+		fileManager.createFile(directoryToMoveMetaData, directoryContents);
 	}
 }

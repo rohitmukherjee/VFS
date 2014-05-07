@@ -178,6 +178,7 @@ public class FileManager implements FileManagerInterface {
 		byte[] parentDataRaw = getData(parent);
 		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
 		long[] newData = new long[parentData.length - 1];
+		Arrays.sort(parentData);
 		int location = Arrays.binarySearch(parentData, positionToRemove);
 		for (int i = 0; i < location; ++i) {
 			newData[i] = parentData[i];
