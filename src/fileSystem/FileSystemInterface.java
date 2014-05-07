@@ -30,4 +30,8 @@ public interface FileSystemInterface {
 
 	void addNewDirectory(String path, String currentPath) throws Exception;
 
+	void moveFile(String oldPath, String newPath) throws Exception;
+
+	void moveDirectory(String oldPath, String newPath) throws Exception;
+
 }

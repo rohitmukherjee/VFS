@@ -90,8 +90,7 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	private boolean isValidDirectory(MetaData parent) {
-		// TODO Auto-generated method stub
-		return false;
+		return isDirectory(parent);
 	}
 
 	@Override
@@ -126,6 +125,12 @@ public class FileSystem implements FileSystemInterface {
 			return false;
 		}
 
+	}
+
+	private boolean isValidFile(MetaData meta) {
+		// Works on the assumption that metaData already has been retrieved.
+		// Optimized to prevent 2 lookups
+		return isFile(meta);
 	}
 
 	private boolean isFile(MetaData meta) {
@@ -242,5 +247,33 @@ public class FileSystem implements FileSystemInterface {
 		} catch (FileOrDirectoryNotFoundException ex) {
 			return false;
 		}
+	}
+
+	@Override
+	public void moveFile(String oldPath, String newPath) throws Exception {
+		MetaData fileToMoveMetaData = fileManager.search(oldPath);
+		if (!isValidFile(fileToMoveMetaData))
+			throw new FileOrDirectoryNotFoundException(
+					"Couldn't move file because it couldn't be found");
+		String pathWithoutFileName = newPath.substring(0,
+				newPath.lastIndexOf("/"));
+		String newFileName = newPath.substring(newPath.lastIndexOf("/") + 1);
+		MetaData newPathMeta = fileManager.search(pathWithoutFileName);
+		if (!isValidDirectory(newPathMeta))
+			throw new FileOrDirectoryNotFoundException(
+					"Destination directory doesn't exist");
+
+		// First get data of the original file
+		byte[] fileContents = fileManager.getData(fileToMoveMetaData);
+		fileManager.deleteFile(fileToMoveMetaData);
+		fileToMoveMetaData.setParent(newPathMeta.getBlockNumber());
+		fileToMoveMetaData.setName(newFileName);
+		fileManager.createFile(fileToMoveMetaData, fileContents);
+	}
+
+	@Override
+	public void moveDirectory(String oldPath, String newPath) throws Exception {
+		// TODO Auto-generated method stub
+
 	}
 }
