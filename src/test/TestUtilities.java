@@ -4,12 +4,15 @@ import utils.BlockSettings;
 
 public class TestUtilities {
 
-	public final static String WINDOWS_PATH_1 = "D:/test.vdisk";
-	public final static String WINDOWS_PATH_2 = "D:/test2.vdisk";
-	public final static String WINDOWS_PATH_3 = "D:/test3.vdisk";
-	public final static String WINDOWS_PATH_4 = "D:/test4.vdisk";
-	public final static String WINDOWS_PATH_5 = "D:/test5.vdisk";
+	public final static String WINDOWS_PATH_1 = "testFiles/test.vdisk";
+	public final static String WINDOWS_PATH_2 = "testFiles/test2.vdisk";
+	public final static String WINDOWS_PATH_3 = "testFiles/test3.vdisk";
+	public final static String WINDOWS_PATH_4 = "testFiles/test4.vdisk";
+	public final static String WINDOWS_PATH_5 = "testFiles/test5.vdisk";
+	public final static String WINDOWS_PATH_6 = "testFiles/test6.vdisk";
+	public static final String WINDOWS_PATH_7 = "testFiles/test7.vdisk";
 	public final static String POSIX_PATH = "~\\Desktop\\test.vdisk";
+
 	public static final byte[] testBlockDataLessThan = { 1, 0, 1, 0, 1, 0, 1,
 			0, 1, 0 };
 	public static final byte[] testBlockDataFullBlock = { 0, 1, 0, 1, 0, 1, 0,

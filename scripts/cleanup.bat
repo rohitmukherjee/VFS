@@ -1,2 +1,3 @@
-del D:\test*
+del testFiles\test*
+cd scripts
 exit

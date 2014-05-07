@@ -30,8 +30,7 @@ public class FileSystemTest {
 
 	@AfterClass
 	public static void tearDown() throws IOException {
-		Runtime.getRuntime().exec(
-				"cmd /c start D:\\ETH_Dev\\teambatman\\scripts\\cleanup.bat");
+		Runtime.getRuntime().exec("cmd /c start scripts\\cleanup.bat");
 	}
 
 	@Test
@@ -132,5 +131,36 @@ public class FileSystemTest {
 		assertArrayEquals(rootFileToWrite, retrievedFile);
 		assertEquals(directoryFileToWrite.length, retrievedDirectoryFile.length);
 		assertArrayEquals(directoryFileToWrite, retrievedDirectoryFile);
+	}
+
+	@Test
+	public void createAFileAndDeleteShouldWork() throws Exception {
+		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_6);
+		byte[] rootFileToWrite = MetaDataUtilities
+				.fileToBytes("testFiles/root.txt");
+		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot",
+				rootFileToWrite);
+		fs.deleteFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot");
+		// Should allow us to write the same file again
+		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot",
+				rootFileToWrite);
+	}
+
+	@Test
+	public void createAFileAndDeleteDirectoryContainingItShouldWork()
+			throws Exception {
+		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_7);
+		byte[] rootFileToWrite = MetaDataUtilities
+				.fileToBytes("testFiles/root.txt");
+		fs.addNewDirectory("directory1", utils.BlockSettings.ROOT_NAME);
+		fs.addNewDirectory("nested1", utils.BlockSettings.ROOT_NAME
+				+ "/directory1");
+		fs.writeFile(utils.BlockSettings.ROOT_NAME
+				+ "/directory1/nested1/fileAtRoot", rootFileToWrite);
+		fs.deleteDirectory(utils.BlockSettings.ROOT_NAME
+				+ "/directory1/nested1");
+		// Should allow us to write the same file again
+		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot",
+				rootFileToWrite);
 	}
 }
