@@ -11,6 +11,7 @@ public class TestUtilities {
 	public final static String WINDOWS_PATH_5 = "testFiles/test5.vdisk";
 	public final static String WINDOWS_PATH_6 = "testFiles/test6.vdisk";
 	public static final String WINDOWS_PATH_7 = "testFiles/test7.vdisk";
+	public static final String WINDOWS_PATH_8 = "testFiles/test8.vdisk";;
 	public final static String POSIX_PATH = "~\\Desktop\\test.vdisk";
 
 	public static final byte[] testBlockDataLessThan = { 1, 0, 1, 0, 1, 0, 1,

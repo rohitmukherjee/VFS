@@ -194,13 +194,15 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
-	public void renameDirectory(String oldName, String newName)
+	public void renameDirectory(String oldPath, String newPath)
 			throws Exception {
-		MetaData originalMetaData = fileManager.search(oldName);
-		if (isValidDirectory(originalMetaData.getName())
+		MetaData originalMetaData = fileManager.search(oldPath);
+		if (originalMetaData.getType() == BlockSettings.DIRECTORY_TYPE
 				&& !(isRoot(originalMetaData))) {
-			originalMetaData.setName(newName);
+			String pathComponents[] = newPath.split("/");
+			originalMetaData.setName(pathComponents[pathComponents.length - 1]);
 			originalMetaData.setTimestamp(new Date().getTime());
+			fileManager.rewriteMetaData(originalMetaData);
 		} else
 			throw new InvalidDirectoryException(
 					"Rename directory failed because the directory is invalid");

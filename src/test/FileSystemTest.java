@@ -163,4 +163,35 @@ public class FileSystemTest {
 		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot",
 				rootFileToWrite);
 	}
+
+	@Test
+	public void renameDirectoryShouldWork() throws Exception {
+		FileSystem fs = new FileSystem(TestUtilities.WINDOWS_PATH_8);
+		fs.addNewDirectory("directory1", utils.BlockSettings.ROOT_NAME);
+		byte[] directoryFileToWrite = MetaDataUtilities
+				.fileToBytes("testFiles/indir1.txt");
+		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/directory1/file",
+				directoryFileToWrite);
+		fs.renameDirectory(BlockSettings.ROOT_NAME + "/directory1",
+				BlockSettings.ROOT_NAME + "/directory2");
+		assertFalse(fs
+				.isValidDirectory(BlockSettings.ROOT_NAME + "/directory1"));
+		assertTrue(fs.isValidDirectory(BlockSettings.ROOT_NAME + "/directory2"));
+		assertTrue(fs.isValidFile(BlockSettings.ROOT_NAME + "/directory2/file"));
+	}
+
+	@Test
+	public void renameFileShouldWork() {
+
+	}
+
+	@Test
+	public void moveFileShouldWork() {
+
+	}
+
+	@Test
+	public void moveDirectoryShouldWork() {
+
+	}
 }

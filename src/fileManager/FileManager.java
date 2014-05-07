@@ -35,6 +35,17 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	@Override
+	public void rewriteMetaData(MetaData newMetaData) throws Exception {
+		logger.debug("Rewriting meta data");
+		long dataBlockNumber = blockManager.getNextBlock(newMetaData
+				.getBlockNumber());
+		blockManager
+				.write(newMetaData.getBytes(), newMetaData.getBlockNumber());
+		blockManager.combineBlocks(newMetaData.getBlockNumber(),
+				dataBlockNumber);
+	}
+
+	@Override
 	public void writeMetaData(long position, MetaData metaData)
 			throws IOException, Exception {
 		long dataBlockNumber = blockManager.getNextBlock(metaData

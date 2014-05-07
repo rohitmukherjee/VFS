@@ -65,4 +65,6 @@ public interface FileManagerInterface {
 	void deleteDirectory(MetaData metaData) throws Exception;
 
 	MetaData search(String path) throws IOException, Exception;
+
+	void rewriteMetaData(MetaData newMetaData) throws Exception;
 }
