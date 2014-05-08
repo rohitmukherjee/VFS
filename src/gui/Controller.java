@@ -8,6 +8,8 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 
 import org.apache.log4j.BasicConfigurator;
@@ -20,6 +22,12 @@ public class Controller implements Initializable {
 	private FileSystem fileSystem;
 	private static Logger logger;
 
+	/* All GUI element initializations go here */
+	@FXML
+	private TextArea directoryName;
+	@FXML
+	private Label status;
+
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		try {
@@ -27,20 +35,26 @@ public class Controller implements Initializable {
 			logger = Logger.getLogger(Controller.class);
 			BasicConfigurator.configure();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			status.setText("Your virtual Disk could not be initialized");
 		}
 	}
 
 	@FXML
-	public void handleImportFile(ActionEvent event) throws Exception {
+	public void handleImportFile(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open File");
 		List<File> files = fileChooser.showOpenMultipleDialog(null);
 		for (File file : files) {
-			fileSystem.importFile(file.getAbsolutePath());
+			try {
+				fileSystem.importFile(file.getAbsolutePath());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				status.setText(e.getMessage());
+			}
 			logger.info("Imported " + file.getName() + "into virtual disk");
 		}
+		// Update status
+		status.setText("Imported " + files.size() + " files into virtualDisk");
 	}
 
 	@FXML
@@ -50,14 +64,10 @@ public class Controller implements Initializable {
 
 	@FXML
 	public void handleCopyFile(ActionEvent event) {
-		App.console.runCommand("cp",
-				new String[] { App.source, App.destination });
 	}
 
 	@FXML
 	public void handleMoveFile(ActionEvent event) {
-		App.console.runCommand("mv",
-				new String[] { App.source, App.destination });
 	}
 
 	@FXML
@@ -68,14 +78,21 @@ public class Controller implements Initializable {
 	}
 
 	@FXML
-	public void handleCreateDirectory(ActionEvent event) throws Exception {
-		fileSystem
-				.addNewDirectory("fuck off", fileSystem.getCurrentDirectory());
+	public void handleCreateDirectory(ActionEvent event) {
+		String directoryToCreate = directoryName.getText();
+		try {
+			fileSystem.addNewDirectory(directoryToCreate,
+					fileSystem.getCurrentDirectory());
+		} catch (Exception e) {
+			status.setText(e.getMessage());
+		}
+		status.setText("Created directory " + directoryToCreate + " in "
+				+ fileSystem.getCurrentDirectory());
+		directoryName.clear();
 	}
 
 	@FXML
 	public void handleDeleteDirectory(ActionEvent event) {
-		App.console.runCommand("rm", new String[] { App.source });
 	}
 
 }
