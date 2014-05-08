@@ -5,16 +5,20 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import utils.BlockSettings;
 import fileSystem.FileSystem;
 
 public class Controller implements Initializable {
@@ -27,6 +31,10 @@ public class Controller implements Initializable {
 	private TextArea directoryName;
 	@FXML
 	private Label status;
+	@FXML
+	private ListView<String> childrenList;
+	private ObservableList<String> children = FXCollections
+			.observableArrayList();
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -34,6 +42,8 @@ public class Controller implements Initializable {
 			fileSystem = new FileSystem("test.vdisk");
 			logger = Logger.getLogger(Controller.class);
 			BasicConfigurator.configure();
+			childrenList.setItems(children);
+			status.setText("VFS Loaded");
 		} catch (Exception e) {
 			status.setText("Your virtual Disk could not be initialized");
 		}
@@ -55,6 +65,7 @@ public class Controller implements Initializable {
 		}
 		// Update status
 		status.setText("Imported " + files.size() + " files into virtualDisk");
+		listContents();
 	}
 
 	@FXML
@@ -68,11 +79,12 @@ public class Controller implements Initializable {
 
 	@FXML
 	public void handleMoveFile(ActionEvent event) {
+
 	}
 
 	@FXML
 	public void handleAddDirectory(ActionEvent event) {
-		App.listController.addChild("lskdfjsl");
+
 		// App.console.runCommand("", new String[] {App.source,
 		// App.destination});
 	}
@@ -80,6 +92,11 @@ public class Controller implements Initializable {
 	@FXML
 	public void handleCreateDirectory(ActionEvent event) {
 		String directoryToCreate = directoryName.getText();
+		if (directoryToCreate.trim().isEmpty()
+				|| directoryToCreate.trim().equals(BlockSettings.ROOT_NAME)) {
+			status.setText("Please provide a valid directory name");
+			return;
+		}
 		try {
 			fileSystem.addNewDirectory(directoryToCreate,
 					fileSystem.getCurrentDirectory());
@@ -88,6 +105,7 @@ public class Controller implements Initializable {
 		}
 		status.setText("Created directory " + directoryToCreate + " in "
 				+ fileSystem.getCurrentDirectory());
+		listContents();
 		directoryName.clear();
 	}
 
@@ -95,4 +113,15 @@ public class Controller implements Initializable {
 	public void handleDeleteDirectory(ActionEvent event) {
 	}
 
+	private void listContents() {
+		children.clear();
+		String cwd = fileSystem.getCurrentDirectory();
+		cwd = cwd.substring(0, cwd.length() - 1);
+		try {
+			String[] directoryContents = fileSystem.getChildren(cwd);
+			children.addAll(directoryContents);
+		} catch (Exception e) {
+			status.setText("Could not display contents");
+		}
+	}
 }

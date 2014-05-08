@@ -155,7 +155,7 @@ public class FileManagerTest {
 				null,
 				fileManager.search(BlockSettings.ROOT_NAME
 						+ "/dir1/nestedDir1/nestedFile1"));
-
+		MetaData[] children = fileManager.getChildrenMeta(retrievedDir1);
 	}
 
 	@Ignore
@@ -197,8 +197,7 @@ public class FileManagerTest {
 				Files.readAllBytes(Paths.get("testFiles/indir1.txt")));
 		MetaData retrievedNestedDir1 = fileManager
 				.search("root/dir1/nestedDir1");
-		MetaData metaFile2 = new MetaData("nestedfile1",
-				retrievedNestedDir1.getBlockNumber(),
+		MetaData metaFile2 = new MetaData("nestedfile1", 0,
 				utils.BlockSettings.FILE_TYPE, System.currentTimeMillis());
 		fileManager.createFile(metaFile2,
 				Files.readAllBytes(Paths.get("testFiles/innested1.txt")));
@@ -207,6 +206,10 @@ public class FileManagerTest {
 				System.currentTimeMillis());
 		fileManager.createFile(metaFile3,
 				Files.readAllBytes(Paths.get("testFiles/indir1.txt")));
+		MetaData[] children = fileManager.getChildrenMeta(rootMetaData);
+		assertEquals("nestedfile1", children[0].getName());
+		assertEquals("dir1", children[2].getName());
+		assertEquals("dir2", children[1].getName());
 
 		// search for nonexistant file
 		try {

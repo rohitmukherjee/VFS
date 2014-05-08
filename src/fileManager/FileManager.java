@@ -52,6 +52,7 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void writeMetaData(long position, MetaData metaData)
 			throws IOException, Exception {
+		cache.invalidateCache();
 		long dataBlockNumber = blockManager.getNextBlock(metaData
 				.getBlockNumber());
 		metaData.setBlockNumber(position);
@@ -62,6 +63,7 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void writeReplaceMetaData(MetaData metaData) throws IOException,
 			Exception {
+		cache.invalidateCache();
 		long dataPosition = blockManager
 				.getNextBlock(metaData.getBlockNumber());
 		blockManager.write(metaData.getBytes(), metaData.getBlockNumber());
@@ -83,6 +85,7 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void createFile(MetaData meta, byte[] data) throws Exception {
 		// Write the metadata and the data, then combines the blocks
+		cache.invalidateCache();
 		meta.setBlockNumber(blockManager.getNextFreeBlock());
 		// * BlockSettings.BLOCK_SIZE);
 		blockManager.write(meta.getBytes(), meta.getBlockNumber());
@@ -95,6 +98,7 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	private void addToParent(MetaData parent, long position) throws Exception {
+		cache.invalidateCache();
 		byte[] parentDataRaw = getData(parent);
 		long[] parentData = MetaDataUtilities.getLongArray(parentDataRaw);
 		long[] newData = new long[1];
@@ -207,6 +211,7 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public void writeData(MetaData meta, byte[] data) throws Exception {
+		cache.invalidateCache();
 		blockManager.delete(blockManager.getNextBlock(meta.getBlockNumber()));
 		long dataPosition = blockManager.getNextFreeBlock();
 		blockManager.write(data, dataPosition);
@@ -227,6 +232,7 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public void createDirectory(MetaData meta) throws Exception {
+		cache.invalidateCache();
 		MetaData parent = getMetaData(meta.getParent());
 		meta.setBlockNumber(blockManager.getNextFreeBlock());
 		blockManager.write(meta.getBytes(), meta.getBlockNumber());
@@ -238,6 +244,7 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	public void deleteMetaData(MetaData metaData) throws Exception {
+		cache.invalidateCache();
 		blockManager.deleteBlock(metaData.getBlockNumber());
 	}
 

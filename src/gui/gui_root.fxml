@@ -9,7 +9,10 @@
 
 <GridPane alignment="CENTER" hgap="10.0" prefHeight="575.0000999999975" prefWidth="440.0" vgap="10.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.Controller">
   <Label style="-fx-font: NORMAL 12 Tahoma" text="Present Working Directory" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-  <fx:include source="children_list_view.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+  <!--  <fx:include source="children_list_view.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+<ListView fx:id = "childList" xmlns:fx="http://javafx.com/fxml" 
+fx:controller="gui.ListViewController" GridPane.columnIndex="0" GridPane.rowIndex="1">
+</ListView>-->
   <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="0" GridPane.rowIndex="5">
     <!-- should add this to controller fxnality
           <Button text="Move Directory" onAction="#handleMoveDirectory"/> -->
@@ -42,4 +45,5 @@
     <Button onAction="#handleCopyFile" prefWidth="94.0" text="Copy File" />
     <Button onAction="#handleMoveFile" prefWidth="94.0" text="Move File" />
   </HBox>
+  <ListView fx:id="childrenList" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="1" />
 </GridPane>

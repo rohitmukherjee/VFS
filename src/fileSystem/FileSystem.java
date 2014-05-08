@@ -83,11 +83,15 @@ public class FileSystem implements FileSystemInterface {
 	public String[] getChildren(String path) throws Exception {
 		MetaData[] childrenMetaData = null;
 		MetaData parent = fileManager.search(path);
-		if (isValidDirectory(parent))
+		if (isValidDirectory(parent)) {
 			childrenMetaData = fileManager.getChildrenMeta(parent);
+			logger.debug(childrenMetaData[0].getName());
+		}
 		String[] childrenPaths = new String[childrenMetaData.length];
-		for (int i = 0; i < childrenMetaData.length; i++)
+		for (int i = 0; i < childrenMetaData.length; i++) {
 			childrenPaths[i] = childrenMetaData[i].getName();
+			logger.debug("******** " + childrenPaths[i]);
+		}
 		return childrenPaths;
 	}
 
@@ -300,7 +304,10 @@ public class FileSystem implements FileSystemInterface {
 
 	public void importFile(String hostPath) throws Exception {
 		byte[] fileContents = MetaDataUtilities.fileToBytes(hostPath);
-		writeFile(currentDirectory, fileContents);
+		String hostPathComponents[] = hostPath.split("\\\\");
+		writeFile(currentDirectory
+				+ hostPathComponents[hostPathComponents.length - 1],
+				fileContents);
 	}
 
 	public String getCurrentDirectory() {
