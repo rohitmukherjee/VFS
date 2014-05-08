@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import utils.BlockSettings;
 import utils.CompressionUtilities;
 import utils.EncryptionUtilities;
+import utils.MetaDataUtilities;
 import exceptions.CannotAccessDiskException;
 import exceptions.FileAlreadyExistsException;
 import exceptions.FileOrDirectoryAlreadyExistsException;
@@ -23,6 +24,7 @@ public class FileSystem implements FileSystemInterface {
 
 	private FileManager fileManager;
 	private Logger logger;
+	private String currentDirectory = BlockSettings.ROOT_NAME + "/";
 
 	public FileSystem(String path) throws Exception {
 		fileManager = new FileManager(path);
@@ -294,5 +296,14 @@ public class FileSystem implements FileSystemInterface {
 		directoryToMoveMetaData.setName(newDirectoryName);
 		// a filled directory is a special file, so creation is the same
 		fileManager.createFile(directoryToMoveMetaData, directoryContents);
+	}
+
+	public void importFile(String hostPath) throws Exception {
+		byte[] fileContents = MetaDataUtilities.fileToBytes(hostPath);
+		writeFile(currentDirectory, fileContents);
+	}
+
+	public String getCurrentDirectory() {
+		return currentDirectory;
 	}
 }
