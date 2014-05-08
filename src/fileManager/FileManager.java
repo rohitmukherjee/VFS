@@ -10,10 +10,12 @@ import utils.BlockSettings;
 import utils.MetaDataUtilities;
 import virtualDisk.BlockManager;
 import exceptions.FileOrDirectoryNotFoundException;
+import fileSystem.CachingSystem;
 
 public class FileManager implements FileManagerInterface {
 
 	private BlockManager blockManager;
+	private CachingSystem cache;
 
 	private static Logger logger;
 
@@ -21,6 +23,7 @@ public class FileManager implements FileManagerInterface {
 		logger = Logger.getLogger(FileManager.class);
 		BasicConfigurator.configure();
 		blockManager = new BlockManager(path);
+		cache = new CachingSystem();
 		try {
 			blockManager.setupBlocks();
 		} catch (Exception e) {
@@ -37,6 +40,7 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void rewriteMetaData(MetaData newMetaData) throws Exception {
 		logger.debug("Rewriting meta data");
+		cache.invalidateCache();
 		long dataBlockNumber = blockManager.getNextBlock(newMetaData
 				.getBlockNumber());
 		blockManager
@@ -113,6 +117,10 @@ public class FileManager implements FileManagerInterface {
 		// Incase the path is only one word, return root
 		if (pathComponents.length == 1)
 			return root;
+		// Check if file/directory already exists in cache
+		if (cache.hasFile(pathComponents[pathComponents.length - 1]))
+			return getMetaData(cache
+					.getBlockNumber(pathComponents[pathComponents.length - 1]));
 		return rsearch(root, 1, pathComponents);
 	}
 
@@ -120,6 +128,9 @@ public class FileManager implements FileManagerInterface {
 			String[] pathComponents) throws Exception {
 		MetaData[] contents = getChildrenMeta(metaData);
 		for (int i = 0; i < contents.length; ++i) {
+			// Adding to cache
+			cache.addToCache(contents[i].getName(),
+					contents[i].getBlockNumber());
 			System.out.println(" Looking at " + contents[i].getName()
 					+ " at position " + contents[i].getBlockNumber()
 					+ " and type " + contents[i].getType());
@@ -172,7 +183,7 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public void deleteFile(MetaData metaData) throws Exception {
 		MetaData parent = getMetaData(metaData.getParent());
-
+		cache.invalidateCache();
 		long positionToRemove = metaData.getBlockNumber();
 
 		byte[] parentDataRaw = getData(parent);
@@ -232,6 +243,7 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public void deleteDirectory(MetaData metaData) throws Exception {
+		cache.invalidateCache();
 		if (metaData.getName().equals(BlockSettings.ROOT_NAME)
 				|| metaData.getBlockNumber() == BlockSettings.ROOT_POSITION)
 			return;
