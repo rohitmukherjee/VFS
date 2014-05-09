@@ -313,4 +313,10 @@ public class FileSystem implements FileSystemInterface {
 	public String getCurrentDirectory() {
 		return currentDirectory;
 	}
+
+	public String getFilePath(String fileName) {
+		if (fileName != null)
+			return getCurrentDirectory().concat(fileName);
+		return "";
+	}
 }

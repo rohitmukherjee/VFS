@@ -19,6 +19,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import utils.BlockSettings;
+import utils.FileSystemUtilities;
 import fileSystem.FileSystem;
 
 public class Controller implements Initializable {
@@ -73,7 +74,21 @@ public class Controller implements Initializable {
 
 	@FXML
 	public void handleExportFile(ActionEvent event) {
-
+		// get file currently highlighted
+		// export to the set application path with fileName.
+		String fileSelected = childrenList.getSelectionModel()
+				.getSelectedItem();
+		logger.debug("Currently selected " + fileSelected);
+		if (fileSelected != null)
+			try {
+				byte[] fileData = fileSystem.readFile(fileSystem
+						.getFilePath(fileSelected));
+				FileSystemUtilities.exportFile(fileData, fileSelected);
+				status.setText("Exported " + fileSelected + " successfully");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				status.setText("Couldn't export file");
+			}
 	}
 
 	@FXML
