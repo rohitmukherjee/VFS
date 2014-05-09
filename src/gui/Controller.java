@@ -35,6 +35,8 @@ public class Controller implements Initializable {
 	private ListView<String> childrenList;
 	private ObservableList<String> children = FXCollections
 			.observableArrayList();
+	@FXML
+	private Label cwd;
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -44,6 +46,7 @@ public class Controller implements Initializable {
 			BasicConfigurator.configure();
 			childrenList.setItems(children);
 			status.setText("VFS Loaded");
+			updateCwdLabel();
 		} catch (Exception e) {
 			status.setText("Your virtual Disk could not be initialized");
 		}
@@ -123,5 +126,9 @@ public class Controller implements Initializable {
 		} catch (Exception e) {
 			status.setText("Could not display contents");
 		}
+	}
+
+	private void updateCwdLabel() {
+		cwd.setText(fileSystem.getCurrentDirectory());
 	}
 }

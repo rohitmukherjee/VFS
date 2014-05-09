@@ -8,7 +8,7 @@
 <?import javafx.scene.text.*?>
 
 <GridPane alignment="CENTER" hgap="10.0" prefHeight="575.0000999999975" prefWidth="440.0" vgap="10.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.Controller">
-  <Label style="-fx-font: NORMAL 12 Tahoma" text="Present Working Directory" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+  <Label fx:id="cwd" style="-fx-font: NORMAL 12 Tahoma" text="Present Working Directory" GridPane.columnIndex="0" GridPane.rowIndex="0" />
   <!--  <fx:include source="children_list_view.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1" />
 <ListView fx:id = "childList" xmlns:fx="http://javafx.com/fxml" 
 fx:controller="gui.ListViewController" GridPane.columnIndex="0" GridPane.rowIndex="1">
@@ -20,8 +20,8 @@ fx:controller="gui.ListViewController" GridPane.columnIndex="0" GridPane.rowInde
     <TextArea fx:id="directoryName" prefHeight="21.0" prefWidth="171.0" promptText="directory name to create" wrapText="true" />
     <Button onAction="#handleCreateDirectory" text="Create Directory" />
   </HBox>
-  <HBox alignment="BOTTOM_LEFT" spacing="10.0" GridPane.columnIndex="0" GridPane.rowIndex="6">
-    <Label fx:id="status" alignment="CENTER" minHeight="14.0" prefHeight="34.0" prefWidth="74.0" style="" text="Status" wrapText="false" />
+  <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="0" GridPane.rowIndex="6">
+    <Label fx:id="status" alignment="CENTER" minHeight="14.0" prefHeight="34.0" prefWidth="74.0" style="" text="Status" textOverrun="CLIP" wrapText="false" />
   </HBox>
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
