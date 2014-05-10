@@ -24,7 +24,7 @@ public class FileSystem implements FileSystemInterface {
 
 	private FileManager fileManager;
 	private Logger logger;
-	private String currentDirectory = BlockSettings.ROOT_NAME + "/";
+	private String currentDirectory = BlockSettings.ROOT_NAME;
 
 	public FileSystem(String path) throws Exception {
 		fileManager = new FileManager(path);
@@ -305,7 +305,7 @@ public class FileSystem implements FileSystemInterface {
 	public void importFile(String hostPath) throws Exception {
 		byte[] fileContents = MetaDataUtilities.fileToBytes(hostPath);
 		String hostPathComponents[] = hostPath.split("\\\\");
-		writeFile(currentDirectory
+		writeFile(currentDirectory + "/"
 				+ hostPathComponents[hostPathComponents.length - 1],
 				fileContents);
 	}
@@ -318,5 +318,17 @@ public class FileSystem implements FileSystemInterface {
 		if (fileName != null)
 			return getCurrentDirectory().concat(fileName);
 		return "";
+	}
+
+	public void setCurrentDirectory(String newCurrentDirectory) {
+		currentDirectory = newCurrentDirectory;
+	}
+
+	public String getParentOfCurrentDirectory() {
+		if (currentDirectory.equals(BlockSettings.ROOT_NAME))
+			return BlockSettings.ROOT_NAME;
+		String parent = getCurrentDirectory().substring(0,
+				getCurrentDirectory().lastIndexOf("/"));
+		return parent;
 	}
 }
