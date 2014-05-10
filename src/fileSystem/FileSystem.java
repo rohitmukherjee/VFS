@@ -85,14 +85,14 @@ public class FileSystem implements FileSystemInterface {
 		MetaData parent = fileManager.search(path);
 		if (isValidDirectory(parent)) {
 			childrenMetaData = fileManager.getChildrenMeta(parent);
-			logger.debug(childrenMetaData[0].getName());
-		}
-		String[] childrenPaths = new String[childrenMetaData.length];
-		for (int i = 0; i < childrenMetaData.length; i++) {
-			childrenPaths[i] = childrenMetaData[i].getName();
-			logger.debug("******** " + childrenPaths[i]);
-		}
-		return childrenPaths;
+			if (childrenMetaData.length == 0)
+				return new String[0];
+			String[] childrenPaths = new String[childrenMetaData.length];
+			for (int i = 0; i < childrenMetaData.length; i++)
+				childrenPaths[i] = childrenMetaData[i].getName();
+			return childrenPaths;
+		} else
+			return new String[0];
 	}
 
 	private boolean isValidDirectory(MetaData parent) {

@@ -173,14 +173,10 @@ public class FileManager implements FileManagerInterface {
 	@Override
 	public byte[] getData(MetaData metaData) throws Exception {
 		// Limited to one block, so only metaData and no data
-		if (blockManager.getNextBlock(metaData.getBlockNumber()) == 0) {
+		if (blockManager.getNextBlock(metaData.getBlockNumber()) == 0)
 			return new byte[0];
-		}
-
 		byte[] tempData = blockManager.read(blockManager.getNextBlock(metaData
 				.getBlockNumber()));
-		// return MetaDataUtilities.getDecryptedBytes(MetaDataUtilities
-		// .getDecompressedBytes(tempData));
 		return tempData;
 	}
 

@@ -48,6 +48,7 @@ public class Controller implements Initializable {
 			childrenList.setItems(children);
 			status.setText("VFS Loaded");
 			updateCwdLabel();
+			listContents();
 		} catch (Exception e) {
 			status.setText("Your virtual Disk could not be initialized");
 		}
@@ -161,11 +162,10 @@ public class Controller implements Initializable {
 		String cwd = fileSystem.getCurrentDirectory();
 		try {
 			String[] directoryContents = fileSystem.getChildren(cwd);
-			logger.debug("CHILDREN: " + directoryContents.length);
 			children.addAll(directoryContents);
 			updateCwdLabel();
 		} catch (Exception e) {
-			status.setText("Could not display contents");
+			e.printStackTrace();
 		}
 	}
 
