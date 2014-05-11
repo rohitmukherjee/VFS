@@ -47,7 +47,7 @@ public class Controller implements Initializable {
 			BasicConfigurator.configure();
 			childrenList.setItems(children);
 			status.setText("VFS Loaded");
-			listContents();
+			populateListView();
 		} catch (Exception e) {
 			status.setText("Your virtual Disk could not be initialized");
 		}
@@ -69,7 +69,7 @@ public class Controller implements Initializable {
 		}
 		// Update status
 		status.setText("Imported " + files.size() + " files into virtualDisk");
-		listContents();
+		populateListView();
 	}
 
 	@FXML
@@ -98,7 +98,7 @@ public class Controller implements Initializable {
 		else {
 			String parentDirectory = fileSystem.getParentOfCurrentDirectory();
 			fileSystem.setCurrentDirectory(parentDirectory);
-			listContents();
+			populateListView();
 		}
 	}
 
@@ -107,10 +107,9 @@ public class Controller implements Initializable {
 		String ItemSelected = childrenList.getSelectionModel()
 				.getSelectedItem();
 		if (FileSystemUtilities.isDirectoryName(ItemSelected)) {
-
 			fileSystem.setCurrentDirectory(fileSystem.getCurrentDirectory()
 					+ "/" + ItemSelected);
-			listContents();
+			populateListView();
 		} else {
 			status.setText("Please select a valid directory");
 		}
@@ -148,15 +147,26 @@ public class Controller implements Initializable {
 		}
 		status.setText("Created directory " + directoryToCreate + " in "
 				+ fileSystem.getCurrentDirectory());
-		listContents();
+		populateListView();
 		directoryName.clear();
 	}
 
 	@FXML
 	public void handleDeleteDirectory(ActionEvent event) {
+		String ItemSelected = childrenList.getSelectionModel()
+				.getSelectedItem();
+		try {
+			if (FileSystemUtilities.isDirectoryName(ItemSelected)) {
+				fileSystem
+						.deleteDirectory(fileSystem.getFilePath(ItemSelected));
+				populateListView();
+			}
+		} catch (Exception ex) {
+			status.setText("Please provide a valid directory");
+		}
 	}
 
-	private void listContents() {
+	private void populateListView() {
 		children.clear();
 		String cwd = fileSystem.getCurrentDirectory();
 		try {
