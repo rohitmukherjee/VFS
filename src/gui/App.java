@@ -16,17 +16,7 @@ public class App extends Application {
 		primaryStage.setTitle("Batman VFS Browser");
 		Parent root = FXMLLoader.load(gui.Controller.class
 				.getResource("gui_root.fxml"));
-		// ListViewController listController = new ListViewController(root.get)
-		/*
-		 * Button btn = new Button(); btn.setText("Import File");
-		 * btn.setOnAction(new EventHandler<ActionEvent>() {
-		 * 
-		 * @Override public void handle(ActionEvent event) {
-		 * System.out.println("Hello World!"); } });
-		 * 
-		 * StackPane root = new StackPane(); root.getChildren().add(btn);
-		 */
-		Scene scene = new Scene(root, 500, 500);
+		Scene scene = new Scene(root, 500, 550);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

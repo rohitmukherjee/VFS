@@ -14,7 +14,6 @@ import utils.BlockSettings;
 public class BlockManager {
 
 	private VirtualDisk virtualDisk;
-	private long blockSize = Block.MAXIMUM_BLOCK_SIZE;
 	private Logger logger;
 	private long numberOfBlocks;
 
@@ -259,29 +258,8 @@ public class BlockManager {
 		return virtualDisk;
 	}
 
-	/**
-	 * Function returns the current Block
-	 * 
-	 * @return
-	 */
-	public Block getCurrentBlock() {
-
-		Block block = new Block(getCurrentBlockNumber()
-				* BlockSettings.BLOCK_SIZE);
-		return block;
-	}
-
 	public long getCurrentBlockStartingAddress() {
 		return getCurrentBlockNumber() * BlockSettings.BLOCK_SIZE;
-	}
-
-	public long OffsetInsideCurrentBlock() {
-		try {
-			long currentPosition = virtualDisk.getFilePosition();
-			return currentPosition % blockSize;
-		} catch (Exception ex) {
-			return -1;
-		}
 	}
 
 	public void combineBlocks(long firstBlockNumber, long secondBlockNumber)

@@ -24,7 +24,7 @@ public class FileSystem implements FileSystemInterface {
 
 	private FileManager fileManager;
 	private Logger logger;
-	private String currentDirectory = BlockSettings.ROOT_NAME + "/";
+	private String currentDirectory = BlockSettings.ROOT_NAME;
 
 	public FileSystem(String path) throws Exception {
 		fileManager = new FileManager(path);
@@ -85,14 +85,14 @@ public class FileSystem implements FileSystemInterface {
 		MetaData parent = fileManager.search(path);
 		if (isValidDirectory(parent)) {
 			childrenMetaData = fileManager.getChildrenMeta(parent);
-			logger.debug(childrenMetaData[0].getName());
-		}
-		String[] childrenPaths = new String[childrenMetaData.length];
-		for (int i = 0; i < childrenMetaData.length; i++) {
-			childrenPaths[i] = childrenMetaData[i].getName();
-			logger.debug("******** " + childrenPaths[i]);
-		}
-		return childrenPaths;
+			if (childrenMetaData.length == 0)
+				return new String[0];
+			String[] childrenPaths = new String[childrenMetaData.length];
+			for (int i = 0; i < childrenMetaData.length; i++)
+				childrenPaths[i] = childrenMetaData[i].getName();
+			return childrenPaths;
+		} else
+			return new String[0];
 	}
 
 	private boolean isValidDirectory(MetaData parent) {
@@ -305,12 +305,26 @@ public class FileSystem implements FileSystemInterface {
 	public void importFile(String hostPath) throws Exception {
 		byte[] fileContents = MetaDataUtilities.fileToBytes(hostPath);
 		String hostPathComponents[] = hostPath.split("\\\\");
-		writeFile(currentDirectory
-				+ hostPathComponents[hostPathComponents.length - 1],
+		writeFile(
+				currentDirectory.concat("/").concat(
+						hostPathComponents[hostPathComponents.length - 1]),
 				fileContents);
 	}
 
 	public String getCurrentDirectory() {
 		return currentDirectory;
+	}
+
+	public void setCurrentDirectory(String newDirectory) {
+		currentDirectory = newDirectory;
+	}
+
+	public String getFilePath(String fileSelected) {
+		return getCurrentDirectory().concat("/").concat(fileSelected);
+	}
+
+	public String getParentOfCurrentDirectory() {
+		return getCurrentDirectory().substring(0,
+				getCurrentDirectory().lastIndexOf("/"));
 	}
 }

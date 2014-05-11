@@ -19,6 +19,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import utils.BlockSettings;
+import utils.FileSystemUtilities;
 import fileSystem.FileSystem;
 
 public class Controller implements Initializable {
@@ -46,7 +47,7 @@ public class Controller implements Initializable {
 			BasicConfigurator.configure();
 			childrenList.setItems(children);
 			status.setText("VFS Loaded");
-			updateCwdLabel();
+			listContents();
 		} catch (Exception e) {
 			status.setText("Your virtual Disk could not be initialized");
 		}
@@ -73,7 +74,46 @@ public class Controller implements Initializable {
 
 	@FXML
 	public void handleExportFile(ActionEvent event) {
+		// get file currently highlighted
+		// export to the set application path with fileName.
+		String fileSelected = childrenList.getSelectionModel()
+				.getSelectedItem();
+		logger.debug("Currently selected " + fileSelected);
+		if (fileSelected != null)
+			try {
+				byte[] fileData = fileSystem.readFile(fileSystem
+						.getFilePath(fileSelected));
+				FileSystemUtilities.exportFile(fileData, fileSelected);
+				status.setText("Exported " + fileSelected + " successfully");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				status.setText("Couldn't export file");
+			}
+	}
 
+	@FXML
+	public void handleBack(ActionEvent event) {
+		if (fileSystem.getCurrentDirectory().equals(BlockSettings.ROOT_NAME))
+			status.setText("Already at highest level");
+		else {
+			String parentDirectory = fileSystem.getParentOfCurrentDirectory();
+			fileSystem.setCurrentDirectory(parentDirectory);
+			listContents();
+		}
+	}
+
+	@FXML
+	public void handleOpenDirectory(ActionEvent event) {
+		String ItemSelected = childrenList.getSelectionModel()
+				.getSelectedItem();
+		if (FileSystemUtilities.isDirectoryName(ItemSelected)) {
+
+			fileSystem.setCurrentDirectory(fileSystem.getCurrentDirectory()
+					+ "/" + ItemSelected);
+			listContents();
+		} else {
+			status.setText("Please select a valid directory");
+		}
 	}
 
 	@FXML
@@ -119,12 +159,12 @@ public class Controller implements Initializable {
 	private void listContents() {
 		children.clear();
 		String cwd = fileSystem.getCurrentDirectory();
-		cwd = cwd.substring(0, cwd.length() - 1);
 		try {
+			updateCwdLabel();
 			String[] directoryContents = fileSystem.getChildren(cwd);
 			children.addAll(directoryContents);
 		} catch (Exception e) {
-			status.setText("Could not display contents");
+			e.printStackTrace();
 		}
 	}
 
