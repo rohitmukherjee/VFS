@@ -179,8 +179,6 @@ public class FileManager implements FileManagerInterface {
 
 		byte[] tempData = blockManager.read(blockManager.getNextBlock(metaData
 				.getBlockNumber()));
-		// return MetaDataUtilities.getDecryptedBytes(MetaDataUtilities
-		// .getDecompressedBytes(tempData));
 		return tempData;
 	}
 
@@ -241,16 +239,16 @@ public class FileManager implements FileManagerInterface {
 
 	public void deleteDisk() throws IOException {
 		blockManager.getVirtualDisk().deleteDisk();
+		cache.invalidateCache();
 	}
 
 	public void deleteMetaData(MetaData metaData) throws Exception {
-		cache.invalidateCache();
 		blockManager.deleteBlock(metaData.getBlockNumber());
 	}
 
 	@Override
 	public void deleteDirectory(MetaData metaData) throws Exception {
-		cache.invalidateCache();
+
 		if (metaData.getName().equals(BlockSettings.ROOT_NAME)
 				|| metaData.getBlockNumber() == BlockSettings.ROOT_POSITION)
 			return;
@@ -258,6 +256,7 @@ public class FileManager implements FileManagerInterface {
 		// Parent MetaData has to change after deletion so search for it by name
 		// again
 		MetaData retrieved = search(metaData.getName());
+		cache.invalidateCache();
 		deleteMetaData(retrieved);
 	}
 
@@ -271,8 +270,7 @@ public class FileManager implements FileManagerInterface {
 						+ childrenMetaData[i].getName());
 				deleteRecursively(childrenMetaData[i]);
 			}
-			if (childrenMetaData.length == 0)
-				deleteFile(metaData);
+			deleteFile(metaData);
 		} else {
 			// file
 			System.out.println("Deleting file " + metaData.getName());

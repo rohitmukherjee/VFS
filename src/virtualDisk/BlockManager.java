@@ -82,20 +82,22 @@ public class BlockManager {
 
 	private byte[] read(ByteArrayOutputStream results, long blockNumber)
 			throws IOException {
-		virtualDisk.seek(getOffset(blockNumber));
-		long lengthOfDataToRead = virtualDisk.readLong();
-		results.write(virtualDisk.read(getOffset(blockNumber)
-				+ BlockSettings.HEADER_LENGTH, lengthOfDataToRead));
-		// Read the next address
-		virtualDisk.seek(getOffset(blockNumber)
-				+ BlockSettings.NEXT_ADDRESS_START);
-		long nextAddress = virtualDisk.readLong();
-		if (nextAddress == 0 || nextAddress == getOffset(blockNumber))
-			return results.toByteArray();
-		else {
-			// logger.warn("Reading:  " + nextAddress);
-			return read(results, getBlockNumber(nextAddress));
+		boolean finishedReading = false;
+		while (!finishedReading) {
+			virtualDisk.seek(getOffset(blockNumber));
+			long lengthOfDataToRead = virtualDisk.readLong();
+			results.write(virtualDisk.read(getOffset(blockNumber)
+					+ BlockSettings.HEADER_LENGTH, lengthOfDataToRead));
+			// Read the next address
+			virtualDisk.seek(getOffset(blockNumber)
+					+ BlockSettings.NEXT_ADDRESS_START);
+			long nextAddress = virtualDisk.readLong();
+			if (nextAddress == 0 || nextAddress == getOffset(blockNumber))
+				finishedReading = true;
+			else
+				blockNumber = getBlockNumber(nextAddress);
 		}
+		return results.toByteArray();
 	}
 
 	/**

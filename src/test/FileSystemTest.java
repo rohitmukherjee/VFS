@@ -159,9 +159,14 @@ public class FileSystemTest {
 				+ "/directory1/nested1/fileAtRoot", rootFileToWrite);
 		fs.deleteDirectory(utils.BlockSettings.ROOT_NAME
 				+ "/directory1/nested1");
+		assertFalse(fs.isValidDirectory(BlockSettings.ROOT_NAME
+				+ "/directory1/nested1"));
+		assertTrue(fs.isValidDirectory(BlockSettings.ROOT_NAME + "/directory1"));
 		// Should allow us to write the same file again
 		fs.writeFile(utils.BlockSettings.ROOT_NAME + "/fileAtRoot",
 				rootFileToWrite);
+		assertArrayEquals(rootFileToWrite,
+				fs.readFile(BlockSettings.ROOT_NAME + "/fileAtRoot"));
 	}
 
 	@Test
