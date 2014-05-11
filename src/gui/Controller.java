@@ -43,11 +43,14 @@ public class Controller implements Initializable {
 			.observableArrayList();
 	@FXML
 	private Label cwd;
+	private String moveClipboard = "";
 
 	/* Context Menu Specific Code */
 	final ContextMenu options = new ContextMenu();
 	MenuItem delete = new MenuItem(GUIMessages.DELETE_BUTTON);
 	MenuItem rename = new MenuItem(GUIMessages.RENAME_BUTTON);
+	MenuItem move = new MenuItem(GUIMessages.MOVE_BUTTON);
+	MenuItem moveHere = new MenuItem(GUIMessages.MOVE_HERE_BUTTON);
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -93,8 +96,59 @@ public class Controller implements Initializable {
 			}
 		});
 
+		move.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				String itemSelected = childrenList.getSelectionModel()
+						.getSelectedItem();
+				if (itemSelected == null)
+					status.setText(GUIMessages.SELECT_ERROR);
+				else
+					moveClipboard = fileSystem.getFilePath(itemSelected);
+			}
+		});
+
+		moveHere.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				String name;
+				if (moveClipboard.trim().isEmpty())
+					status.setText(GUIMessages.SELECT_ERROR);
+
+				else if (FileSystemUtilities.isFileName(moveClipboard)) {
+					name = moveClipboard.substring(moveClipboard
+							.lastIndexOf("/"));
+					try {
+						fileSystem.moveFile(moveClipboard, fileSystem
+								.getCurrentDirectory().concat(name));
+						populateListView();
+					} catch (Exception e) {
+						status.setText(GUIMessages.MOVE_FILE_ERROR);
+						e.printStackTrace();
+					}
+					moveClipboard = "";
+				}
+
+				else if (FileSystemUtilities.isDirectoryName(moveClipboard)) {
+					name = moveClipboard.substring(moveClipboard
+							.lastIndexOf("/"));
+					try {
+						fileSystem.moveDirectory(moveClipboard, fileSystem
+								.getCurrentDirectory().concat(name));
+					} catch (Exception e) {
+						status.setText(GUIMessages.MOVE_DIRECTORY_ERROR);
+						e.printStackTrace();
+					}
+					moveClipboard = "";
+				}
+			}
+		});
+
+		options.getItems().add(move);
+		options.getItems().add(moveHere);
 		options.getItems().add(delete);
 		options.getItems().add(rename);
+
 		childrenList.addEventHandler(MouseEvent.MOUSE_CLICKED,
 				new EventHandler<MouseEvent>() {
 					@Override
@@ -217,6 +271,22 @@ public class Controller implements Initializable {
 		} catch (Exception ex) {
 			status.setText(GUIMessages.PROVIDE_DIRECTORY);
 		}
+
+	}
+
+	private void moveFile(String fileName) {
+		try {
+			logger.debug("Move File " + fileSystem.getFilePath(fileName));
+			fileSystem.deleteFile(fileSystem.getFilePath(fileName));
+			populateListView();
+		} catch (Exception ex) {
+			status.setText(GUIMessages.PROVIDE_FILE);
+		}
+
+	}
+
+	private void moveDirectory(String itemSelected) {
+		// TODO Auto-generated method stub
 
 	}
 

@@ -16,6 +16,8 @@ public class GUIMessages {
 	public static final String IN_ROOT = "Already in ROOT directory";
 	public static final String LIST_ERROR = "Couldn't list files";
 	protected static final String SELECT_ERROR = "Select a file/directory";
+	protected static final String MOVE_DIRECTORY_ERROR = "Couldn't move directory";
+	protected static final String MOVE_FILE_ERROR = "Couldn't move file";
 
 	// Prompts and Dialogs
 	public static final String PROVIDE_DIRECTORY = "Please provide a valid directory";
@@ -26,4 +28,6 @@ public class GUIMessages {
 	// Button text
 	public static final String DELETE_BUTTON = "delete";
 	public static final String RENAME_BUTTON = "rename";
+	public static final String MOVE_BUTTON = "move";
+	public static final String MOVE_HERE_BUTTON = "move here";
 }
