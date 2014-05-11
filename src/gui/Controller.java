@@ -57,10 +57,10 @@ public class Controller implements Initializable {
 			BasicConfigurator.configure();
 			initializeMenu();
 			childrenList.setItems(children);
-			status.setText("VFS Loaded");
+			status.setText(GUIMessages.STARTUP_SUCCESS);
 			populateListView();
 		} catch (Exception e) {
-			status.setText("Your virtual Disk could not be initialized");
+			status.setText(GUIMessages.STARTUP_ERROR);
 		}
 	}
 
@@ -114,13 +114,12 @@ public class Controller implements Initializable {
 			try {
 				fileSystem.importFile(file.getAbsolutePath());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				status.setText(e.getMessage());
 			}
 			logger.info("Imported " + file.getName() + "into virtual disk");
 		}
 		// Update status
-		status.setText("Imported " + files.size() + " files into virtualDisk");
+		status.setText(GUIMessages.IMPORTED_FILES_MSG);
 		populateListView();
 	}
 
@@ -136,17 +135,17 @@ public class Controller implements Initializable {
 				byte[] fileData = fileSystem.readFile(fileSystem
 						.getFilePath(fileSelected));
 				FileSystemUtilities.exportFile(fileData, fileSelected);
-				status.setText("Exported " + fileSelected + " successfully");
+				status.setText(GUIMessages.EXPORT + fileSelected
+						+ GUIMessages.SUCCESS);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				status.setText("Couldn't export file");
+				status.setText(GUIMessages.EXPORT_ERROR);
 			}
 	}
 
 	@FXML
 	public void handleBack(ActionEvent event) {
 		if (fileSystem.getCurrentDirectory().equals(BlockSettings.ROOT_NAME))
-			status.setText("Already at highest level");
+			status.setText(GUIMessages.IN_ROOT);
 		else {
 			String parentDirectory = fileSystem.getParentOfCurrentDirectory();
 			fileSystem.setCurrentDirectory(parentDirectory);
@@ -163,7 +162,7 @@ public class Controller implements Initializable {
 					+ "/" + ItemSelected);
 			populateListView();
 		} else {
-			status.setText("Please select a valid directory");
+			status.setText(GUIMessages.PROVIDE_DIRECTORY);
 		}
 	}
 
@@ -188,7 +187,7 @@ public class Controller implements Initializable {
 		String directoryToCreate = directoryName.getText();
 		if (directoryToCreate.trim().isEmpty()
 				|| directoryToCreate.trim().equals(BlockSettings.ROOT_NAME)) {
-			status.setText("Please provide a valid directory name");
+			status.setText(GUIMessages.PROVIDE_DIRECTORY_NAME);
 			return;
 		}
 		try {
@@ -197,8 +196,8 @@ public class Controller implements Initializable {
 		} catch (Exception e) {
 			status.setText(e.getMessage());
 		}
-		status.setText("Created directory " + directoryToCreate + " in "
-				+ fileSystem.getCurrentDirectory());
+		status.setText(GUIMessages.CREATED_DIRECTORY + directoryToCreate
+				+ GUIMessages.IN + fileSystem.getCurrentDirectory());
 		populateListView();
 		directoryName.clear();
 	}
@@ -214,7 +213,7 @@ public class Controller implements Initializable {
 				populateListView();
 			}
 		} catch (Exception ex) {
-			status.setText("Please provide a valid directory");
+			status.setText(GUIMessages.PROVIDE_DIRECTORY);
 		}
 	}
 
@@ -226,6 +225,7 @@ public class Controller implements Initializable {
 			String[] directoryContents = fileSystem.getChildren(cwd);
 			children.addAll(directoryContents);
 		} catch (Exception e) {
+			status.setText(GUIMessages.LIST_ERROR);
 			e.printStackTrace();
 		}
 	}
