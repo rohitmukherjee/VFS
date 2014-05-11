@@ -119,7 +119,8 @@ public class BlockManager {
 	private void rwrite(byte[] data, int startPosInArray, long startPosInFile)
 			throws Exception {
 		++numberOfBlocks;
-		if (data.length - startPosInArray > BlockSettings.DATA_LENGTH) {
+
+		while (data.length - startPosInArray > BlockSettings.DATA_LENGTH) {
 			byte[] toWrite = subArray(data, startPosInArray,
 					(int) BlockSettings.DATA_LENGTH);
 			// Writing the header
@@ -132,9 +133,11 @@ public class BlockManager {
 			virtualDisk
 					.write(startPosInFile + BlockSettings.NEXT_ADDRESS_START,
 							startPos);
-			rwrite(data, startPosInArray + (int) BlockSettings.DATA_LENGTH,
-					startPos);
-		} else {
+			startPosInArray += (int) BlockSettings.DATA_LENGTH;
+			startPosInFile = startPos;
+		}
+
+		if (data.length - startPosInArray <= BlockSettings.DATA_LENGTH) {
 			int numWrite = data.length - startPosInArray;
 			byte[] toWrite = subArray(data, startPosInArray, numWrite);
 			virtualDisk.write(startPosInFile, numWrite);
@@ -213,22 +216,21 @@ public class BlockManager {
 	}
 
 	private long getNextFreeBlock(long blockNumber) throws IOException {
-		virtualDisk.seek(blockNumber * BlockSettings.BLOCK_SIZE);
-		logger.debug("virtualDisk file pointer is now at position: "
-				+ virtualDisk.getFilePosition());
+		boolean isFree = false;
 		try {
-			long result = virtualDisk.readLong();
-			// logger.debug("BlockNumber: " + blockNumber + " header length: "
-			// + result);
-			if (isUnused(result))
-				return blockNumber;
-			else
-				return getNextFreeBlock(blockNumber + 1);
+			while (!isFree) {
+				virtualDisk.seek(blockNumber * BlockSettings.BLOCK_SIZE);
+				long result = virtualDisk.readLong();
+				if (isUnused(result))
+					isFree = true;
+				else
+					++blockNumber;
+			}
 		} catch (EOFException ex) {
 			// logger.debug("Creating free space");
 			setupEmptyBlock(blockNumber);
-			return blockNumber;
 		}
+		return blockNumber;
 	}
 
 	private void setupEmptyBlock(long blockNumber) throws IOException {

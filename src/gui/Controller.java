@@ -46,8 +46,8 @@ public class Controller implements Initializable {
 
 	/* Context Menu Specific Code */
 	final ContextMenu options = new ContextMenu();
-	MenuItem delete = new MenuItem("Delete");
-	MenuItem rename = new MenuItem("Rename");
+	MenuItem delete = new MenuItem(GUIMessages.DELETE_BUTTON);
+	MenuItem rename = new MenuItem(GUIMessages.RENAME_BUTTON);
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -66,38 +66,42 @@ public class Controller implements Initializable {
 
 	private void initializeMenu() {
 		delete.setOnAction(new EventHandler<ActionEvent>() {
-
 			@Override
 			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-
+				String itemSelected = childrenList.getSelectionModel()
+						.getSelectedItem();
+				if (FileSystemUtilities.isDirectoryName(itemSelected))
+					deleteDirectory(itemSelected);
+				else if (FileSystemUtilities.isFileName(itemSelected))
+					deleteFile(itemSelected);
+				else if (itemSelected == null)
+					status.setText(GUIMessages.SELECT_ERROR);
 			}
-
 		});
 
 		rename.setOnAction(new EventHandler<ActionEvent>() {
-
 			@Override
 			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-
+				String itemSelected = childrenList.getSelectionModel()
+						.getSelectedItem();
+				if (FileSystemUtilities.isDirectoryName(itemSelected))
+					renameDirectory(itemSelected, "TEXT");
+				else if (FileSystemUtilities.isFileName(itemSelected))
+					renameFile(itemSelected, "TEXT");
+				else if (itemSelected == null)
+					status.setText(GUIMessages.SELECT_ERROR);
 			}
-
 		});
 
 		options.getItems().add(delete);
 		options.getItems().add(rename);
 		childrenList.addEventHandler(MouseEvent.MOUSE_CLICKED,
 				new EventHandler<MouseEvent>() {
-
 					@Override
 					public void handle(MouseEvent event) {
 						if (event.getButton().equals(MouseButton.SECONDARY)) {
 							options.show(childrenList, event.getScreenX(),
 									event.getScreenY());
-							logger.debug("Selected "
-									+ childrenList.getSelectionModel()
-											.getSelectedItem());
 						} else if (event.getButton()
 								.equals(MouseButton.PRIMARY))
 							options.hide();
@@ -108,7 +112,7 @@ public class Controller implements Initializable {
 	@FXML
 	public void handleImportFile(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Open File");
+		fileChooser.setTitle(GUIMessages.OPEN_DIALOG);
 		List<File> files = fileChooser.showOpenMultipleDialog(null);
 		for (File file : files) {
 			try {
@@ -116,7 +120,7 @@ public class Controller implements Initializable {
 			} catch (Exception e) {
 				status.setText(e.getMessage());
 			}
-			logger.info("Imported " + file.getName() + "into virtual disk");
+			logger.info(GUIMessages.IMPORT + file.getName());
 		}
 		// Update status
 		status.setText(GUIMessages.IMPORTED_FILES_MSG);
@@ -176,13 +180,6 @@ public class Controller implements Initializable {
 	}
 
 	@FXML
-	public void handleAddDirectory(ActionEvent event) {
-
-		// App.console.runCommand("", new String[] {App.source,
-		// App.destination});
-	}
-
-	@FXML
 	public void handleCreateDirectory(ActionEvent event) {
 		String directoryToCreate = directoryName.getText();
 		if (directoryToCreate.trim().isEmpty()
@@ -202,16 +199,43 @@ public class Controller implements Initializable {
 		directoryName.clear();
 	}
 
-	@FXML
-	public void handleDeleteDirectory(ActionEvent event) {
-		String ItemSelected = childrenList.getSelectionModel()
-				.getSelectedItem();
+	private void renameFile(String fileName, String newName) {
 		try {
-			if (FileSystemUtilities.isDirectoryName(ItemSelected)) {
-				fileSystem
-						.deleteDirectory(fileSystem.getFilePath(ItemSelected));
-				populateListView();
-			}
+			fileSystem.renameFile(fileSystem.getFilePath(fileName),
+					fileSystem.getFilePath(newName));
+			populateListView();
+		} catch (Exception ex) {
+			status.setText(GUIMessages.PROVIDE_FILE);
+		}
+	}
+
+	private void renameDirectory(String directoryName, String newName) {
+		try {
+			fileSystem.renameDirectory(fileSystem.getFilePath(directoryName),
+					fileSystem.getFilePath(newName));
+			populateListView();
+		} catch (Exception ex) {
+			status.setText(GUIMessages.PROVIDE_DIRECTORY);
+		}
+
+	}
+
+	private void deleteFile(String fileName) {
+		try {
+			logger.debug("Deleting File " + fileSystem.getFilePath(fileName));
+			fileSystem.deleteFile(fileSystem.getFilePath(fileName));
+			populateListView();
+		} catch (Exception ex) {
+			status.setText(GUIMessages.PROVIDE_FILE);
+		}
+	}
+
+	private void deleteDirectory(String directoryName) {
+		try {
+			logger.debug("Deleting File "
+					+ fileSystem.getFilePath(directoryName));
+			fileSystem.deleteDirectory(fileSystem.getFilePath(directoryName));
+			populateListView();
 		} catch (Exception ex) {
 			status.setText(GUIMessages.PROVIDE_DIRECTORY);
 		}

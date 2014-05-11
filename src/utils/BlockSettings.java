@@ -12,7 +12,7 @@ public class BlockSettings {
 			- NEXT_ADDRESS_LENGTH;
 	public static final int DATA_LENGTH = BLOCK_SIZE - NEXT_ADDRESS_LENGTH
 			- HEADER_LENGTH;
-	public static final long BLOCKS_TO_INITIALIZE = 100;
+	public static final long BLOCKS_TO_INITIALIZE = 10000;
 	public static final long BYTES_TO_GROW = BLOCKS_TO_INITIALIZE * BLOCK_SIZE;
 
 	// Number of blocks to allocate to root directory

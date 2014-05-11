@@ -47,6 +47,7 @@ public class FileManager implements FileManagerInterface {
 				.write(newMetaData.getBytes(), newMetaData.getBlockNumber());
 		blockManager.combineBlocks(newMetaData.getBlockNumber(),
 				dataBlockNumber);
+		cache.invalidateCache();
 	}
 
 	@Override
@@ -58,6 +59,7 @@ public class FileManager implements FileManagerInterface {
 		metaData.setBlockNumber(position);
 		blockManager.write(metaData.getBytes(), position);
 		blockManager.combineBlocks(metaData.getBlockNumber(), dataBlockNumber);
+		cache.invalidateCache();
 	}
 
 	@Override
@@ -70,6 +72,7 @@ public class FileManager implements FileManagerInterface {
 		metaData.setBlockNumber(blockManager.getNextFreeBlock());
 		blockManager.write(metaData.getBytes(), metaData.getBlockNumber());
 		blockManager.combineBlocks(metaData.getBlockNumber(), dataPosition);
+		cache.invalidateCache();
 	}
 
 	@Override
@@ -95,6 +98,7 @@ public class FileManager implements FileManagerInterface {
 		// logger.warn("pos{ " + meta.getBlockNumber());
 		addToParent(getMetaData(meta.getParent()), meta.getBlockNumber());
 		// grabs the parents and updates those values
+		cache.invalidateCache();
 	}
 
 	private void addToParent(MetaData parent, long position) throws Exception {
@@ -112,6 +116,7 @@ public class FileManager implements FileManagerInterface {
 		// Have to find a way of deleting the unused space to prevent
 		// unnecessary growing
 		blockManager.combineBlocks(parent.getBlockNumber(), newParentDataBlock);
+		cache.invalidateCache();
 	}
 
 	@Override
@@ -184,8 +189,8 @@ public class FileManager implements FileManagerInterface {
 
 	@Override
 	public void deleteFile(MetaData metaData) throws Exception {
-		MetaData parent = getMetaData(metaData.getParent());
 		cache.invalidateCache();
+		MetaData parent = getMetaData(metaData.getParent());
 		long positionToRemove = metaData.getBlockNumber();
 
 		byte[] parentDataRaw = getData(parent);
@@ -203,8 +208,8 @@ public class FileManager implements FileManagerInterface {
 		long parentDataLocation = blockManager.getNextFreeBlock();
 		blockManager.write(parentDataToWrite);
 		blockManager.combineBlocks(parent.getBlockNumber(), parentDataLocation);
-
 		blockManager.delete(metaData.getBlockNumber());
+		cache.invalidateCache();
 	}
 
 	@Override
@@ -214,6 +219,7 @@ public class FileManager implements FileManagerInterface {
 		long dataPosition = blockManager.getNextFreeBlock();
 		blockManager.write(data, dataPosition);
 		blockManager.combineBlocks(meta.getBlockNumber(), dataPosition);
+		cache.invalidateCache();
 	}
 
 	public long getFreeMemory() throws IOException {
@@ -235,6 +241,7 @@ public class FileManager implements FileManagerInterface {
 		meta.setBlockNumber(blockManager.getNextFreeBlock());
 		blockManager.write(meta.getBytes(), meta.getBlockNumber());
 		addToParent(parent, meta.getBlockNumber());
+		cache.invalidateCache();
 	}
 
 	public void deleteDisk() throws IOException {
@@ -243,12 +250,14 @@ public class FileManager implements FileManagerInterface {
 	}
 
 	public void deleteMetaData(MetaData metaData) throws Exception {
+		cache.invalidateCache();
 		blockManager.deleteBlock(metaData.getBlockNumber());
+		cache.invalidateCache();
 	}
 
 	@Override
 	public void deleteDirectory(MetaData metaData) throws Exception {
-
+		cache.invalidateCache();
 		if (metaData.getName().equals(BlockSettings.ROOT_NAME)
 				|| metaData.getBlockNumber() == BlockSettings.ROOT_POSITION)
 			return;

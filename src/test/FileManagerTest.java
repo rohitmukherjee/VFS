@@ -251,8 +251,7 @@ public class FileManagerTest {
 
 		// search for nested file1
 		MetaData retrievedNestedFile1 = fileManager
-				.search(BlockSettings.ROOT_NAME
-						+ "/dir1/nestedDir1/nestedfile1");
+				.search(BlockSettings.ROOT_NAME + "/nestedfile1");
 		assertArrayEquals(metaFile2.getBytes(), retrievedNestedFile1.getBytes());
 		assertArrayEquals(fileManager.getData(metaFile2),
 				fileManager.getData(retrievedNestedFile1));
