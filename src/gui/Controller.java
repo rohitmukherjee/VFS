@@ -8,11 +8,16 @@ import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
 import org.apache.log4j.BasicConfigurator;
@@ -39,18 +44,65 @@ public class Controller implements Initializable {
 	@FXML
 	private Label cwd;
 
+	/* Context Menu Specific Code */
+	final ContextMenu options = new ContextMenu();
+	MenuItem delete = new MenuItem("Delete");
+	MenuItem rename = new MenuItem("Rename");
+
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		try {
 			fileSystem = new FileSystem("test.vdisk");
 			logger = Logger.getLogger(Controller.class);
 			BasicConfigurator.configure();
+			initializeMenu();
 			childrenList.setItems(children);
 			status.setText("VFS Loaded");
 			populateListView();
 		} catch (Exception e) {
 			status.setText("Your virtual Disk could not be initialized");
 		}
+	}
+
+	private void initializeMenu() {
+		delete.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+
+		rename.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+
+		options.getItems().add(delete);
+		options.getItems().add(rename);
+		childrenList.addEventHandler(MouseEvent.MOUSE_CLICKED,
+				new EventHandler<MouseEvent>() {
+
+					@Override
+					public void handle(MouseEvent event) {
+						if (event.getButton().equals(MouseButton.SECONDARY)) {
+							options.show(childrenList, event.getScreenX(),
+									event.getScreenY());
+							logger.debug("Selected "
+									+ childrenList.getSelectionModel()
+											.getSelectedItem());
+						} else if (event.getButton()
+								.equals(MouseButton.PRIMARY))
+							options.hide();
+					}
+				});
 	}
 
 	@FXML
