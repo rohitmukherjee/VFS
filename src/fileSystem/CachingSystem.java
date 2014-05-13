@@ -1,6 +1,7 @@
 package fileSystem;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class CachingSystem {
 
@@ -24,5 +25,9 @@ public class CachingSystem {
 			return cache.get(fileName);
 		else
 			return CACHE_DOES_NOT_CONTAIN;
+	}
+
+	public Set<String> getFileList() {
+		return cache.keySet();
 	}
 }

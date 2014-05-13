@@ -1,7 +1,9 @@
 package fileManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -286,4 +288,21 @@ public class FileManager implements FileManagerInterface {
 			deleteFile(metaData);
 		}
 	}
+
+	public ArrayList<String> searchCache(String searchTerm,
+			boolean caseSensitiveOn) {
+		Set<String> fileList = cache.getFileList();
+		ArrayList<String> results = new ArrayList<String>();
+		for (String key : fileList) {
+			if (caseSensitiveOn) {
+				if (key.contains(searchTerm))
+					results.add(key);
+			} else if (!caseSensitiveOn) {
+				if (key.toLowerCase().contains(searchTerm.toLowerCase()))
+					results.add(key);
+			}
+		}
+		return results;
+	}
+
 }

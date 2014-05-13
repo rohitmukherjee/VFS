@@ -34,4 +34,6 @@ public interface FileSystemInterface {
 
 	void moveDirectory(String oldPath, String newPath) throws Exception;
 
+	void copyFile(String oldPath, String newPath) throws Exception;
+
 }

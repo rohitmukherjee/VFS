@@ -1,6 +1,7 @@
 package fileSystem;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.log4j.BasicConfigurator;
@@ -278,6 +279,27 @@ public class FileSystem implements FileSystemInterface {
 	}
 
 	@Override
+	public void copyFile(String oldPath, String newPath) throws Exception {
+		MetaData fileToCopyMetaData = fileManager.search(oldPath);
+		if (!isValidFile(fileToCopyMetaData))
+			throw new FileOrDirectoryNotFoundException(
+					"Couldn't copy file because it couldn't be found");
+		String pathWithoutFileName = newPath.substring(0,
+				newPath.lastIndexOf("/"));
+		String newFileName = newPath.substring(newPath.lastIndexOf("/") + 1);
+		MetaData newParentMeta = fileManager.search(pathWithoutFileName);
+		if (!isValidDirectory(newParentMeta))
+			throw new FileOrDirectoryNotFoundException(
+					"Destination directory doesn't exist");
+
+		// copy data
+		byte[] fileContents = fileManager.getData(fileToCopyMetaData);
+		fileToCopyMetaData.setParent(newParentMeta.getBlockNumber());
+		fileToCopyMetaData.setName(newFileName);
+		fileManager.createFile(fileToCopyMetaData, fileContents);
+	}
+
+	@Override
 	public void moveDirectory(String oldPath, String newPath) throws Exception {
 		MetaData directoryToMoveMetaData = fileManager.search(oldPath);
 		if (!isValidDirectory(directoryToMoveMetaData)
@@ -326,5 +348,10 @@ public class FileSystem implements FileSystemInterface {
 	public String getParentOfCurrentDirectory() {
 		return getCurrentDirectory().substring(0,
 				getCurrentDirectory().lastIndexOf("/"));
+	}
+
+	public ArrayList<String> searchCache(String searchTerm,
+			boolean caseSensitiveOn) {
+		return fileManager.searchCache(searchTerm, caseSensitiveOn);
 	}
 }
